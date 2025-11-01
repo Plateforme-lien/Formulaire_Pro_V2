@@ -5,28 +5,106 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Questionnaire — Professionnels</title>
 <style>
-  :root{--bg:#f6f8fb;--card:#fff;--primary:#0ea5a4;--muted:#6b7280}
-  body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:24px}
+  :root{--bg:#f6f8fb;--card:#fff;--primary:#0ea5a4;--primary-dark:#0d8887;--muted:#6b7280;--section-bg:#f9fafb}
+  body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:24px;line-height:1.6}
   .wrap{max-width:980px;margin:18px auto}
-  .card{background:var(--card);border-radius:12px;padding:20px 22px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
-  h1{margin:0 0 6px;font-size:20px}
-  p.lead{margin:0 0 12px;color:var(--muted)}
-  label{display:block;margin-top:12px;font-weight:600;color:#0f1724}
+  .card{background:var(--card);border-radius:16px;padding:32px 36px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  h1{margin:0 0 8px;font-size:24px;color:#0f1724}
+  p.lead{margin:0 0 24px;color:var(--muted);font-size:15px}
+  
+  /* Labels plus lisibles */
+  label{display:block;margin-top:24px;font-weight:600;color:#0f1724;font-size:15px}
+  label:first-of-type{margin-top:0}
+  
+  /* Inputs plus espacés et lisibles */
   input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{
-    width:100%;padding:10px;border:1px solid #e6eef6;border-radius:8px;margin-top:6px;font-size:14px;
+    width:100%;padding:12px 14px;border:2px solid #e6eef6;border-radius:8px;margin-top:8px;font-size:15px;
+    transition:border-color 0.2s;
   }
-  .row{display:flex;gap:12px}
-  .col{flex:1}
-  .actions{display:flex;gap:8px;align-items:center;margin-top:12px}
-  button{background:var(--primary);color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+  input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus,input[type=date]:focus,select:focus{
+    outline:none;border-color:var(--primary);
+  }
+  
+  /* Sections avec fond légèrement différent */
+  .question-section{
+    background:var(--section-bg);
+    padding:24px;
+    border-radius:12px;
+    margin-top:32px;
+    border-left:4px solid var(--primary);
+  }
+  .question-section:first-child{margin-top:24px}
+  .section-title{
+    font-size:17px;
+    font-weight:700;
+    color:#0f1724;
+    margin:0 0 20px 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-number{
+    background:var(--primary);
+    color:white;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    font-weight:700;
+  }
+  
+  /* Fieldset amélioré */
+  fieldset{margin-top:0;border:2px solid #e6eef6;padding:20px;border-radius:12px;background:white}
+  legend{font-weight:700;font-size:16px;color:#0f1724;padding:0 8px}
+  
+  /* Boutons */
+  button{background:var(--primary);color:#fff;padding:12px 20px;border-radius:8px;border:0;cursor:pointer;
+    font-size:15px;font-weight:600;transition:all 0.2s}
+  button:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,164,0.3)}
+  button:active{transform:translateY(0)}
   .btn-ghost{background:#eef2f7;color:#0f1724}
-  .small{font-size:13px;color:var(--muted);margin-top:6px}
-  .error{color:#b91c1c;margin-top:6px}
-  fieldset{margin-top:14px;border:1px solid #eef2f4;padding:12px;border-radius:8px}
-  legend{font-weight:700}
-  .inline{display:inline-block;margin-right:10px}
+  .btn-ghost:hover{background:#e1e7ef;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+  
+  /* Bouton de validation PRINCIPAL - très visible */
+  #submit{
+    background:linear-gradient(135deg, #0ea5a4 0%, #0d8887 100%);
+    padding:16px 40px;
+    font-size:17px;
+    font-weight:700;
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(14,165,164,0.4);
+    margin-top:32px;
+  }
+  #submit:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(14,165,164,0.5);
+  }
+  
+  /* Actions */
+  .actions{display:flex;gap:12px;align-items:center;margin-top:32px;flex-wrap:wrap}
+  
+  /* Textes */
+  .small{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .error{color:#dc2626;margin-top:8px;font-weight:500}
+  
+  /* Radio/Checkbox plus espacés */
+  .inline{display:inline-block;margin-right:16px;margin-bottom:8px}
+  input[type=radio],input[type=checkbox]{margin-right:6px;cursor:pointer}
+  label:has(input[type=radio]),label:has(input[type=checkbox]){font-weight:500;cursor:pointer}
+  
   .hidden{display:none}
-  .tag{display:inline-block;padding:6px 8px;border-radius:8px;background:#f1f5f9;margin-right:6px;font-size:13px}
+  .tag{display:inline-block;padding:6px 10px;border-radius:8px;background:#f1f5f9;margin-right:8px;font-size:13px}
+  
+  /* Responsive */
+  @media(max-width:768px){
+    .card{padding:24px 20px}
+    .question-section{padding:20px}
+    h1{font-size:20px}
+    #submit{padding:14px 32px;font-size:16px}
+  }
 </style>
 </head>
 <body>
@@ -82,80 +160,131 @@
 
         <!-- Rest of form -->
         <div id="rest" class="hidden">
-          <label for="nom">Nom (obligatoire)</label>
-          <input id="nom" name="nom" type="text"/>
+          <!-- Section 1 : Identité -->
+          <div class="question-section">
+            <div class="section-title">
+              <span class="section-number">1</span>
+              Informations personnelles
+            </div>
+            
+            <label for="nom">Nom (obligatoire)</label>
+            <input id="nom" name="nom" type="text"/>
 
-          <label for="prenom">Prénom (obligatoire)</label>
-          <input id="prenom" name="prenom" type="text"/>
+            <label for="prenom">Prénom (obligatoire)</label>
+            <input id="prenom" name="prenom" type="text"/>
 
-          <label for="phone">Téléphone (optionnel)</label>
-          <input id="phone" name="phone" type="tel" placeholder="0X XX XX XX XX ou +33..."/>
-          <div class="small">Numéro France métropole : 10 chiffres ; outre-mer : parfois 10+ chiffres. +33... accepté.</div>
-
-          <label for="profession">Profession (obligatoire)</label>
-          <select id="profession" name="profession">
-            <option value="">-- sélectionnez --</option>
-            <option>Éducateur spécialisé</option>
-            <option>Ergothérapeute</option>
-            <option>Psychologue</option>
-            <option>Psychomotricien</option>
-            <option>Orthophoniste</option>
-          </select>
-
-          <label>Auprès de quel(s) public(s) intervenez-vous ? (obligatoire)</label>
-          <div>
-            <label><input type="checkbox" name="public" value="0-6"> Enfants (0-6 ans)</label>
-            <label><input type="checkbox" name="public" value="7-12"> Enfants (7-12 ans)</label>
-            <label><input type="checkbox" name="public" value="13-18"> Adolescents (13-18 ans)</label>
-            <label><input type="checkbox" name="public" value="18+"> Adultes (18+)</label>
+            <label for="phone">Téléphone (optionnel)</label>
+            <input id="phone" name="phone" type="tel" placeholder="0X XX XX XX XX ou +33..."/>
+            <div class="small">Numéro France métropole : 10 chiffres ; outre-mer : parfois 10+ chiffres. +33... accepté.</div>
           </div>
 
-          <label>Quel(s) sont vos modes d'intervention ? (obligatoire)</label>
-          <div>
-            <label><input type="checkbox" name="mode" value="domicile"> Se déplace à domicile</label>
-            <label><input type="checkbox" name="mode" value="cabinet"> En cabinet</label>
+          <!-- Section 2 : Profession -->
+          <div class="question-section">
+            <div class="section-title">
+              <span class="section-number">2</span>
+              Profession et public
+            </div>
+            
+            <label for="profession">Profession (obligatoire)</label>
+            <select id="profession" name="profession">
+              <option value="">-- sélectionnez --</option>
+              <option>Éducateur spécialisé</option>
+              <option>Ergothérapeute</option>
+              <option>Psychologue</option>
+              <option>Psychomotricien</option>
+              <option>Orthophoniste</option>
+            </select>
+
+            <label style="margin-top:24px">Auprès de quel(s) public(s) intervenez-vous ? (obligatoire)</label>
+            <div style="margin-top:12px">
+              <label><input type="checkbox" name="public" value="0-6"> Enfants (0-6 ans)</label>
+              <label><input type="checkbox" name="public" value="7-12"> Enfants (7-12 ans)</label>
+              <label><input type="checkbox" name="public" value="13-18"> Adolescents (13-18 ans)</label>
+              <label><input type="checkbox" name="public" value="18+"> Adultes (18+)</label>
+            </div>
           </div>
 
-          <label>Proposez-vous des rendez-vous en visio ? (obligatoire)</label>
-          <div>
-            <label><input type="radio" name="visio" value="oui"> Oui</label>
-            <label><input type="radio" name="visio" value="non"> Non</label>
+          <!-- Section 3 : Modalités d'intervention -->
+          <div class="question-section">
+            <div class="section-title">
+              <span class="section-number">3</span>
+              Modalités d'intervention
+            </div>
+            
+            <label>Quel(s) sont vos modes d'intervention ? (obligatoire)</label>
+            <div style="margin-top:12px">
+              <label><input type="checkbox" name="mode" value="domicile"> Se déplace à domicile</label>
+              <label><input type="checkbox" name="mode" value="cabinet"> En cabinet</label>
+            </div>
+
+            <label style="margin-top:24px">Proposez-vous des rendez-vous en visio ? (obligatoire)</label>
+            <div style="margin-top:12px">
+              <label><input type="radio" name="visio" value="oui"> Oui</label>
+              <label><input type="radio" name="visio" value="non"> Non</label>
+            </div>
           </div>
 
-          <label for="departement">Dans quel département intervenez-vous principalement ? (obligatoire)</label>
-          <select id="departement" name="departement"><option value="">-- chargement --</option></select>
+          <!-- Section 4 : Zone géographique -->
+          <div class="question-section">
+            <div class="section-title">
+              <span class="section-number">4</span>
+              Zone géographique d'intervention
+            </div>
+            
+            <label for="departement">Dans quel département intervenez-vous principalement ? (obligatoire)</label>
+            <select id="departement" name="departement"><option value="">-- chargement --</option></select>
 
-          <label for="commune">Quelle est votre commune principale d'intervention ? (obligatoire)</label>
-          <select id="commune" name="commune"><option value="">-- choisissez le département --</option></select>
+            <label for="commune">Quelle est votre commune principale d'intervention ? (obligatoire)</label>
+            <select id="commune" name="commune"><option value="">-- choisissez le département --</option></select>
 
-          <label for="rayon">Quel est votre rayon d'intervention ? (obligatoire)</label>
-          <select id="rayon" name="rayon">
-            <option value="">-- sélectionnez --</option>
-            <option>0-5 km</option>
-            <option>5-15 km</option>
-            <option>15-30 km</option>
-            <option>30+ km</option>
-          </select>
-
-          <label>Avez-vous des disponibilités pour de nouveaux bénéficiaires ? (obligatoire)</label>
-          <div>
-            <label><input type="radio" name="dispo" value="oui"> Oui</label>
-            <label><input type="radio" name="dispo" value="non"> Non</label>
+            <label for="rayon">Quel est votre rayon d'intervention ? (obligatoire)</label>
+            <select id="rayon" name="rayon">
+              <option value="">-- sélectionnez --</option>
+              <option>0-5 km</option>
+              <option>5-15 km</option>
+              <option>15-30 km</option>
+              <option>30+ km</option>
+            </select>
           </div>
 
-          <div id="dateBlock" class="hidden">
-            <label for="dateDispo">À partir de quelle date êtes-vous disponible ?</label>
-            <input id="dateDispo" name="dateDispo" type="date"/>
-            <div class="small">La première date disponible est aujourd'hui.</div>
+          <!-- Section 5 : Disponibilités -->
+          <div class="question-section">
+            <div class="section-title">
+              <span class="section-number">5</span>
+              Disponibilités
+            </div>
+            
+            <label>Avez-vous des disponibilités pour de nouveaux bénéficiaires ? (obligatoire)</label>
+            <div style="margin-top:12px">
+              <label><input type="radio" name="dispo" value="oui"> Oui</label>
+              <label><input type="radio" name="dispo" value="non"> Non</label>
+            </div>
+
+            <div id="dateBlock" class="hidden">
+              <label for="dateDispo">À partir de quelle date êtes-vous disponible ?</label>
+              <input id="dateDispo" name="dateDispo" type="date"/>
+              <div class="small">La première date disponible est aujourd'hui.</div>
+            </div>
           </div>
 
-          <label style="margin-top:12px"><input id="consent" name="consent" type="checkbox"/> J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation. (obligatoire)</label>
+          <!-- Section 6 : Consentement -->
+          <div class="question-section">
+            <div class="section-title">
+              <span class="section-number">6</span>
+              Consentement
+            </div>
+            
+            <label style="margin-top:0;display:flex;align-items:start;gap:8px">
+              <input id="consent" name="consent" type="checkbox" style="margin-top:4px"/> 
+              <span>J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation. (obligatoire)</span>
+            </label>
+          </div>
 
           <div class="actions">
-            <button id="submit" type="button">Valider le formulaire</button>
+            <button id="submit" type="button">✓ Valider mon inscription</button>
             <button id="resetBtn" type="button" class="btn-ghost">Réinitialiser</button>
-            <div id="submitMsg" class="small"></div>
           </div>
+          <div id="submitMsg" class="small"></div>
         </div>
       </form>
     </div>
@@ -219,11 +348,20 @@ sendCodeBtn.addEventListener("click", async () => {
       emailMsg.textContent = "Code envoyé. Vérifiez votre boîte mail.";
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
+      codeEl.focus(); // Focus automatique sur le champ code
     } else {
       emailMsg.textContent = "Erreur : " + (j.error || "impossible d'envoyer le code");
     }
   } catch (err) {
     emailMsg.textContent = "Erreur réseau lors de l'envoi du code.";
+  }
+});
+
+// Permettre de valider avec Entrée sur le champ email
+emailEl.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendCodeBtn.click();
   }
 });
 
@@ -515,11 +653,6 @@ resetBtn.addEventListener('click', () => {
   siretBlock.classList.add("hidden");
   noNum.classList.add("hidden");
   submitMsg.textContent = "";
-});
-
-/* ========== HELP ========== */
-document.getElementById("openHelp").addEventListener('click', () => {
-  alert("Procédure : 1) entrez votre email 2) demandez le code 3) validez le code 4) remplissez le formulaire. Si vous avez déjà validé une fois, le formulaire sera prérempli après la validation du code.");
 });
 
 </script>
