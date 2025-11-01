@@ -12,14 +12,11 @@
   h1{margin:0 0 8px;font-size:24px;color:#0f1724}
   p.lead{margin:0 0 24px;color:var(--muted);font-size:15px}
   
-  /* Labels plus lisibles */
   label{display:block;margin-top:24px;font-weight:600;color:#0f1724;font-size:15px}
   label:first-of-type{margin-top:0}
   
-  /* Astérisque rouge pour champs obligatoires */
   .required::after{content:" *";color:#dc2626;font-weight:700}
   
-  /* Inputs plus espacés et lisibles */
   input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{
     width:100%;padding:12px 14px;border:2px solid #e6eef6;border-radius:8px;margin-top:8px;font-size:15px;
     transition:border-color 0.2s;
@@ -28,7 +25,6 @@
     outline:none;border-color:var(--primary);
   }
   
-  /* Sections avec fond légèrement différent */
   .question-section{
     background:var(--section-bg);
     padding:24px;
@@ -59,19 +55,17 @@
     font-weight:700;
   }
   
-  /* Fieldset amélioré */
   fieldset{margin-top:0;border:2px solid #e6eef6;padding:20px;border-radius:12px;background:white}
   legend{font-weight:700;font-size:16px;color:#0f1724;padding:0 8px}
   
-  /* Boutons */
   button{background:var(--primary);color:#fff;padding:12px 20px;border-radius:8px;border:0;cursor:pointer;
     font-size:15px;font-weight:600;transition:all 0.2s}
   button:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,164,0.3)}
   button:active{transform:translateY(0)}
+  button:disabled{opacity:0.5;cursor:not-allowed;transform:none}
   .btn-ghost{background:#eef2f7;color:#0f1724}
   .btn-ghost:hover{background:#e1e7ef;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
   
-  /* Bouton de validation PRINCIPAL - très visible */
   #submit{
     background:linear-gradient(135deg, #0ea5a4 0%, #0d8887 100%);
     padding:16px 40px;
@@ -86,22 +80,17 @@
     box-shadow:0 6px 20px rgba(14,165,164,0.5);
   }
   
-  /* Actions */
   .actions{display:flex;gap:12px;align-items:center;margin-top:32px;flex-wrap:wrap}
   
-  /* Textes */
   .small{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
   .error{color:#dc2626;margin-top:8px;font-weight:500}
   
-  /* Radio/Checkbox plus espacés */
   .inline{display:inline-block;margin-right:16px;margin-bottom:8px}
   input[type=radio],input[type=checkbox]{margin-right:6px;cursor:pointer}
   label:has(input[type=radio]),label:has(input[type=checkbox]){font-weight:500;cursor:pointer}
   
   .hidden{display:none}
-  .tag{display:inline-block;padding:6px 10px;border-radius:8px;background:#f1f5f9;margin-right:8px;font-size:13px}
   
-  /* Responsive */
   @media(max-width:768px){
     .card{padding:24px 20px}
     .question-section{padding:20px}
@@ -357,23 +346,16 @@ sendCodeBtn.addEventListener("click", async () => {
     
     console.log("Réponse serveur sendCode:", j);
     
-    // Vérifier d'abord les erreurs de saturation, même si ok=true
-    if (j.error) {
-      const errorLower = j.error.toLowerCase();
-      if (errorLower.includes("quota") || 
-          errorLower.includes("limite") || 
-          errorLower.includes("trop") ||
-          errorLower.includes("dépassé") ||
-          errorLower.includes("maximum")) {
-        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Service temporairement indisponible</span><br>
-          <span style="color:#6b7280">Le quota d'emails quotidien est atteint. Merci de réessayer demain.</span>`;
-        sendCodeBtn.disabled = false;
-        return;
-      }
+    // Vérifier si le quota est dépassé (prioritaire)
+    if (j.error === "SERVICE_QUOTA_EXCEEDED") {
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Service temporairement indisponible</span><br>
+        <span style="color:#6b7280">Le quota d'emails quotidien est atteint. Merci de réessayer demain.</span>`;
+      sendCodeBtn.disabled = false;
+      return;
     }
     
-    // Si vraiment ok et pas d'erreur de quota
-    if (j.ok && !j.error) {
+    // Si vraiment ok
+    if (j.ok) {
       emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
         <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
       CURRENT_EMAIL = mail;
@@ -483,19 +465,12 @@ async function showFormAndPrefill(data) {
   if (data.departement) {
     let deptCode = String(data.departement).trim();
     if (deptCode.length === 1) deptCode = "0" + deptCode;
-    console.log("Pré-remplissage département:", data.departement, "→ normalisé:", deptCode);
     
     setTimeout(() => {
       departSelect.value = deptCode;
-      console.log("Département sélectionné:", departSelect.value);
       
       if (data.commune) {
-        console.log("Chargement des communes pour:", deptCode);
-        loadCommunes(deptCode, data.commune).then(() => {
-          console.log("Commune sélectionnée:", data.commune);
-        }).catch(err => {
-          console.error("Erreur chargement communes:", err);
-        });
+        loadCommunes(deptCode, data.commune);
       }
     }, 100);
   }
@@ -504,8 +479,6 @@ async function showFormAndPrefill(data) {
   
   const consentValue = String(data.consentement || "").toLowerCase();
   document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
-  
-  console.log("Pré-remplissage terminé");
 }
 
 /* ========== LISTENERS: numType toggles ========== */
