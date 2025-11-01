@@ -345,20 +345,10 @@ async function showFormAndPrefill(data) {
   // 7. Rayon
   document.getElementById("rayon").value = data.rayon || "";
   
-  // 8. Disponibilités (ne pas pré-remplir la date pour forcer une mise à jour)
-  if (data.disponibilite) {
-    const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
-    if (dispoRadio) {
-      dispoRadio.checked = true;
-      // Afficher le bloc date si dispo = "oui", mais ne PAS pré-remplir la date
-      if (data.disponibilite === "oui") {
-        dateBlock.classList.remove("hidden");
-        // Laisser le champ vide pour que l'utilisateur mette à jour la date
-        dateInput.value = "";
-        console.log("Bloc date affiché - l'utilisateur doit mettre à jour la date");
-      }
-    }
-  }
+  // 8. Disponibilités (ne PAS pré-remplir pour forcer une mise à jour)
+  // Les disponibilités changent régulièrement, on force l'utilisateur à répondre à nouveau
+  // Le bloc date reste caché par défaut
+  console.log("Disponibilités non pré-remplies - l'utilisateur doit confirmer");
   
   // 9. Consentement
   const consentValue = String(data.consentement || "").toLowerCase();
