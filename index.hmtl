@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questionnaire Professionnels</title>
+  <style>
+    body {font-family: sans-serif; background:#f8fafc; margin:0; padding:20px;}
+    .card {background:#fff; max-width:800px; margin:auto; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    h1,h2 {color:#333;}
+    label {display:block; margin-top:10px; font-weight:600;}
+    input, select {width:100%; padding:8px; margin-top:5px;}
+    .hidden {display:none;}
+    button {background:#0284c7; color:#fff; border:none; padding:10px 15px; border-radius:8px; margin-top:15px; cursor:pointer;}
+    .small {font-size:0.9em; color:#666;}
+    .error {color:#c62828; font-size:0.9em;}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Questionnaire - Mise en relation</h1>
+    <p>Entrez votre e-mail pour commencer :</p>
+
+    <!-- Étape 1 : Email -->
+    <input type="email" id="email" placeholder="votre@email.com" />
+    <button id="sendCodeBtn">Vérifier mon mail</button>
+    <p id="emailMsg" class="small"></p>
+
+    <!-- Étape 2 : Code -->
+    <div id="codeSection" class="hidden">
+      <label>Code reçu par mail :</label>
+      <input type="text" id="code" placeholder="6 chiffres">
+      <button id="verifyBtn">Valider le code</button>
+      <p id="codeMsg" class="small"></p>
+    </div>
+
+    <!-- Étape 3 : Formulaire -->
+    <form id="formSection" class="hidden">
+      <h2>Informations professionnelles</h2>
+
+      <label>Numéro professionnel :</label>
+      <label><input type="radio" name="numType" value="adeli"> Oui, j’ai un numéro ADELI</label>
+      <label><input type="radio" name="numType" value="siret"> Oui, j’ai un numéro SIRET</label>
+      <label><input type="radio" name="numType" value="none"> Non, je n’ai pas de numéro</label>
+
+      <div id="adeliField" class="hidden">
+        <label>Numéro ADELI :</label>
+        <input type="text" id="adeliNum" maxlength="9" placeholder="9 chiffres">
+      </div>
+
+      <div id="siretField" class="hidden">
+        <label>Numéro SIRET :</label>
+        <input type="text" id="siretNum" maxlength="14" placeholder="14 chiffres">
+      </div>
+
+      <div id="noAccess" class="hidden error">Ce questionnaire est réservé aux professionnels avec un numéro ADELI ou SIRET.</div>
+
+      <div id="restForm" class="hidden">
+        <label>Nom :</label>
+        <input type="text" id="nom">
+
+        <label>Prénom :</label>
+        <input type="text" id="prenom">
+
+        <label>Téléphone (optionnel) :</label>
+        <input type="tel" id="phone" placeholder="0X XX XX XX XX">
+
+        <label>Profession :</label>
+        <select id="profession" required>
+          <option value="">-- sélectionnez --</option>
+          <option>Éducateur spécialisé</option>
+          <option>Ergothérapeute</option>
+          <option>Psychologue</option>
+          <option>Psychomotricien</option>
+          <option>Orthophoniste</option>
+        </select>
+
+        <label>Département :</label>
+        <select id="departement"><option value="">-- chargement --</option></select>
+
+        <label>Commune :</label>
+        <select id="commune"><option value="">-- sélectionnez un département --</option></select>
+
+        <label><input type="checkbox" id="consent"> J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation.</label>
+
+        <button type="submit">Valider le formulaire</button>
+        <p id="submitMsg" class="small"></p>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"; // 🔁 à remplacer
+
+    const email = document.getElementById('email');
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const emailMsg = document.getElementById('emailMsg');
+    const codeSection = document.getElementById('codeSection');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const codeMsg = document.getElementById('codeMsg');
+    const formSection = document.getElementById('formSection');
+
+    sendCodeBtn.addEventListener('click', async ()=>{
+      const mail = email.value.trim();
+      if(!mail){emailMsg.textContent="Veuillez entrer un e-mail";return;}
+      emailMsg.textContent="Envoi du code...";
+      const res = await fetch(`${scriptURL}?action=sendCode&email=${encodeURIComponent(mail)}`);
+      const data = await res.json();
+      if(data.ok){ emailMsg.textContent="Code envoyé !"; codeSection.classList.remove('hidden'); }
+      else emailMsg.textContent="Erreur : "+data.error;
+    });
+
+    verifyBtn.addEventListener('click', async ()=>{
+      const mail = email.value.trim();
+      const code = document.getElementById('code').value.trim();
+      codeMsg.textContent="Vérification...";
+      const res = await fetch(`${scriptURL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}`);
+      const data = await res.json();
+      if(data.ok){
+        codeMsg.textContent="Code validé !";
+        codeSection.classList.add('hidden');
+        formSection.classList.remove('hidden');
+        loadDepartements();
+      } else codeMsg.textContent="Code invalide";
+    });
+
+    // Chargement départements via geo.api.gouv.fr
+    async function loadDepartements(){
+      const dep = document.getElementById('departement');
+      const r = await fetch('https://geo.api.gouv.fr/departements');
+      const d = await r.json();
+      dep.innerHTML = '<option value=\"\">-- sélectionnez --</option>';
+      d.forEach(e=>{dep.innerHTML += `<option value=\"${e.code}\">${e.code} - ${e.nom}</option>`});
+      dep.addEventListener('change', async ()=>{
+        const c = document.getElementById('commune');
+        const r = await fetch(`https://geo.api.gouv.fr/departements/${dep.value}/communes`);
+        const d = await r.json();
+        c.innerHTML = '<option value=\"\">-- sélectionnez --</option>';
+        d.forEach(e=>{c.innerHTML += `<option value=\"${e.nom}\">${e.nom}</option>`});
+      });
+    }
+
+    // Logique pro num
+    document.querySelectorAll('input[name=\"numType\"]').forEach(radio=>{
+      radio.addEventListener('change', e=>{
+        document.getElementById('adeliField').classList.add('hidden');
+        document.getElementById('siretField').classList.add('hidden');
+        document.getElementById('noAccess').classList.add('hidden');
+        document.getElementById('restForm').classList.add('hidden');
+        if(e.target.value==='adeli') document.getElementById('adeliField').classList.remove('hidden');
+        else if(e.target.value==='siret') document.getElementById('siretField').classList.remove('hidden');
+        else document.getElementById('noAccess').classList.remove('hidden');
+      });
+    });
+
+    // Validation finale
+    document.getElementById('formSection').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      formData.append('email', email.value);
+      formData.append('action', 'submitForm');
+      const res = await fetch(scriptURL, {method:'POST', body:formData});
+      const data = await res.json();
+      document.getElementById('submitMsg').textContent = data.ok ? 'Formulaire envoyé !' : 'Erreur : '+data.error;
+    });
+  </script>
+</body>
+</html>
