@@ -320,16 +320,20 @@ async function showFormAndPrefill(data) {
   
   // 6. Département et commune (avec gestion du timing)
   if (data.departement) {
-    console.log("Pré-remplissage département:", data.departement);
+    // Normaliser le code département (ajouter 0 devant si nécessaire)
+    let deptCode = String(data.departement).trim();
+    if (deptCode.length === 1) deptCode = "0" + deptCode;
+    console.log("Pré-remplissage département:", data.departement, "→ normalisé:", deptCode);
+    
     // Attendre un peu pour être sûr que les options sont chargées
     setTimeout(() => {
-      departSelect.value = data.departement;
+      departSelect.value = deptCode;
       console.log("Département sélectionné:", departSelect.value);
       
       // Charger et pré-remplir la commune
       if (data.commune) {
-        console.log("Chargement des communes pour:", data.departement);
-        loadCommunes(data.departement, data.commune).then(() => {
+        console.log("Chargement des communes pour:", deptCode);
+        loadCommunes(deptCode, data.commune).then(() => {
           console.log("Commune sélectionnée:", data.commune);
         });
       }
