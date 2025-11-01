@@ -57,13 +57,13 @@
 
       <!-- FORM -->
       <form id="form" class="hidden" onsubmit="return false;">
-        <!-- Numéro professionnel (toujours shown first for new) -->
+        <!-- Numéro professionnel -->
         <fieldset id="numField">
           <legend>Numéro professionnel <span class="small">(obligatoire)</span></legend>
           <div>
-            <label class="inline"><input type="radio" name="numType" value="adeli"> Oui, j’ai un numéro ADELI</label>
-            <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j’ai un numéro SIRET</label>
-            <label class="inline"><input type="radio" name="numType" value="none"> Non, je n’ai pas de numéro</label>
+            <label class="inline"><input type="radio" name="numType" value="adeli"> Oui, j'ai un numéro ADELI</label>
+            <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j'ai un numéro SIRET</label>
+            <label class="inline"><input type="radio" name="numType" value="none"> Non, je n'ai pas de numéro</label>
           </div>
 
           <div id="adeliBlock" class="hidden">
@@ -81,7 +81,7 @@
           <div id="noNum" class="error hidden">Ce questionnaire n'est autorisé que pour les professionnels ayant un numéro ADELI ou SIRET.</div>
         </fieldset>
 
-        <!-- Rest of form (shown only when ADELI/SIRET valid for new users; always shown for returning users) -->
+        <!-- Rest of form -->
         <div id="rest" class="hidden">
           <label for="nom">Nom (obligatoire)</label>
           <input id="nom" name="nom" type="text"/>
@@ -243,78 +243,112 @@ verifyBtn.addEventListener("click", async () => {
     const r = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}`);
     const j = await r.json();
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
+    
     // success
     codeMsg.textContent = "E-mail vérifié.";
     CURRENT_EMAIL = mail;
+    
+    // Charger les départements d'abord
+    await loadDepartements();
+    
     // if existing user -> prefill
     if (j.existing && j.data) {
       EXISTING = true;
       EXISTING_DATA = j.data;
-      showFormAndPrefill(j.data);
+      await showFormAndPrefill(j.data);
     } else {
       EXISTING = false;
       EXISTING_DATA = null;
-      // new user: show form but keep rest hidden until valid number
       formEl.classList.remove("hidden");
       rest.classList.add("hidden");
-      // show number fieldset already visible (numField)
     }
   } catch (err) {
     codeMsg.textContent = "Erreur réseau lors de la vérification.";
   }
 });
 
-/* ========== PREFILL FUNCTION ========== */
-function showFormAndPrefill(data) {
+/* ========== PREFILL FUNCTION (CORRIGÉE) ========== */
+async function showFormAndPrefill(data) {
+  console.log("Données reçues pour pré-remplissage:", data);
+  
   formEl.classList.remove("hidden");
   rest.classList.remove("hidden");
-  // map server keys to front fields (expected keys from Apps Script: typeNum,numPro,nom,prenom,phone,profession,publics,modes,visio,departement,commune,rayon,disponibilite,dateDisponibilite,consentement)
-  const type = data.typeNum || data.numType || "";
-  if (type === "adeli") {
+  
+  // 1. Type de numéro et numéro professionnel
+  const numType = data.numType || "";
+  if (numType === "adeli") {
     document.querySelector('input[name="numType"][value="adeli"]').checked = true;
     adeliBlock.classList.remove("hidden");
     siretBlock.classList.add("hidden");
+    noNum.classList.add("hidden");
     adeliNum.value = data.numPro || "";
-  } else if (type === "siret") {
+  } else if (numType === "siret") {
     document.querySelector('input[name="numType"][value="siret"]').checked = true;
     siretBlock.classList.remove("hidden");
     adeliBlock.classList.add("hidden");
+    noNum.classList.add("hidden");
     siretNum.value = data.numPro || "";
   }
-  // basic fields
+  
+  // 2. Champs texte simples
   document.getElementById("nom").value = data.nom || "";
   document.getElementById("prenom").value = data.prenom || "";
   document.getElementById("phone").value = data.phone || "";
   document.getElementById("profession").value = data.profession || "";
-  // publics (csv)
-  const publics = (data.publics || "").split(",").map(s=>s.trim());
-  document.querySelectorAll('input[name="public"]').forEach(ch => ch.checked = publics.includes(ch.value));
-  // modes
-  const modes = (data.modes || "").split(",").map(s=>s.trim());
-  document.querySelectorAll('input[name="mode"]').forEach(ch => ch.checked = modes.includes(ch.value));
-  // visio
+  
+  // 3. Publics (checkboxes) - format brut: "0-6,7-12"
+  if (data.publics) {
+    const publicsArr = data.publics.split(",").map(s => s.trim()).filter(Boolean);
+    document.querySelectorAll('input[name="public"]').forEach(ch => {
+      ch.checked = publicsArr.includes(ch.value);
+    });
+  }
+  
+  // 4. Modes (checkboxes) - format brut: "domicile,cabinet"
+  if (data.modes) {
+    const modesArr = data.modes.split(",").map(s => s.trim()).filter(Boolean);
+    document.querySelectorAll('input[name="mode"]').forEach(ch => {
+      ch.checked = modesArr.includes(ch.value);
+    });
+  }
+  
+  // 5. Visio (radio)
   if (data.visio) {
-    const v = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
-    if (v) v.checked = true;
+    const visioRadio = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
+    if (visioRadio) visioRadio.checked = true;
   }
-  // depart/commune -> load depts then set
-  loadDepartements().then(()=> {
-    if (data.departement) {
-      departSelect.value = data.departement;
-      return loadCommunes(data.departement, data.commune);
+  
+  // 6. Département et commune
+  if (data.departement) {
+    departSelect.value = data.departement;
+    if (data.commune) {
+      await loadCommunes(data.departement, data.commune);
     }
-  }).catch(()=>{});
-  // rayon
-  document.getElementById("rayon").value = data.rayon || "";
-  // dispo/date
-  if (data.disponibilite) {
-    const dEl = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
-    if (dEl) dEl.checked = true;
-    dateBlock.classList.toggle("hidden", data.disponibilite !== "oui");
   }
-  dateInput.value = data.dateDisponibilite || "";
-  // consent
-  document.getElementById("consent").checked = ((""+(data.consentement||"")).toLowerCase() === "oui" || (data.consentement||"").toLowerCase()==="true");
+  
+  // 7. Rayon
+  document.getElementById("rayon").value = data.rayon || "";
+  
+  // 8. Disponibilités
+  if (data.disponibilite) {
+    const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
+    if (dispoRadio) {
+      dispoRadio.checked = true;
+      // Afficher le bloc date si dispo = "oui"
+      if (data.disponibilite === "oui") {
+        dateBlock.classList.remove("hidden");
+        if (data.dateDisponibilite) {
+          dateInput.value = data.dateDisponibilite;
+        }
+      }
+    }
+  }
+  
+  // 9. Consentement
+  const consentValue = String(data.consentement || "").toLowerCase();
+  document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
+  
+  console.log("Pré-remplissage terminé");
 }
 
 /* ========== LISTENERS: numType toggles ========== */
@@ -329,16 +363,27 @@ document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListen
   else noNum.classList.remove("hidden");
 }));
 
-/* ========== VALIDATION on blur for ADELI/SIRET to reveal form for new users ========== */
+/* ========== VALIDATION on blur for ADELI/SIRET ========== */
 adeliNum.addEventListener('blur', () => {
   const v = adeliNum.value.trim();
-  if (!validAdeli(v)) { adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; rest.classList.add("hidden"); }
-  else { adeliErr.textContent = ""; rest.classList.remove("hidden"); loadDepartements(); }
+  if (!validAdeli(v)) { 
+    adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; 
+    rest.classList.add("hidden"); 
+  } else { 
+    adeliErr.textContent = ""; 
+    rest.classList.remove("hidden");
+  }
 });
+
 siretNum.addEventListener('blur', () => {
   const v = siretNum.value.trim();
-  if (!validSiret(v)) { siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; rest.classList.add("hidden"); }
-  else { siretErr.textContent = ""; rest.classList.remove("hidden"); loadDepartements(); }
+  if (!validSiret(v)) { 
+    siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; 
+    rest.classList.add("hidden"); 
+  } else { 
+    siretErr.textContent = ""; 
+    rest.classList.remove("hidden");
+  }
 });
 
 /* ========== DISPO date logic ========== */
@@ -366,6 +411,7 @@ async function loadDepartements(){
     departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
   }
 }
+
 async function loadCommunes(deptCode, preselect){
   communeSelect.innerHTML = '<option>Chargement...</option>';
   try {
@@ -378,21 +424,28 @@ async function loadCommunes(deptCode, preselect){
       opt.textContent = c.nom;
       communeSelect.appendChild(opt);
     });
-    if (preselect) communeSelect.value = preselect;
+    if (preselect) {
+      communeSelect.value = preselect;
+    }
   } catch (err) {
     communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
   }
 }
+
 departSelect.addEventListener('change', e => {
   const v = e.target.value;
-  if (!v) { communeSelect.innerHTML = '<option value="">-- choisissez d\'abord le département --</option>'; return; }
+  if (!v) { 
+    communeSelect.innerHTML = '<option value="">-- choisissez d\'abord le département --</option>'; 
+    return; 
+  }
   loadCommunes(v);
 });
 
 /* ========== SUBMIT FORM ========== */
 submitBtn.addEventListener('click', async () => {
   submitMsg.textContent = "";
-  // validations (client-side)
+  
+  // validations
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
   if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
   const numType = numTypeChecked.value;
@@ -413,7 +466,7 @@ submitBtn.addEventListener('click', async () => {
   if (dispoChecked.value === "oui" && !dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; return; }
   if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
 
-  // build FormData to send
+  // build FormData
   const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
@@ -459,7 +512,7 @@ resetBtn.addEventListener('click', () => {
   submitMsg.textContent = "";
 });
 
-/* ========== UX: help (small) ========== */
+/* ========== HELP ========== */
 document.getElementById("openHelp").addEventListener('click', () => {
   alert("Procédure : 1) entrez votre email 2) demandez le code 3) validez le code 4) remplissez le formulaire. Si vous avez déjà validé une fois, le formulaire sera prérempli après la validation du code.");
 });
@@ -467,5 +520,3 @@ document.getElementById("openHelp").addEventListener('click', () => {
 </script>
 </body>
 </html>
-
-
