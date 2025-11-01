@@ -16,6 +16,9 @@
   label{display:block;margin-top:24px;font-weight:600;color:#0f1724;font-size:15px}
   label:first-of-type{margin-top:0}
   
+  /* Astérisque rouge pour champs obligatoires */
+  .required::after{content:" *";color:#dc2626;font-weight:700}
+  
   /* Inputs plus espacés et lisibles */
   input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{
     width:100%;padding:12px 14px;border:2px solid #e6eef6;border-radius:8px;margin-top:8px;font-size:15px;
@@ -112,9 +115,10 @@
     <div class="card">
       <h1>Questionnaire — Mise en relation (professionnels)</h1>
       <p class="lead">Commencez par vérifier votre e-mail — un code sera envoyé. Si vous avez déjà rempli le formulaire auparavant, il sera pré-rempli.</p>
+      <p class="small" style="margin-top:-16px;margin-bottom:16px">Les champs marqués d'un <span style="color:#dc2626;font-weight:700">*</span> sont obligatoires.</p>
 
       <!-- EMAIL -->
-      <label for="email">Adresse e-mail</label>
+      <label for="email" class="required">Adresse e-mail</label>
       <div style="display:flex;gap:8px;align-items:center">
         <input id="email" type="email" placeholder="votre@email.com" autocomplete="email"/>
         <button id="sendCodeBtn" type="button">Vérifier mon mail</button>
@@ -136,7 +140,7 @@
       <form id="form" class="hidden" onsubmit="return false;">
         <!-- Numéro professionnel -->
         <fieldset id="numField">
-          <legend>Numéro professionnel <span class="small">(obligatoire)</span></legend>
+          <legend>Numéro professionnel <span style="color:#dc2626;font-weight:700">*</span></legend>
           <div>
             <label class="inline"><input type="radio" name="numType" value="adeli"> Oui, j'ai un numéro ADELI</label>
             <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j'ai un numéro SIRET</label>
@@ -167,10 +171,10 @@
               Informations personnelles
             </div>
             
-            <label for="nom">Nom (obligatoire)</label>
+            <label for="nom" class="required">Nom</label>
             <input id="nom" name="nom" type="text"/>
 
-            <label for="prenom">Prénom (obligatoire)</label>
+            <label for="prenom" class="required">Prénom</label>
             <input id="prenom" name="prenom" type="text"/>
 
             <label for="phone">Téléphone (optionnel)</label>
@@ -185,7 +189,7 @@
               Profession et public
             </div>
             
-            <label for="profession">Profession (obligatoire)</label>
+            <label for="profession" class="required">Profession</label>
             <select id="profession" name="profession">
               <option value="">-- sélectionnez --</option>
               <option>Éducateur spécialisé</option>
@@ -195,7 +199,7 @@
               <option>Orthophoniste</option>
             </select>
 
-            <label style="margin-top:24px">Auprès de quel(s) public(s) intervenez-vous ? (obligatoire)</label>
+            <label style="margin-top:24px" class="required">Auprès de quel(s) public(s) intervenez-vous ?</label>
             <div style="margin-top:12px">
               <label><input type="checkbox" name="public" value="0-6"> Enfants (0-6 ans)</label>
               <label><input type="checkbox" name="public" value="7-12"> Enfants (7-12 ans)</label>
@@ -211,13 +215,13 @@
               Modalités d'intervention
             </div>
             
-            <label>Quel(s) sont vos modes d'intervention ? (obligatoire)</label>
+            <label class="required">Quel(s) sont vos modes d'intervention ?</label>
             <div style="margin-top:12px">
               <label><input type="checkbox" name="mode" value="domicile"> Se déplace à domicile</label>
               <label><input type="checkbox" name="mode" value="cabinet"> En cabinet</label>
             </div>
 
-            <label style="margin-top:24px">Proposez-vous des rendez-vous en visio ? (obligatoire)</label>
+            <label style="margin-top:24px" class="required">Proposez-vous des rendez-vous en visio ?</label>
             <div style="margin-top:12px">
               <label><input type="radio" name="visio" value="oui"> Oui</label>
               <label><input type="radio" name="visio" value="non"> Non</label>
@@ -231,13 +235,13 @@
               Zone géographique d'intervention
             </div>
             
-            <label for="departement">Dans quel département intervenez-vous principalement ? (obligatoire)</label>
+            <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
             <select id="departement" name="departement"><option value="">-- chargement --</option></select>
 
-            <label for="commune">Quelle est votre commune principale d'intervention ? (obligatoire)</label>
+            <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
             <select id="commune" name="commune"><option value="">-- choisissez le département --</option></select>
 
-            <label for="rayon">Quel est votre rayon d'intervention ? (obligatoire)</label>
+            <label for="rayon" class="required">Quel est votre rayon d'intervention ?</label>
             <select id="rayon" name="rayon">
               <option value="">-- sélectionnez --</option>
               <option>0-5 km</option>
@@ -254,7 +258,7 @@
               Disponibilités
             </div>
             
-            <label>Avez-vous des disponibilités pour de nouveaux bénéficiaires ? (obligatoire)</label>
+            <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
             <div style="margin-top:12px">
               <label><input type="radio" name="dispo" value="oui"> Oui</label>
               <label><input type="radio" name="dispo" value="non"> Non</label>
@@ -276,7 +280,7 @@
             
             <label style="margin-top:0;display:flex;align-items:start;gap:8px">
               <input id="consent" name="consent" type="checkbox" style="margin-top:4px"/> 
-              <span>J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation. (obligatoire)</span>
+              <span>J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation. <span style="color:#dc2626;font-weight:700">*</span></span>
             </label>
           </div>
 
@@ -350,7 +354,13 @@ sendCodeBtn.addEventListener("click", async () => {
       codeArea.classList.remove("hidden");
       codeEl.focus(); // Focus automatique sur le champ code
     } else {
-      emailMsg.textContent = "Erreur : " + (j.error || "impossible d'envoyer le code");
+      // Message d'erreur amélioré pour la limite d'emails
+      if (j.error && j.error.toLowerCase().includes("trop d'appels")) {
+        emailMsg.innerHTML = `<span style="color:#dc2626">⚠️ Le service a atteint sa capacité maximale pour aujourd'hui.</span><br>
+          <span style="color:#6b7280">Merci de réessayer demain. Nous nous excusons pour ce désagrément temporaire.</span>`;
+      } else {
+        emailMsg.textContent = "Erreur : " + (j.error || "impossible d'envoyer le code");
+      }
     }
   } catch (err) {
     emailMsg.textContent = "Erreur réseau lors de l'envoi du code.";
