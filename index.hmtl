@@ -90,7 +90,7 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"; // 🔁 à remplacer
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzbaEis0cqzKjoHIRaXZ6fcB188xhx1yB3YTLafBNO_MBZG_hhAqSui_bBvdi-lGr-F/exec"; // 🔁 à remplacer
 
     const email = document.getElementById('email');
     const sendCodeBtn = document.getElementById('sendCodeBtn');
