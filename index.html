@@ -127,7 +127,7 @@
 
       <!-- CODE -->
       <div id="codeArea" class="hidden" style="margin-top:12px">
-        <label for="code">Code de vérification (envoyé par e-mail)</label>
+        <label for="code" class="required">Code de vérification (envoyé par e-mail)</label>
         <div style="display:flex;gap:8px;align-items:center">
           <input id="code" type="text" placeholder="000000" inputmode="numeric"/>
           <button id="verifyBtn" type="button">Valider le code</button>
@@ -148,13 +148,13 @@
           </div>
 
           <div id="adeliBlock" class="hidden">
-            <label for="adeliNum">Quel est votre numéro ADELI ?</label>
+            <label for="adeliNum" class="required">Quel est votre numéro ADELI ?</label>
             <input id="adeliNum" name="adeliNum" type="text" maxlength="9" inputmode="numeric" placeholder="9 chiffres"/>
             <div id="adeliErr" class="error"></div>
           </div>
 
           <div id="siretBlock" class="hidden">
-            <label for="siretNum">Quel est votre numéro SIRET ?</label>
+            <label for="siretNum" class="required">Quel est votre numéro SIRET ?</label>
             <input id="siretNum" name="siretNum" type="text" maxlength="14" inputmode="numeric" placeholder="14 chiffres"/>
             <div id="siretErr" class="error"></div>
           </div>
@@ -265,7 +265,7 @@
             </div>
 
             <div id="dateBlock" class="hidden">
-              <label for="dateDispo">À partir de quelle date êtes-vous disponible ?</label>
+              <label for="dateDispo" class="required">À partir de quelle date êtes-vous disponible ?</label>
               <input id="dateDispo" name="dateDispo" type="date"/>
               <div class="small">La première date disponible est aujourd'hui.</div>
             </div>
@@ -278,9 +278,9 @@
               Consentement
             </div>
             
-            <label style="margin-top:0;display:flex;align-items:start;gap:8px">
+            <label style="margin-top:0;display:flex;align-items:start;gap:8px" class="required">
               <input id="consent" name="consent" type="checkbox" style="margin-top:4px"/> 
-              <span>J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation. <span style="color:#dc2626;font-weight:700">*</span></span>
+              <span>J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation.</span>
             </label>
           </div>
 
@@ -339,9 +339,16 @@ const resetBtn = document.getElementById("resetBtn");
 let CURRENT_EMAIL = null;
 let EXISTING = false;
 let EXISTING_DATA = null;
+let SERVICE_SATURATED = false;
 
 /* ========== SEND CODE ========== */
 sendCodeBtn.addEventListener("click", async () => {
+  if (SERVICE_SATURATED) {
+    emailMsg.innerHTML = `<span style="color:#dc2626">⚠️ Le service a atteint sa capacité maximale pour aujourd'hui.</span><br>
+      <span style="color:#6b7280">Merci de réessayer demain. Nous nous excusons pour ce désagrément temporaire.</span>`;
+    return;
+  }
+  
   const mail = (emailEl.value || "").trim().toLowerCase();
   if (!mail) { emailMsg.textContent = "Merci d'indiquer une adresse e-mail."; return; }
   emailMsg.textContent = "Envoi du code...";
@@ -352,10 +359,10 @@ sendCodeBtn.addEventListener("click", async () => {
       emailMsg.textContent = "Code envoyé. Vérifiez votre boîte mail.";
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
-      codeEl.focus(); // Focus automatique sur le champ code
+      codeEl.focus();
     } else {
-      // Message d'erreur amélioré pour la limite d'emails
-      if (j.error && j.error.toLowerCase().includes("trop d'appels")) {
+      if (j.error && (j.error.toLowerCase().includes("trop d'appels") || j.error.toLowerCase().includes("quota") || j.error.toLowerCase().includes("limite"))) {
+        SERVICE_SATURATED = true;
         emailMsg.innerHTML = `<span style="color:#dc2626">⚠️ Le service a atteint sa capacité maximale pour aujourd'hui.</span><br>
           <span style="color:#6b7280">Merci de réessayer demain. Nous nous excusons pour ce désagrément temporaire.</span>`;
       } else {
@@ -367,7 +374,6 @@ sendCodeBtn.addEventListener("click", async () => {
   }
 });
 
-// Permettre de valider avec Entrée sur le champ email
 emailEl.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -391,14 +397,11 @@ verifyBtn.addEventListener("click", async () => {
     const j = await r.json();
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
     
-    // success
     codeMsg.textContent = "E-mail vérifié.";
     CURRENT_EMAIL = mail;
     
-    // Charger les départements d'abord
     await loadDepartements();
     
-    // if existing user -> prefill
     if (j.existing && j.data) {
       EXISTING = true;
       EXISTING_DATA = j.data;
@@ -414,14 +417,13 @@ verifyBtn.addEventListener("click", async () => {
   }
 });
 
-/* ========== PREFILL FUNCTION (CORRIGÉE) ========== */
+/* ========== PREFILL FUNCTION ========== */
 async function showFormAndPrefill(data) {
   console.log("Données reçues pour pré-remplissage:", data);
   
   formEl.classList.remove("hidden");
   rest.classList.remove("hidden");
   
-  // 1. Type de numéro et numéro professionnel
   const numType = data.numType || "";
   if (numType === "adeli") {
     document.querySelector('input[name="numType"][value="adeli"]').checked = true;
@@ -437,13 +439,11 @@ async function showFormAndPrefill(data) {
     siretNum.value = data.numPro || "";
   }
   
-  // 2. Champs texte simples
   document.getElementById("nom").value = data.nom || "";
   document.getElementById("prenom").value = data.prenom || "";
   document.getElementById("phone").value = data.phone || "";
   document.getElementById("profession").value = data.profession || "";
   
-  // 3. Publics (checkboxes) - format brut: "0-6,7-12"
   if (data.publics) {
     const publicsArr = data.publics.split(",").map(s => s.trim()).filter(Boolean);
     document.querySelectorAll('input[name="public"]').forEach(ch => {
@@ -451,7 +451,6 @@ async function showFormAndPrefill(data) {
     });
   }
   
-  // 4. Modes (checkboxes) - format brut: "domicile,cabinet"
   if (data.modes) {
     const modesArr = data.modes.split(",").map(s => s.trim()).filter(Boolean);
     document.querySelectorAll('input[name="mode"]').forEach(ch => {
@@ -459,25 +458,20 @@ async function showFormAndPrefill(data) {
     });
   }
   
-  // 5. Visio (radio)
   if (data.visio) {
     const visioRadio = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
     if (visioRadio) visioRadio.checked = true;
   }
   
-  // 6. Département et commune (avec gestion du timing)
   if (data.departement) {
-    // Normaliser le code département (ajouter 0 devant si nécessaire)
     let deptCode = String(data.departement).trim();
     if (deptCode.length === 1) deptCode = "0" + deptCode;
     console.log("Pré-remplissage département:", data.departement, "→ normalisé:", deptCode);
     
-    // Attendre un peu pour être sûr que les options sont chargées
     setTimeout(() => {
       departSelect.value = deptCode;
       console.log("Département sélectionné:", departSelect.value);
       
-      // Charger et pré-remplir la commune (utiliser deptCode normalisé !)
       if (data.commune) {
         console.log("Chargement des communes pour:", deptCode);
         loadCommunes(deptCode, data.commune).then(() => {
@@ -489,15 +483,8 @@ async function showFormAndPrefill(data) {
     }, 100);
   }
   
-  // 7. Rayon
   document.getElementById("rayon").value = data.rayon || "";
   
-  // 8. Disponibilités (ne PAS pré-remplir pour forcer une mise à jour)
-  // Les disponibilités changent régulièrement, on force l'utilisateur à répondre à nouveau
-  // Le bloc date reste caché par défaut
-  console.log("Disponibilités non pré-remplies - l'utilisateur doit confirmer");
-  
-  // 9. Consentement
   const consentValue = String(data.consentement || "").toLowerCase();
   document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
   
@@ -598,7 +585,6 @@ departSelect.addEventListener('change', e => {
 submitBtn.addEventListener('click', async () => {
   submitMsg.textContent = "";
   
-  // validations
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
   if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
   const numType = numTypeChecked.value;
@@ -619,7 +605,6 @@ submitBtn.addEventListener('click', async () => {
   if (dispoChecked.value === "oui" && !dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; return; }
   if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
 
-  // build FormData
   const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
