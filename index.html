@@ -339,38 +339,55 @@ const resetBtn = document.getElementById("resetBtn");
 let CURRENT_EMAIL = null;
 let EXISTING = false;
 let EXISTING_DATA = null;
-let SERVICE_SATURATED = false;
 
 /* ========== SEND CODE ========== */
 sendCodeBtn.addEventListener("click", async () => {
-  if (SERVICE_SATURATED) {
-    emailMsg.innerHTML = `<span style="color:#dc2626">⚠️ Le service a atteint sa capacité maximale pour aujourd'hui.</span><br>
-      <span style="color:#6b7280">Merci de réessayer demain. Nous nous excusons pour ce désagrément temporaire.</span>`;
-    return;
+  const mail = (emailEl.value || "").trim().toLowerCase();
+  if (!mail) { 
+    emailMsg.textContent = "Merci d'indiquer une adresse e-mail."; 
+    return; 
   }
   
-  const mail = (emailEl.value || "").trim().toLowerCase();
-  if (!mail) { emailMsg.textContent = "Merci d'indiquer une adresse e-mail."; return; }
-  emailMsg.textContent = "Envoi du code...";
+  emailMsg.textContent = "Envoi du code en cours...";
+  sendCodeBtn.disabled = true;
+  
   try {
     const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}`);
     const j = await r.json();
-    if (j.ok) {
-      emailMsg.textContent = "Code envoyé. Vérifiez votre boîte mail.";
+    
+    console.log("Réponse serveur sendCode:", j);
+    
+    // Vérifier d'abord les erreurs de saturation, même si ok=true
+    if (j.error) {
+      const errorLower = j.error.toLowerCase();
+      if (errorLower.includes("quota") || 
+          errorLower.includes("limite") || 
+          errorLower.includes("trop") ||
+          errorLower.includes("dépassé") ||
+          errorLower.includes("maximum")) {
+        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Service temporairement indisponible</span><br>
+          <span style="color:#6b7280">Le quota d'emails quotidien est atteint. Merci de réessayer demain.</span>`;
+        sendCodeBtn.disabled = false;
+        return;
+      }
+    }
+    
+    // Si vraiment ok et pas d'erreur de quota
+    if (j.ok && !j.error) {
+      emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
+        <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
       codeEl.focus();
     } else {
-      if (j.error && (j.error.toLowerCase().includes("trop d'appels") || j.error.toLowerCase().includes("quota") || j.error.toLowerCase().includes("limite"))) {
-        SERVICE_SATURATED = true;
-        emailMsg.innerHTML = `<span style="color:#dc2626">⚠️ Le service a atteint sa capacité maximale pour aujourd'hui.</span><br>
-          <span style="color:#6b7280">Merci de réessayer demain. Nous nous excusons pour ce désagrément temporaire.</span>`;
-      } else {
-        emailMsg.textContent = "Erreur : " + (j.error || "impossible d'envoyer le code");
-      }
+      // Autres erreurs
+      emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible d'envoyer le code"}</span>`;
     }
   } catch (err) {
-    emailMsg.textContent = "Erreur réseau lors de l'envoi du code.";
+    console.error("Erreur réseau:", err);
+    emailMsg.innerHTML = `<span style="color:#dc2626">Erreur réseau lors de l'envoi du code</span>`;
+  } finally {
+    sendCodeBtn.disabled = false;
   }
 });
 
