@@ -318,12 +318,22 @@ async function showFormAndPrefill(data) {
     if (visioRadio) visioRadio.checked = true;
   }
   
-  // 6. Département et commune
+  // 6. Département et commune (avec gestion du timing)
   if (data.departement) {
-    departSelect.value = data.departement;
-    if (data.commune) {
-      await loadCommunes(data.departement, data.commune);
-    }
+    console.log("Pré-remplissage département:", data.departement);
+    // Attendre un peu pour être sûr que les options sont chargées
+    setTimeout(() => {
+      departSelect.value = data.departement;
+      console.log("Département sélectionné:", departSelect.value);
+      
+      // Charger et pré-remplir la commune
+      if (data.commune) {
+        console.log("Chargement des communes pour:", data.departement);
+        loadCommunes(data.departement, data.commune).then(() => {
+          console.log("Commune sélectionnée:", data.commune);
+        });
+      }
+    }, 100);
   }
   
   // 7. Rayon
