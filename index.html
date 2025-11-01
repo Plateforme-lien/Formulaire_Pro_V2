@@ -1,72 +1,92 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Questionnaire Professionnels</title>
   <style>
-    body {font-family: sans-serif; background:#f8fafc; margin:0; padding:20px;}
-    .card {background:#fff; max-width:800px; margin:auto; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-    h1,h2 {color:#333;}
-    label {display:block; margin-top:10px; font-weight:600;}
-    input, select {width:100%; padding:8px; margin-top:5px;}
-    .hidden {display:none;}
-    button {background:#0284c7; color:#fff; border:none; padding:10px 15px; border-radius:8px; margin-top:15px; cursor:pointer;}
-    .small {font-size:0.9em; color:#666;}
-    .error {color:#c62828; font-size:0.9em;}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f3f6f9;margin:0;padding:20px}
+    .card{max-width:920px;margin:20px auto;padding:22px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(10,20,40,.06)}
+    h1{margin:0 0 8px;font-size:22px}
+    label{display:block;margin:10px 0 6px;font-weight:600}
+    input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{width:100%;padding:9px;border:1px solid #dfe6ee;border-radius:6px}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    .hidden{display:none}
+    .small{font-size:0.88rem;color:#5b6b7a}
+    .error{color:#b00020;font-size:0.9rem;margin-top:6px}
+    button{background:#0ea5a4;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+    .btn-ghost{background:#eef2f7;color:#0f1724}
+    fieldset{border:1px solid #eef2f4;padding:12px;border-radius:8px;margin-top:10px}
+    legend{font-weight:700}
+    .inline{display:inline-block;margin-right:10px}
+    pre{white-space:pre-wrap;font-family:monospace}
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Questionnaire - Mise en relation</h1>
-    <p>Entrez votre e-mail pour commencer :</p>
+    <h1>Questionnaire de mise en relation - Professionnels</h1>
+    <p class="small">Commencez par vérifier votre e-mail — un code vous sera envoyé.</p>
 
-    <!-- Étape 1 : Email -->
-    <input type="email" id="email" placeholder="votre@email.com" />
-    <button id="sendCodeBtn">Vérifier mon mail</button>
-    <p id="emailMsg" class="small"></p>
+    <!-- EMAIL -->
+    <label for="email">Adresse e-mail</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="email" type="email" placeholder="votre@email.com" />
+      <button id="sendCodeBtn">Vérifier mon mail</button>
+    </div>
+    <div id="emailMsg" class="small"></div>
 
-    <!-- Étape 2 : Code -->
-    <div id="codeSection" class="hidden">
-      <label>Code reçu par mail :</label>
-      <input type="text" id="code" placeholder="6 chiffres">
-      <button id="verifyBtn">Valider le code</button>
-      <p id="codeMsg" class="small"></p>
+    <!-- CODE -->
+    <div id="codeArea" class="hidden" style="margin-top:10px">
+      <label for="code">Code de vérification (reçu par e-mail)</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="code" type="text" placeholder="000000" />
+        <button id="verifyCodeBtn">Valider le code</button>
+        <button id="resendBtn" class="btn-ghost" style="margin-left:6px">Renvoyer</button>
+      </div>
+      <div id="codeMsg" class="small"></div>
     </div>
 
-    <!-- Étape 3 : Formulaire -->
-    <form id="formSection" class="hidden">
-      <h2>Informations professionnelles</h2>
+    <!-- MAIN FORM -->
+    <form id="mainForm" class="hidden" onsubmit="return false;">
+      <!-- SECTION: Numéro pro (toujours visible en premier pour nouveaux) -->
+      <fieldset id="numFieldset">
+        <legend>Numéro professionnel (obligatoire)</legend>
+        <div>
+          <label class="inline"><input type="radio" name="numType" value="adeli"> Oui, j’ai un numéro ADELI</label>
+          <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j’ai un numéro SIRET</label>
+          <label class="inline"><input type="radio" name="numType" value="none"> Non, je n’ai pas de numéro</label>
+        </div>
 
-      <label>Numéro professionnel :</label>
-      <label><input type="radio" name="numType" value="adeli"> Oui, j’ai un numéro ADELI</label>
-      <label><input type="radio" name="numType" value="siret"> Oui, j’ai un numéro SIRET</label>
-      <label><input type="radio" name="numType" value="none"> Non, je n’ai pas de numéro</label>
+        <div id="adeliBlock" class="hidden">
+          <label for="adeliNum">Quel est votre numéro ADELI ? (9 chiffres)</label>
+          <input id="adeliNum" name="adeliNum" inputmode="numeric" maxlength="9"/>
+          <div id="adeliErr" class="error"></div>
+        </div>
 
-      <div id="adeliField" class="hidden">
-        <label>Numéro ADELI :</label>
-        <input type="text" id="adeliNum" maxlength="9" placeholder="9 chiffres">
-      </div>
+        <div id="siretBlock" class="hidden">
+          <label for="siretNum">Quel est votre numéro SIRET ? (14 chiffres)</label>
+          <input id="siretNum" name="siretNum" inputmode="numeric" maxlength="14"/>
+          <div id="siretErr" class="error"></div>
+        </div>
 
-      <div id="siretField" class="hidden">
-        <label>Numéro SIRET :</label>
-        <input type="text" id="siretNum" maxlength="14" placeholder="14 chiffres">
-      </div>
+        <div id="noNumMsg" class="error hidden">Ce questionnaire n'est autorisé que pour les professionnels ayant un numéro ADELI ou SIRET.</div>
+      </fieldset>
 
-      <div id="noAccess" class="hidden error">Ce questionnaire est réservé aux professionnels avec un numéro ADELI ou SIRET.</div>
+      <!-- REST OF FORM (hidden for new until num valid; shown immediately for returning user) -->
+      <div id="restOfForm" class="hidden">
+        <label for="nom">Nom (obligatoire)</label>
+        <input id="nom" name="nom" type="text" />
 
-      <div id="restForm" class="hidden">
-        <label>Nom :</label>
-        <input type="text" id="nom">
+        <label for="prenom">Prénom (obligatoire)</label>
+        <input id="prenom" name="prenom" type="text" />
 
-        <label>Prénom :</label>
-        <input type="text" id="prenom">
+        <label for="phone">Téléphone (optionnel)</label>
+        <input id="phone" name="phone" type="tel" placeholder="0X XX XX XX XX ou +33..." />
+        <div class="small">Numéro France métropole 10 chiffres, outre-mer peuvent avoir 10+ chiffres ; +33... accepté.</div>
 
-        <label>Téléphone (optionnel) :</label>
-        <input type="tel" id="phone" placeholder="0X XX XX XX XX">
-
-        <label>Profession :</label>
-        <select id="profession" required>
+        <label for="profession">Profession (obligatoire)</label>
+        <select id="profession" name="profession">
           <option value="">-- sélectionnez --</option>
           <option>Éducateur spécialisé</option>
           <option>Ergothérapeute</option>
@@ -75,94 +95,382 @@
           <option>Orthophoniste</option>
         </select>
 
-        <label>Département :</label>
-        <select id="departement"><option value="">-- chargement --</option></select>
+        <label>Auprès de quel(s) public(s) intervenez-vous ? (obligatoire)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="public" value="0-6"> Enfants (0-6 ans)</label>
+          <label><input type="checkbox" name="public" value="7-12"> Enfants (7-12 ans)</label>
+          <label><input type="checkbox" name="public" value="13-18"> Adolescents (13-18 ans)</label>
+          <label><input type="checkbox" name="public" value="18+"> Adultes (18+)</label>
+        </div>
 
-        <label>Commune :</label>
-        <select id="commune"><option value="">-- sélectionnez un département --</option></select>
+        <label>Quel(s) sont vos modes d'intervention ? (obligatoire)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="mode" value="domicile"> Se déplace à domicile</label>
+          <label><input type="checkbox" name="mode" value="cabinet"> En cabinet</label>
+        </div>
 
-        <label><input type="checkbox" id="consent"> J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation.</label>
+        <label>Proposez-vous des rendez-vous en visio ? (obligatoire)</label>
+        <div class="radio-group">
+          <label><input type="radio" name="visio" value="oui"> Oui</label>
+          <label><input type="radio" name="visio" value="non"> Non</label>
+        </div>
 
-        <button type="submit">Valider le formulaire</button>
-        <p id="submitMsg" class="small"></p>
+        <label for="departement">Dans quel département intervenez-vous principalement ? (obligatoire)</label>
+        <select id="departement" name="departement"><option value="">-- chargement --</option></select>
+
+        <label for="commune">Quelle est votre commune principale d'intervention ? (obligatoire)</label>
+        <select id="commune" name="commune"><option value="">-- choisissez d'abord le département --</option></select>
+
+        <label for="rayon">Quel est votre rayon d'intervention ? (obligatoire)</label>
+        <select id="rayon" name="rayon">
+          <option value="">-- sélectionnez --</option>
+          <option>0-5 km</option>
+          <option>5-15 km</option>
+          <option>15-30 km</option>
+          <option>30+ km</option>
+        </select>
+
+        <label>Avez-vous une ou des disponibilités à venir pour de nouveaux bénéficiaires ? (obligatoire)</label>
+        <div class="radio-group">
+          <label><input type="radio" name="dispo" value="oui"> Oui</label>
+          <label><input type="radio" name="dispo" value="non"> Non</label>
+        </div>
+
+        <div id="dateDispoBlock" class="hidden">
+          <label for="dateDispo">À partir de quelle date avez-vous une disponibilité ?</label>
+          <input id="dateDispo" name="dateDispo" type="date" />
+          <div class="small">La première date possible est la date du jour.</div>
+        </div>
+
+        <label><input id="consent" name="consent" type="checkbox"> J'accepte que mes données soient utilisées uniquement dans le cas de cette mise en relation. (obligatoire)</label>
+
+        <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+          <button id="submitBtn" type="button">Valider le formulaire</button>
+          <div id="submitMsg" class="small"></div>
+        </div>
       </div>
     </form>
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzbaEis0cqzKjoHIRaXZ6fcB188xhx1yB3YTLafBNO_MBZG_hhAqSui_bBvdi-lGr-F/exec"; // 🔁 à remplacer
+    /***********************
+     * CONFIG
+     ***********************/
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbaEis0cqzKjoHIRaXZ6fcB188xhx1yB3YTLafBNO_MBZG_hhAqSui_bBvdi-lGr-F/exec"; 
+    const DEPARTEMENT_API = "https://geo.api.gouv.fr/departements";
+    const COMMUNE_API = (code) => `https://geo.api.gouv.fr/departements/${code}/communes`;
 
-    const email = document.getElementById('email');
-    const sendCodeBtn = document.getElementById('sendCodeBtn');
-    const emailMsg = document.getElementById('emailMsg');
-    const codeSection = document.getElementById('codeSection');
-    const verifyBtn = document.getElementById('verifyBtn');
-    const codeMsg = document.getElementById('codeMsg');
-    const formSection = document.getElementById('formSection');
+    /***********************
+     * UTILS VALIDATION
+     ***********************/
+    const isDigits = (v) => /^[0-9]+$/.test(v || "");
+    const validAdeli = (v) => isDigits(v) && v.length === 9;
+    const validSiret = (v) => isDigits(v) && v.length === 14;
+    const validPhone = (v) => {
+      if (!v) return true; // optional
+      const cleaned = v.replace(/\s|\-|\(|\)|\./g, "");
+      return /^(0[1-9]\d{8}|\+33[1-9]\d{8})$/.test(cleaned) || /^[0-9]{10,15}$/.test(cleaned);
+    };
 
-    sendCodeBtn.addEventListener('click', async ()=>{
-      const mail = email.value.trim();
-      if(!mail){emailMsg.textContent="Veuillez entrer un e-mail";return;}
-      emailMsg.textContent="Envoi du code...";
-      const res = await fetch(`${scriptURL}?action=sendCode&email=${encodeURIComponent(mail)}`);
-      const data = await res.json();
-      if(data.ok){ emailMsg.textContent="Code envoyé !"; codeSection.classList.remove('hidden'); }
-      else emailMsg.textContent="Erreur : "+data.error;
+    /***********************
+     * DOM
+     ***********************/
+    const emailInput = document.getElementById("email");
+    const sendCodeBtn = document.getElementById("sendCodeBtn");
+    const emailMsg = document.getElementById("emailMsg");
+    const codeArea = document.getElementById("codeArea");
+    const codeInput = document.getElementById("code");
+    const verifyCodeBtn = document.getElementById("verifyCodeBtn");
+    const resendBtn = document.getElementById("resendBtn");
+    const codeMsg = document.getElementById("codeMsg");
+    const mainForm = document.getElementById("mainForm");
+    const adeliBlock = document.getElementById("adeliBlock");
+    const siretBlock = document.getElementById("siretBlock");
+    const noNumMsg = document.getElementById("noNumMsg");
+    const restOfForm = document.getElementById("restOfForm");
+    const adeliNum = document.getElementById("adeliNum");
+    const siretNum = document.getElementById("siretNum");
+    const adeliErr = document.getElementById("adeliErr");
+    const siretErr = document.getElementById("siretErr");
+    const submitBtn = document.getElementById("submitBtn");
+    const submitMsg = document.getElementById("submitMsg");
+    const departementSelect = document.getElementById("departement");
+    const communeSelect = document.getElementById("commune");
+    const dateDispoBlock = document.getElementById("dateDispoBlock");
+    const dateDispo = document.getElementById("dateDispo");
+
+    /***********************
+     * STATE
+     ***********************/
+    let currentEmail = null;
+    let isExistingUser = false;
+    let existingData = null;
+
+    /***********************
+     * EMAIL / CODE
+     ***********************/
+    sendCodeBtn.addEventListener("click", async () => {
+      const mail = emailInput.value.trim().toLowerCase();
+      if (!mail) { emailMsg.textContent = "Merci d'indiquer une adresse e-mail."; return; }
+      emailMsg.textContent = "Envoi du code...";
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}`);
+        const j = await res.json();
+        if (j.ok) {
+          emailMsg.textContent = "Code envoyé sur l'adresse indiquée.";
+          currentEmail = mail;
+          codeArea.classList.remove("hidden");
+        } else {
+          emailMsg.textContent = "Erreur : " + (j.error || "impossible d'envoyer le code");
+        }
+      } catch (err) {
+        emailMsg.textContent = "Erreur réseau lors de l'envoi du code.";
+      }
     });
 
-    verifyBtn.addEventListener('click', async ()=>{
-      const mail = email.value.trim();
-      const code = document.getElementById('code').value.trim();
-      codeMsg.textContent="Vérification...";
-      const res = await fetch(`${scriptURL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}`);
-      const data = await res.json();
-      if(data.ok){
-        codeMsg.textContent="Code validé !";
-        codeSection.classList.add('hidden');
-        formSection.classList.remove('hidden');
-        loadDepartements();
-      } else codeMsg.textContent="Code invalide";
+    resendBtn.addEventListener("click", async () => {
+      // simple re-call send
+      sendCodeBtn.click();
     });
 
-    // Chargement départements via geo.api.gouv.fr
-    async function loadDepartements(){
-      const dep = document.getElementById('departement');
-      const r = await fetch('https://geo.api.gouv.fr/departements');
-      const d = await r.json();
-      dep.innerHTML = '<option value=\"\">-- sélectionnez --</option>';
-      d.forEach(e=>{dep.innerHTML += `<option value=\"${e.code}\">${e.code} - ${e.nom}</option>`});
-      dep.addEventListener('change', async ()=>{
-        const c = document.getElementById('commune');
-        const r = await fetch(`https://geo.api.gouv.fr/departements/${dep.value}/communes`);
-        const d = await r.json();
-        c.innerHTML = '<option value=\"\">-- sélectionnez --</option>';
-        d.forEach(e=>{c.innerHTML += `<option value=\"${e.nom}\">${e.nom}</option>`});
+    verifyCodeBtn.addEventListener("click", async () => {
+      const mail = (emailInput.value || "").trim().toLowerCase();
+      const code = (codeInput.value || "").trim();
+      if (!mail || !code) { codeMsg.textContent = "Merci d'indiquer l'e-mail et le code."; return; }
+      codeMsg.textContent = "Vérification...";
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}`);
+        const j = await res.json();
+        if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error || "code invalide"); return; }
+
+        // OK
+        codeMsg.textContent = "E-mail vérifié.";
+        currentEmail = mail;
+        // If existing data provided, prefill and show full form (all fields visible)
+        if (j.existing && j.data) {
+          isExistingUser = true;
+          existingData = j.data;
+          showFullFormAndPrefill(existingData);
+        } else {
+          isExistingUser = false;
+          existingData = null;
+          // new user: reveal only number section (fieldset already visible because mainForm hidden before)
+          // show mainForm but with restOfForm hidden until valid number
+          mainForm.classList.remove("hidden");
+          // keep restOfForm hidden until ADELI/SIRET validated
+          restOfForm.classList.add("hidden");
+        }
+      } catch (err) {
+        codeMsg.textContent = "Erreur réseau lors de la vérification.";
+      }
+    });
+
+    /***********************
+     * SHOW / PREFILL LOGIC
+     ***********************/
+    function showFullFormAndPrefill(data) {
+      // display whole form (user can edit any field)
+      mainForm.classList.remove("hidden");
+      restOfForm.classList.remove("hidden");
+      // set numType and num
+      if (data.typeNum) {
+        const el = document.querySelector(`input[name="numType"][value="${data.typeNum}"]`);
+        if (el) el.checked = true;
+        if (data.typeNum === "adeli") {
+          adeliBlock.classList.remove("hidden"); siretBlock.classList.add("hidden");
+          adeliNum.value = data.numPro || "";
+        } else if (data.typeNum === "siret") {
+          siretBlock.classList.remove("hidden"); adeliBlock.classList.add("hidden");
+          siretNum.value = data.numPro || "";
+        }
+      }
+      document.getElementById("nom").value = data.nom || "";
+      document.getElementById("prenom").value = data.prenom || "";
+      document.getElementById("phone").value = data.phone || "";
+      document.getElementById("profession").value = data.profession || "";
+      // publics (csv)
+      Array.from(document.querySelectorAll('input[name="public"]')).forEach(ch=> {
+        ch.checked = (data.publics || "").split(",").map(s=>s.trim()).includes(ch.value);
       });
+      // modes
+      Array.from(document.querySelectorAll('input[name="mode"]')).forEach(ch=> {
+        ch.checked = (data.modes || "").split(",").map(s=>s.trim()).includes(ch.value);
+      });
+      // visio
+      if (data.visio) {
+        const vis = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
+        if (vis) vis.checked = true;
+      }
+      // departement and commune: we load departments then set values; communes loaded on change
+      loadDepartements().then(()=> {
+        if (data.departement) departementSelect.value = data.departement;
+        if (data.departement) loadCommunes(data.departement, data.commune);
+      });
+      // rayon
+      document.getElementById("rayon").value = data.rayon || "";
+      // dispo and date
+      if (data.disponibilite) {
+        const dispoEl = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
+        if (dispoEl) dispoEl.checked = true;
+        dateDispoBlock.classList.toggle("hidden", data.disponibilite !== "oui");
+      }
+      document.getElementById("dateDispo").value = data.dateDisponibilite || "";
+      // consent
+      document.getElementById("consent").checked = (data.consentement === "Oui" || data.consentement === "oui" || data.consentement === "true" || data.consentement === "yes");
     }
 
-    // Logique pro num
-    document.querySelectorAll('input[name=\"numType\"]').forEach(radio=>{
-      radio.addEventListener('change', e=>{
-        document.getElementById('adeliField').classList.add('hidden');
-        document.getElementById('siretField').classList.add('hidden');
-        document.getElementById('noAccess').classList.add('hidden');
-        document.getElementById('restForm').classList.add('hidden');
-        if(e.target.value==='adeli') document.getElementById('adeliField').classList.remove('hidden');
-        else if(e.target.value==='siret') document.getElementById('siretField').classList.remove('hidden');
-        else document.getElementById('noAccess').classList.remove('hidden');
-      });
+    /***********************
+     * DEPARTEMENTS / COMMUNES
+     ***********************/
+    async function loadDepartements() {
+      // fetch and populate
+      departementSelect.innerHTML = '<option value="">-- chargement --</option>';
+      try {
+        const r = await fetch(DEPARTEMENT_API);
+        const list = await r.json();
+        departementSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+        list.forEach(d => {
+          const opt = document.createElement("option");
+          opt.value = d.code;
+          opt.textContent = `${d.code} — ${d.nom}`;
+          departementSelect.appendChild(opt);
+        });
+      } catch (err) {
+        departementSelect.innerHTML = '<option value="">Erreur chargement</option>';
+      }
+    }
+
+    async function loadCommunes(codeDept, preselect) {
+      communeSelect.innerHTML = '<option>Chargement...</option>';
+      try {
+        const r = await fetch(COMMUNE_API(codeDept));
+        const list = await r.json();
+        communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+        list.forEach(c => {
+          const opt = document.createElement("option");
+          // store code as value to avoid accents issues; show nom
+          opt.value = c.nom;
+          opt.textContent = c.nom;
+          communeSelect.appendChild(opt);
+        });
+        if (preselect) communeSelect.value = preselect;
+      } catch (err) {
+        communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
+      }
+    }
+
+    departementSelect.addEventListener("change", (e) => {
+      const code = e.target.value;
+      if (!code) { communeSelect.innerHTML = '<option value="">-- sélectionnez d\'abord le département --</option>'; return; }
+      loadCommunes(code);
     });
 
-    // Validation finale
-    document.getElementById('formSection').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      formData.append('email', email.value);
-      formData.append('action', 'submitForm');
-      const res = await fetch(scriptURL, {method:'POST', body:formData});
-      const data = await res.json();
-      document.getElementById('submitMsg').textContent = data.ok ? 'Formulaire envoyé !' : 'Erreur : '+data.error;
+    /***********************
+     * PRO NUMBER VALIDATION
+     ***********************/
+    document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
+      const v = e.target.value;
+      adeliErr.textContent = ""; siretErr.textContent = "";
+      adeliNum.value = ""; siretNum.value = "";
+      adeliBlock.classList.add("hidden"); siretBlock.classList.add("hidden"); noNumMsg.classList.add("hidden");
+      restOfForm.classList.add("hidden");
+      if (v === "adeli") adeliBlock.classList.remove("hidden");
+      else if (v === "siret") siretBlock.classList.remove("hidden");
+      else noNumMsg.classList.remove("hidden");
+    }));
+
+    adeliNum.addEventListener("blur", () => {
+      const v = adeliNum.value.trim();
+      if (!validAdeli(v)) { adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; restOfForm.classList.add("hidden"); }
+      else { adeliErr.textContent = ""; restOfForm.classList.remove("hidden"); loadDepartements(); }
     });
+    siretNum.addEventListener("blur", () => {
+      const v = siretNum.value.trim();
+      if (!validSiret(v)) { siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; restOfForm.classList.add("hidden"); }
+      else { siretErr.textContent = ""; restOfForm.classList.remove("hidden"); loadDepartements(); }
+    });
+
+    /***********************
+     * DISPO DATE LOGIC
+     ***********************/
+    document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener('change', e => {
+      const on = e.target.value === "oui";
+      dateDispoBlock.classList.toggle("hidden", !on);
+      if (on) {
+        const today = new Date().toISOString().split("T")[0];
+        dateDispo.setAttribute("min", today);
+      } else {
+        dateDispo.value = "";
+      }
+    }));
+
+    /***********************
+     * SUBMIT FORM
+     ***********************/
+    submitBtn.addEventListener("click", async () => {
+      submitMsg.textContent = "";
+      // Basic validations
+      const numTypeChecked = document.querySelector('input[name="numType"]:checked');
+      if (!numTypeChecked) { submitMsg.textContent = "Veuillez indiquer votre type de numéro professionnel."; return; }
+      const numType = numTypeChecked.value;
+      if (numType === "adeli" && !validAdeli(adeliNum.value.trim())) { submitMsg.textContent = "Numéro ADELI invalide."; return; }
+      if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
+      if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
+      if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
+      if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
+      if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
+      if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Veuillez indiquer au moins un public."; return; }
+      if (!Array.from(document.querySelectorAll('input[name="mode"]:checked')).length) { submitMsg.textContent = "Veuillez indiquer au moins un mode d'intervention."; return; }
+      if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Veuillez indiquer si vous proposez des RDV en visio."; return; }
+      if (!departementSelect.value) { submitMsg.textContent = "Département requis."; return; }
+      if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
+      if (!document.getElementById("rayon").value) { submitMsg.textContent = "Veuillez indiquer un rayon d'intervention."; return; }
+      if (!document.querySelector('input[name="dispo"]:checked')) { submitMsg.textContent = "Veuillez répondre à la question sur vos disponibilités."; return; }
+      if (document.querySelector('input[name="dispo"]:checked').value === "oui" && !dateDispo.value) { submitMsg.textContent = "Veuillez indiquer votre date de disponibilité."; return; }
+      if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
+
+      // build formdata
+      const fd = new FormData();
+      fd.append("action", "submitForm");
+      fd.append("email", currentEmail || emailInput.value.trim().toLowerCase());
+      fd.append("numType", numType);
+      fd.append("adeliNum", adeliNum.value.trim());
+      fd.append("siretNum", siretNum.value.trim());
+      fd.append("nom", document.getElementById("nom").value.trim());
+      fd.append("prenom", document.getElementById("prenom").value.trim());
+      fd.append("phone", document.getElementById("phone").value.trim());
+      fd.append("profession", document.getElementById("profession").value);
+      fd.append("publics", Array.from(document.querySelectorAll('input[name="public"]:checked')).map(i=>i.value).join(","));
+      fd.append("modes", Array.from(document.querySelectorAll('input[name="mode"]:checked')).map(i=>i.value).join(","));
+      fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
+      fd.append("departement", departementSelect.value);
+      fd.append("commune", communeSelect.value);
+      fd.append("rayon", document.getElementById("rayon").value);
+      fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
+      fd.append("dateDispo", dateDispo.value);
+      fd.append("consent", document.getElementById("consent").checked ? "oui" : "non");
+
+      // send
+      submitMsg.textContent = "Envoi en cours...";
+      try {
+        const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
+        const j = await res.json();
+        if (j.ok) {
+          submitMsg.textContent = "✅ Formulaire envoyé !";
+        } else {
+          submitMsg.textContent = "❌ Erreur : " + (j.error || "erreur inconnue");
+        }
+      } catch (err) {
+        submitMsg.textContent = "❌ Erreur réseau lors de l'envoi.";
+      }
+    });
+
+    // If user is existing and verifyCode returned data, showFullFormAndPrefill handles it.
+    // If new user: when they validate ADELI/SIRET via blur we reveal restOfForm.
+    // Initialize minimal listeners to avoid missing dept load on prefill
+    // Preload nothing until verification step; only load depts when needed.
+
   </script>
 </body>
 </html>
+
