@@ -330,11 +330,13 @@ async function showFormAndPrefill(data) {
       departSelect.value = deptCode;
       console.log("Département sélectionné:", departSelect.value);
       
-      // Charger et pré-remplir la commune
+      // Charger et pré-remplir la commune (utiliser deptCode normalisé !)
       if (data.commune) {
         console.log("Chargement des communes pour:", deptCode);
         loadCommunes(deptCode, data.commune).then(() => {
           console.log("Commune sélectionnée:", data.commune);
+        }).catch(err => {
+          console.error("Erreur chargement communes:", err);
         });
       }
     }, 100);
@@ -343,17 +345,17 @@ async function showFormAndPrefill(data) {
   // 7. Rayon
   document.getElementById("rayon").value = data.rayon || "";
   
-  // 8. Disponibilités
+  // 8. Disponibilités (ne pas pré-remplir la date pour forcer une mise à jour)
   if (data.disponibilite) {
     const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
     if (dispoRadio) {
       dispoRadio.checked = true;
-      // Afficher le bloc date si dispo = "oui"
+      // Afficher le bloc date si dispo = "oui", mais ne PAS pré-remplir la date
       if (data.disponibilite === "oui") {
         dateBlock.classList.remove("hidden");
-        if (data.dateDisponibilite) {
-          dateInput.value = data.dateDisponibilite;
-        }
+        // Laisser le champ vide pour que l'utilisateur mette à jour la date
+        dateInput.value = "";
+        console.log("Bloc date affiché - l'utilisateur doit mettre à jour la date");
       }
     }
   }
