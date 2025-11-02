@@ -381,6 +381,7 @@ sendCodeBtn.addEventListener("click", async () => {
     const j = await r.json();
     
     console.log("Réponse serveur sendCode:", j);
+    console.log("🔍 DEBUG - alreadySent =", j.alreadySent);
     
     // Vérifier si le quota est dépassé (prioritaire)
     if (j.error === "SERVICE_QUOTA_EXCEEDED") {
