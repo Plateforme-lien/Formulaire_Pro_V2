@@ -426,8 +426,10 @@ verifyBtn.addEventListener("click", async () => {
     const j = await r.json();
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
     
-    codeMsg.textContent = "E-mail vérifié.";
+    codeMsg.textContent = "✅ E-mail vérifié avec succès !";
     CURRENT_EMAIL = mail;
+    // 🆕 Masquer UNIQUEMENT la zone du code (garder l'email visible)
+    codeArea.style.display = "none";
     
     await loadDepartements();
     
