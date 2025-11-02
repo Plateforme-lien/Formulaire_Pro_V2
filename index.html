@@ -465,9 +465,11 @@ verifyBtn.addEventListener("click", async () => {
     
     codeMsg.textContent = "✅ E-mail vérifié avec succès !";
     CURRENT_EMAIL = mail;
-    // 🆕 Masquer UNIQUEMENT la zone du code (garder l'email visible)
+    // 🆕 Masquer la zone du code et verrouiller l'email
     codeArea.style.display = "none";
-    emailMsg.style.display = "none";  
+    emailMsg.style.display = "none";
+    emailEl.disabled = true;  // Verrouiller le champ email
+    sendCodeBtn.style.display = "none";  // Masquer le bouton "Vérifier mon mail"
     
     await loadDepartements();
     
