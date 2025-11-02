@@ -387,6 +387,14 @@ sendCodeBtn.addEventListener("click", async () => {
       console.log("✅ Nouveau code envoyé par email");
     }
 
+    // 🆕 Gestion limite quotidienne (3 codes/jour)
+    if (j.error === "DAILY_LIMIT_REACHED") {
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
+        <span style="color:#6b7280">Vous avez déjà demandé ${j.codesEnvoyes || 3} codes aujourd'hui. Maximum autorisé : 3 codes par jour. Réessayez demain.</span>`;
+      sendCodeBtn.disabled = false;
+      return;
+    }
+
       //  Gestion du cooldown
     if (j.error === "COOLDOWN_ACTIVE") {
       const heures = Math.floor(j.minutesRestantes / 60);
