@@ -426,6 +426,7 @@ sendCodeBtn.addEventListener("click", async () => {
       
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
+      sendCodeBtn.style.display = "none";  // Masquer le bouton une fois le code envoyé
       codeEl.focus();
     } else {
       // Autres erreurs
@@ -450,6 +451,14 @@ emailEl.addEventListener("keypress", (e) => {
 /* ========== RESEND ========== */
 resendBtn.addEventListener("click", () => {
   sendCodeBtn.click();
+});
+
+/* ========== TOUCHE ENTRÉE POUR VALIDER LE CODE ========== */
+codeEl.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    verifyBtn.click();
+  }
 });
 
 /* ========== VERIFY CODE ========== */
@@ -566,6 +575,17 @@ document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListen
 }));
 
 /* ========== VALIDATION on blur for ADELI/SIRET ========== */
+adeliNum.addEventListener('input', () => {
+  const v = adeliNum.value.trim();
+  if (v.length === 9 && validAdeli(v)) {
+    adeliErr.textContent = ""; 
+    rest.classList.remove("hidden");
+  } else if (v.length === 9) {
+    adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; 
+    rest.classList.add("hidden");
+  }
+});
+
 adeliNum.addEventListener('blur', () => {
   const v = adeliNum.value.trim();
   if (!validAdeli(v)) { 
@@ -574,6 +594,17 @@ adeliNum.addEventListener('blur', () => {
   } else { 
     adeliErr.textContent = ""; 
     rest.classList.remove("hidden");
+  }
+});
+
+siretNum.addEventListener('input', () => {
+  const v = siretNum.value.trim();
+  if (v.length === 14 && validSiret(v)) {
+    siretErr.textContent = ""; 
+    rest.classList.remove("hidden");
+  } else if (v.length === 14) {
+    siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; 
+    rest.classList.add("hidden");
   }
 });
 
