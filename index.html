@@ -678,66 +678,6 @@ resetBtn.addEventListener('click', () => {
   submitMsg.textContent = "";
 });
 
-  /* ========== ADMIN QUOTA DISPLAY ========== */
-const ADMIN_EMAIL = "plateforme.lien.pro@gmail.com"; // 🔧 Changez si besoin
-
-async function checkAndDisplayQuota() {
-  try {
-    const r = await fetch(`${SCRIPT_URL}?action=checkQuota`);
-    const j = await r.json();
-    
-    if (j.ok) {
-      const quotaDisplay = document.getElementById("quotaDisplay");
-      const percentColor = j.percentUsed > 80 ? "#dc2626" : j.percentUsed > 50 ? "#f59e0b" : "#059669";
-      
-      quotaDisplay.innerHTML = `
-        <span style="color:${percentColor}; font-weight:700;">${j.remaining}/${j.total}</span> 
-        restants (${j.used} utilisés - ${j.percentUsed}%)
-        ${j.warning ? `<br><small style="color:#6b7280;">${j.warning}</small>` : ''}
-      `;
-    } else {
-      document.getElementById("quotaDisplay").textContent = "❌ Erreur : " + (j.error || "impossible de charger");
-    }
-  } catch (err) {
-    document.getElementById("quotaDisplay").textContent = "❌ Erreur réseau";
-  }
-}
-
-// Vérifier si c'est l'admin et afficher le quota
-function initAdminMode() {
-  const adminQuotaDiv = document.getElementById("adminQuota");
-  const currentEmail = (emailEl.value || "").trim().toLowerCase();
-  
-  // Vérifier régulièrement si l'email admin est entré
-  const checkEmail = () => {
-    const email = (emailEl.value || "").trim().toLowerCase();
-    if (email === ADMIN_EMAIL.toLowerCase()) {
-      adminQuotaDiv.style.display = "block";
-      checkAndDisplayQuota();
-    } else {
-      adminQuotaDiv.style.display = "none";
-    }
-  };
-  
-  // Vérifier à chaque changement d'email
-  emailEl.addEventListener("input", checkEmail);
-  emailEl.addEventListener("blur", checkEmail);
-  
-  // Vérifier au chargement
-  checkEmail();
-}
-
-// Bouton refresh quota
-document.getElementById("refreshQuota").addEventListener("click", () => {
-  document.getElementById("quotaDisplay").textContent = "Chargement...";
-  checkAndDisplayQuota();
-});
-
-// Initialiser au chargement de la page
-initAdminMode();
-```
----
-
 </script>
 </body>
 </html>
