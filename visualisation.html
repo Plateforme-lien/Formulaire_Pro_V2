@@ -303,8 +303,8 @@ afficherBtn.addEventListener('click', () => {
   L.marker(centre).addTo(map)
     .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
 
-  // Zoom moyen (pas trop fort)
-  map.setView(centre, 12);
+  // Ajuster la vue pour montrer tout le cercle (avec marge)
+  map.fitBounds(cercle.getBounds(), { padding: [50, 50] });
 
   // Communes dans le rayon
   const dansRayon = communes.filter(c => {
