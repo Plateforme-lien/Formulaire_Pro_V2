@@ -395,7 +395,7 @@ sendCodeBtn.addEventListener("click", async () => {
     if (j.ok) {
       // Vérifier si c'est un code déjà envoyé ou un nouveau code
       if (j.alreadySent) {
-        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">ℹ️ Code déjà envoyé</span><br>
+        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">Code déjà envoyé</span><br>
           <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable. Vérifiez votre boîte mail (pensez aux spams).</span>`;
       } else {
         emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
