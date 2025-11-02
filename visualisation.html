@@ -16,165 +16,19 @@
       --primary:#0ea5a4;
       --primary-dark:#0d8887;
       --muted:#6b7280;
-      --section-bg:#f9fafb;
     }
-    
-    body{
-      font-family:Inter,Arial,Helvetica,sans-serif;
-      background:var(--bg);
-      margin:0;
-      padding:24px;
-      line-height:1.6;
-      color:#0f1724;
-    }
-
-    .wrap{
-      max-width:980px;
-      margin:18px auto;
-    }
-    
-    .card{
-      background:var(--card);
-      border-radius:16px;
-      padding:32px 36px;
-      box-shadow:0 8px 30px rgba(2,6,23,0.06);
-      margin-bottom:24px;
-    }
-    
-    h1{
-      margin:0 0 8px;
-      font-size:24px;
-      color:#0f1724;
-    }
-    
-    h2{
-      margin:0 0 16px;
-      color:var(--muted);
-      font-size:17px;
-      font-weight:600;
-      line-height:1.6;
-    }
-    
-    h3{
-      margin:24px 0 12px;
-      font-size:16px;
-      font-weight:700;
-      color:#0f1724;
-    }
-    
-    p.lead{
-      margin:0 0 24px;
-      color:var(--muted);
-      font-size:15px;
-    }
-    
-    label{
-      display:block;
-      margin-top:20px;
-      font-weight:600;
-      color:#0f1724;
-      font-size:15px;
-    }
-    
-    label:first-of-type{
-      margin-top:0;
-    }
-    
-    select, button, textarea{
-      width:100%;
-      padding:12px 14px;
-      margin-top:8px;
-      border:2px solid #e6eef6;
-      border-radius:8px;
-      font-size:15px;
-      transition:border-color 0.2s;
-      box-sizing:border-box;
-    }
-    
-    select:focus{
-      outline:none;
-      border-color:var(--primary);
-    }
-    
-    button{
-      background:var(--primary);
-      color:#fff;
-      border:none;
-      margin-top:15px;
-      cursor:pointer;
-      font-weight:600;
-      transition:all 0.2s;
-    }
-    
-    button:hover{
-      background:var(--primary-dark);
-      transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(14,165,164,0.3);
-    }
-    
-    button:active{
-      transform:translateY(0);
-    }
-    
-    .btn-secondary{
-      background:#eef2f7;
-      color:#0f1724;
-      margin-top:20px;
-    }
-    
-    .btn-secondary:hover{
-      background:#e1e7ef;
-      box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    #map{
-      height:500px;
-      margin-top:15px;
-      border-radius:12px;
-      overflow:hidden;
-      border:2px solid #e6eef6;
-    }
-
-    .info-box{
-      background:#e6f7f7;
-      padding:16px 20px;
-      border-left:4px solid var(--primary);
-      border-radius:8px;
-      margin-bottom:20px;
-      color:#0f1724;
-    }
-    
-    .info-box strong{
-      color:var(--primary);
-    }
-
-    textarea{
-      font-family:Arial, sans-serif;
-      line-height:1.4;
-      min-height:150px;
-      max-height:400px;
-      resize:vertical;
-      overflow-y:auto;
-    }
-
-    .leaflet-control-scale{
-      z-index:1000 !important;
-    }
-    
-    @media(max-width:768px){
-      body{
-        padding:16px;
-      }
-      .card{
-        padding:24px 20px;
-      }
-      h1{
-        font-size:20px;
-      }
-      #map{
-        height:400px;
-      }
-    }
+    body{font-family:Inter,Arial,sans-serif;background:var(--bg);margin:0;padding:24px;color:#0f1724;}
+    .wrap{max-width:980px;margin:18px auto;}
+    .card{background:var(--card);border-radius:16px;padding:32px 36px;box-shadow:0 8px 30px rgba(2,6,23,0.06);}
+    h1{font-size:24px;margin:0 0 8px;}
+    h2{font-size:17px;margin:0 0 16px;color:var(--muted);}
+    label{display:block;margin-top:20px;font-weight:600;}
+    select, button, textarea{width:100%;padding:12px;border:2px solid #e6eef6;border-radius:8px;margin-top:8px;}
+    button{background:var(--primary);color:#fff;border:none;margin-top:16px;cursor:pointer;font-weight:600;}
+    button:hover{background:var(--primary-dark);}
+    #map{height:500px;margin-top:15px;border-radius:12px;border:2px solid #e6eef6;}
+    .info-box{background:#e6f7f7;padding:16px;border-left:4px solid var(--primary);border-radius:8px;margin-bottom:20px;}
+    textarea{min-height:150px;}
   </style>
 </head>
 
@@ -183,10 +37,10 @@
 <div class="wrap">
   <div class="card">
     <h1>🗺️ Visualisation de votre zone d'intervention</h1>
-    <h2>Identifiez facilement les communes couvertes par votre rayon d'action</h2>
+    <h2>Visualisez les communes couvertes par votre rayon</h2>
 
     <div class="info-box">
-      <strong>💡 Mode d'emploi :</strong> Sélectionnez votre commune centrale et votre rayon d'intervention pour visualiser sur la carte toutes les communes que vous pouvez couvrir.
+      <strong>💡 Astuce :</strong> Votre commune et votre rayon devraient se remplir automatiquement.
     </div>
 
     <label for="commune">Commune centrale</label>
@@ -194,7 +48,7 @@
 
     <label for="rayon">Rayon d'intervention (km)</label>
     <select id="rayon">
-      <option value="">-- Sélectionnez votre rayon d'intervention --</option>
+      <option value="">-- Choisissez un rayon --</option>
       <option value="10">10 km</option>
       <option value="15">15 km</option>
       <option value="20">20 km</option>
@@ -204,155 +58,86 @@
       <option value="50">50 km</option>
     </select>
 
-    <button id="afficher">📍 Afficher ma zone d'intervention</button>
+    <button id="afficher">📍 Afficher ma zone</button>
 
     <div id="map"></div>
 
     <h3>📋 Communes couvertes</h3>
-    <textarea id="liste" rows="8" placeholder="Les communes apparaîtront ici après avoir cliqué sur 'Afficher ma zone d'intervention'"></textarea>
+    <textarea id="liste" placeholder="Elles apparaîtront ici..."></textarea>
     
-    <button class="btn-secondary" onclick="window.close()">← Retour au questionnaire</button>
+    <button class="btn-secondary" onclick="window.close()">← Retour</button>
   </div>
 </div>
 
 <script>
-// --- Carte initiale ---
-const map = L.map('map').setView([48.692054, 6.184417], 9);
+// Récupération paramètres URL
+const params = new URLSearchParams(window.location.search);
+const depChoisi = params.get("dep");
+const communeChoisie = params.get("commune");
+const rayonChoisi = params.get("rayon");
 
-// Fond de carte
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:18,
-  attribution: '© OpenStreetMap'
-}).addTo(map);
+// Carte
+const map = L.map('map').setView([46.5, 2], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(map);
+L.control.scale({position:'bottomleft'}).addTo(map);
 
-// Échelle
-L.control.scale({
-  position: 'bottomleft',
-  metric: true,
-  imperial: false,
-  maxWidth: 200
-}).addTo(map);
-
-// --- Chargement des communes Lorraine ---
 let communes = [];
-const departements = [54, 55, 57, 88];
 
+// Charger communes du département reçu
 async function chargerCommunes() {
-  const select = document.getElementById('commune');
-  select.innerHTML = '<option value="">⏳ Chargement des communes...</option>';
-  
-  for(const dep of departements){
-    const url = `https://geo.api.gouv.fr/departements/${dep}/communes?fields=nom,centre`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      communes = communes.concat(data);
-    } catch(error) {
-      console.error(`Erreur chargement département ${dep}:`, error);
-    }
-  }
+  const select = document.getElementById("commune");
+  select.innerHTML = "<option>⏳ Chargement...</option>";
 
-  // Tri alphabétique
-  communes.sort((a, b) => a.nom.localeCompare(b.nom));
+  const url = `https://geo.api.gouv.fr/departements/${depChoisi}/communes?fields=nom,centre`;
 
-  // Remplir le menu
-  select.innerHTML = '<option value="">-- Sélectionnez votre commune --</option>';
-  communes.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.nom;
-    opt.text = c.nom;
-    select.appendChild(opt);
+  const res = await fetch(url);
+  communes = await res.json();
+  communes.sort((a,b)=>a.nom.localeCompare(b.nom));
+
+  select.innerHTML = '<option value="">-- Sélectionnez --</option>';
+  communes.forEach(c=> {
+    const o = document.createElement("option");
+    o.value = c.nom; o.textContent = c.nom;
+    select.appendChild(o);
   });
 
-  // Ajuster la vue pour montrer toutes les communes
-  if(communes.length > 0) {
-    const latitudes = communes.map(c => c.centre.coordinates[1]);
-    const longitudes = communes.map(c => c.centre.coordinates[0]);
-    const minLat = Math.min(...latitudes);
-    const maxLat = Math.max(...latitudes);
-    const minLng = Math.min(...longitudes);
-    const maxLng = Math.max(...longitudes);
+  if(communeChoisie) select.value = communeChoisie;
+  if(rayonChoisi) document.getElementById("rayon").value = rayonChoisi;
 
-    map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
+  if(communeChoisie && rayonChoisi) {
+    setTimeout(()=>document.getElementById("afficher").click(), 400);
   }
 }
-
 chargerCommunes();
 
-// --- Afficher zone ---
-document.getElementById('afficher').addEventListener('click', () => {
-  const nomCentrale = document.getElementById('commune').value;
-  const rayonKm = parseFloat(document.getElementById('rayon').value);
+// Bouton afficher
+document.getElementById("afficher").addEventListener("click", ()=>{
+  const nom = document.getElementById("commune").value;
+  const rayon = parseFloat(document.getElementById("rayon").value);
+  if(!nom || !rayon) return alert("Sélectionnez une commune & un rayon");
 
-  if(!nomCentrale) {
-    alert("⚠️ Merci de sélectionner une commune centrale");
-    return;
-  }
-
-  const centrale = communes.find(c => c.nom === nomCentrale);
-  if(!centrale) {
-    alert("❌ Commune centrale introuvable");
-    return;
-  }
-
+  const centrale = communes.find(c=>c.nom===nom);
   const centre = L.latLng(centrale.centre.coordinates[1], centrale.centre.coordinates[0]);
 
-  // Effacer anciens markers/cercle
-  map.eachLayer(layer => {
-    if (layer instanceof L.Marker || layer instanceof L.Circle) {
-      map.removeLayer(layer);
-    }
-  });
+  map.eachLayer(l=>{ if(l instanceof L.Marker || l instanceof L.Circle) map.removeLayer(l); });
 
-  // Cercle
-  const cercle = L.circle(centre, {
-    radius: rayonKm*1000,
-    color: "#0ea5a4",
-    fillColor: "#0ea5a4",
-    fillOpacity: 0.15,
-    weight: 2
-  }).addTo(map);
-
-  // Marker pour la commune centrale
-  L.marker(centre, {
-    icon: L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    })
-  }).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
-
-  // Ajuster la vue pour que tout le cercle soit visible
+  const cercle = L.circle(centre,{radius:rayon*1000,color:"#0ea5a4",fillColor:"#0ea5a4",fillOpacity:.15}).addTo(map);
+  L.marker(centre).addTo(map).bindPopup(nom).openPopup();
   map.fitBounds(cercle.getBounds());
 
-  // Communes dans rayon
-  let communesDansZone = [];
-  communes.forEach(c => {
-    const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-    const distance = map.distance(centre, pt);
-    
-    if(distance <= rayonKm*1000 && c.nom !== nomCentrale){
-      communesDansZone.push(c.nom);
-      L.marker(pt).addTo(map).bindPopup(c.nom);
-    }
+  const zones = communes.filter(c=>{
+    const pt=L.latLng(c.centre.coordinates[1],c.centre.coordinates[0]);
+    return map.distance(centre,pt)<=rayon*1000 && c.nom!==nom;
   });
 
-  // Liste formatée
-  const total = communesDansZone.length + 1; // +1 pour la commune centrale
-  const listeFormattee = `📍 Commune centrale : ${nomCentrale}\n\n` +
-    `✅ ${communesDansZone.length} commune(s) supplémentaire(s) couverte(s) :\n\n` +
-    communesDansZone
-      .sort()
-      .map((c, i) => `${i+1}. ${c}`)
-      .join("\n") +
-    `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
-
-  document.getElementById('liste').value = listeFormattee;
+  document.getElementById("liste").value =
+    `Commune centrale : ${nom}\n`+
+    `Rayon : ${rayon} km\n\n`+
+    `Communes couvertes (${zones.length}) :\n\n`+
+    zones.map(c=>`- ${c.nom}`).join("\n");
 });
 </script>
 
 </body>
 </html>
+
