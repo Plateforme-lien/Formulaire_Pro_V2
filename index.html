@@ -381,7 +381,11 @@ sendCodeBtn.addEventListener("click", async () => {
     const j = await r.json();
     
     console.log("Réponse serveur sendCode:", j);
-    console.log("🔍 DEBUG - alreadySent =", j.alreadySent);
+    if (j.alreadySent) {
+      console.log("🔍 Code déjà envoyé récemment - pas de nouvel email");
+    } else if (j.ok) {
+      console.log("✅ Nouveau code envoyé par email");
+    }
 
       //  Gestion du cooldown
     if (j.error === "COOLDOWN_ACTIVE") {
