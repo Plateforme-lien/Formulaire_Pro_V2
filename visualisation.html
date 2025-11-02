@@ -62,12 +62,6 @@
       color:#0f1724;
     }
     
-    p.lead{
-      margin:0 0 24px;
-      color:var(--muted);
-      font-size:15px;
-    }
-    
     label{
       display:block;
       margin-top:20px;
@@ -75,11 +69,7 @@
       color:#0f1724;
       font-size:15px;
     }
-    
-    label:first-of-type{
-      margin-top:0;
-    }
-    
+
     select, button, textarea{
       width:100%;
       padding:12px 14px;
@@ -90,12 +80,12 @@
       transition:border-color 0.2s;
       box-sizing:border-box;
     }
-    
+
     select:focus{
       outline:none;
       border-color:var(--primary);
     }
-    
+
     button{
       background:var(--primary);
       color:#fff;
@@ -107,23 +97,19 @@
       padding:12px 14px;
       border-radius:8px;
     }
-    
+
     button:hover{
       background:var(--primary-dark);
       transform:translateY(-1px);
       box-shadow:0 4px 12px rgba(14,165,164,0.3);
     }
-    
-    button:active{
-      transform:translateY(0);
-    }
-    
+
     .btn-secondary{
       background:#eef2f7;
       color:#0f1724;
       margin-top:20px;
     }
-    
+
     .btn-secondary:hover{
       background:#e1e7ef;
       box-shadow:0 2px 8px rgba(0,0,0,0.1);
@@ -145,7 +131,7 @@
       margin-bottom:20px;
       color:#0f1724;
     }
-    
+
     .info-box strong{
       color:var(--primary);
     }
@@ -154,28 +140,15 @@
       font-family:Arial, sans-serif;
       line-height:1.4;
       min-height:150px;
-      max-height:400px;
       resize:vertical;
       overflow-y:auto;
     }
 
-    .leaflet-control-scale{
-      z-index:1000 !important;
-    }
-    
     @media(max-width:768px){
-      body{
-        padding:16px;
-      }
-      .card{
-        padding:24px 20px;
-      }
-      h1{
-        font-size:20px;
-      }
-      #map{
-        height:400px;
-      }
+      body{ padding:16px; }
+      .card{ padding:24px 20px; }
+      h1{ font-size:20px; }
+      #map{ height:400px; }
     }
   </style>
 </head>
@@ -188,10 +161,9 @@
     <h2>Identifiez facilement les communes couvertes par votre rayon d'action</h2>
 
     <div class="info-box">
-      <strong>💡 Mode d'emploi :</strong> Sélectionnez d'abord le département, puis la commune centrale et votre rayon d'intervention pour visualiser sur la carte toutes les communes que vous pouvez couvrir.
+      <strong>💡 Mode d'emploi :</strong> Sélectionnez d'abord le département, puis la commune centrale et votre rayon d'intervention pour visualiser sur la carte toutes les communes couvertes.
     </div>
 
-    <!-- Nouveau : sélection du département -->
     <label for="departement">Département</label>
     <select id="departement">
       <option value="">⏳ Chargement des départements...</option>
@@ -225,49 +197,35 @@
 </div>
 
 <script>
-/* ===========================
-   Configuration / helpers
-   =========================== */
+// ==========================
+//  CONFIGURATION / INIT
+// ==========================
 const DEPT_API = "https://geo.api.gouv.fr/departements";
 const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre`;
 
-/* DOM */
 const departSelect = document.getElementById('departement');
 const communeSelect = document.getElementById('commune');
 const rayonSelect = document.getElementById('rayon');
 const afficherBtn = document.getElementById('afficher');
 const listeBox = document.getElementById('liste');
 
-/* Carte Leaflet - vue initiale large France */
 const map = L.map('map').setView([46.8, 2.5], 6);
-
-/* Fond de carte */
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
   attribution: '© OpenStreetMap'
 }).addTo(map);
+L.control.scale({ position: 'bottomleft', metric: true }).addTo(map);
 
-/* Échelle */
-L.control.scale({
-  position: 'bottomleft',
-  metric: true,
-  imperial: false,
-  maxWidth: 200
-}).addTo(map);
-
-/* stockage temporaire des communes chargées pour le département choisi */
 let communes = [];
 
-/* ===========================
-   Charger départements
-   =========================== */
+// ==========================
+//  CHARGEMENT DES DÉPARTEMENTS
+// ==========================
 async function chargerDepartements(){
   departSelect.innerHTML = '<option value="">⏳ Chargement des départements...</option>';
   try {
     const res = await fetch(DEPT_API);
-    if(!res.ok) throw new Error("Réponse serveur départements non OK");
     const data = await res.json();
-    // tri par code (01,02,...)
     data.sort((a,b) => a.code.localeCompare(b.code));
     departSelect.innerHTML = '<option value="">-- Sélectionnez un département --</option>';
     data.forEach(dep => {
@@ -276,35 +234,25 @@ async function chargerDepartements(){
       opt.textContent = `${dep.code} — ${dep.nom}`;
       departSelect.appendChild(opt);
     });
-  } catch(err){
-    console.error("Erreur chargement départements:", err);
+  } catch {
     departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
   }
 }
 chargerDepartements();
 
-/* ===========================
-   Lors du changement de département
-   =========================== */
-departSelect.addEventListener('change', async (e) => {
-  const code = (e.target.value || "").trim();
+// ==========================
+//  CHARGEMENT DES COMMUNES
+// ==========================
+departSelect.addEventListener('change', async e => {
+  const code = e.target.value;
   communes = [];
-  communeSelect.innerHTML = '<option value="">⏳ Chargement des communes...</option>';
-  listeBox.value = ''; // effacer la liste précédente
-  if(!code){
-    communeSelect.innerHTML = '<option value="">-- choisissez d\'abord le département --</option>';
-    return;
-  }
+  communeSelect.innerHTML = '<option>⏳ Chargement des communes...</option>';
+  if(!code) return;
 
   try {
     const res = await fetch(COMMUNE_API(code));
-    if(!res.ok) throw new Error("Réponse serveur communes non OK");
     const data = await res.json();
-    // Trier alphabétiquement
-    data.sort((a,b) => a.nom.localeCompare(b.nom));
-    communes = data;
-
-    // remplir le select commune
+    communes = data.sort((a,b) => a.nom.localeCompare(b.nom));
     communeSelect.innerHTML = '<option value="">-- Sélectionnez votre commune --</option>';
     communes.forEach(c => {
       const opt = document.createElement('option');
@@ -313,55 +261,34 @@ departSelect.addEventListener('change', async (e) => {
       communeSelect.appendChild(opt);
     });
 
-    // Zoomer sur l'étendue du département (approximation via bounding box des communes)
-    if(communes.length > 0){
-      const lats = communes.map(c => c.centre.coordinates[1]);
-      const lngs = communes.map(c => c.centre.coordinates[0]);
-      const minLat = Math.min(...lats);
-      const maxLat = Math.max(...lats);
-      const minLng = Math.min(...lngs);
-      const maxLng = Math.max(...lngs);
-      const bounds = [[minLat, minLng], [maxLat, maxLng]];
-      // Protections au cas où bounds seraient invalides
-      if(isFinite(minLat) && isFinite(maxLat) && isFinite(minLng) && isFinite(maxLng)) {
-        map.fitBounds(bounds, { padding: [40,40] });
-      }
-    }
+    // Zoom sur le département
+    const lats = communes.map(c => c.centre.coordinates[1]);
+    const lngs = communes.map(c => c.centre.coordinates[0]);
+    const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+    map.fitBounds(bounds, { padding: [30,30] });
 
-  } catch(err){
-    console.error("Erreur chargement communes pour le département", code, err);
-    communeSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+  } catch {
+    communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
   }
 });
 
-/* ===========================
-   Afficher la zone d'intervention
-   =========================== */
+// ==========================
+//  AFFICHER LA ZONE D'INTERVENTION
+// ==========================
 afficherBtn.addEventListener('click', () => {
   const nomCentrale = communeSelect.value;
-  const rayonKm = parseFloat(rayonSelect.value) || 0;
-
-  if(!nomCentrale){
-    alert("⚠️ Merci de sélectionner une commune centrale");
-    return;
-  }
+  const rayonKm = parseFloat(rayonSelect.value);
+  if(!nomCentrale) return alert("⚠️ Sélectionnez une commune centrale");
 
   const centrale = communes.find(c => c.nom === nomCentrale);
-  if(!centrale || !centrale.centre || !centrale.centre.coordinates){
-    alert("❌ Commune centrale introuvable ou sans coordonnées");
-    return;
-  }
+  if(!centrale) return alert("❌ Commune introuvable");
 
   const centre = L.latLng(centrale.centre.coordinates[1], centrale.centre.coordinates[0]);
 
-  // Effacer anciens markers/cercle (on garde les tuiles)
-  const toRemove = [];
+  // Nettoyage ancien affichage
   map.eachLayer(layer => {
-    if (layer instanceof L.Marker || layer instanceof L.Circle) {
-      toRemove.push(layer);
-    }
+    if (layer instanceof L.Marker || layer instanceof L.Circle) map.removeLayer(layer);
   });
-  toRemove.forEach(l => map.removeLayer(l));
 
   // Cercle
   const cercle = L.circle(centre, {
@@ -373,108 +300,71 @@ afficherBtn.addEventListener('click', () => {
   }).addTo(map);
 
   // Marker central
-  L.marker(centre, {
-    icon: L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    })
-  }).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+  L.marker(centre).addTo(map)
+    .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
 
-  // Ajuster la vue pour que tout le cercle soit visible
-  try {
-    map.fitBounds(cercle.getBounds(), { padding: [30,30] });
-  } catch(e) {
-    // fallback simple
-    map.setView(centre, 12);
-  }
+  // Zoom moyen (pas trop fort)
+  map.setView(centre, 12);
 
-  // Communes dans rayon
-  const communesDansZone = [];
-  communes.forEach(c => {
-    if(!c.centre || !c.centre.coordinates) return;
+  // Communes dans le rayon
+  const dansRayon = communes.filter(c => {
     const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-    const distance = map.distance(centre, pt);
-    if(distance <= rayonKm * 1000 && c.nom !== nomCentrale){
-      communesDansZone.push(c);
-      L.marker(pt).addTo(map).bindPopup(c.nom);
-    }
+    return map.distance(centre, pt) <= rayonKm * 1000 && c.nom !== nomCentrale;
   });
 
-  // Formatage de la liste
-  const total = communesDansZone.length + 1;
-  const sortedNames = communesDansZone.map(c => c.nom).sort((a,b) => a.localeCompare(b));
-  const listeFormattee = `📍 Commune centrale : ${nomCentrale}\n\n` +
-    `✅ ${communesDansZone.length} commune(s) supplémentaire(s) couverte(s) :\n\n` +
-    sortedNames.map((c,i) => `${i+1}. ${c}`).join("\n") +
-    `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+  dansRayon.forEach(c => {
+    const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+    L.marker(pt).addTo(map).bindPopup(c.nom);
+  });
 
-  listeBox.value = listeFormattee;
+  // Liste
+  const total = dansRayon.length + 1;
+  listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
+    `✅ ${dansRayon.length} commune(s) supplémentaire(s) :\n\n` +
+    dansRayon.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+    `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
 });
 
-/* ===========================
-   (Optionnel) charger un département par paramètre d'URL
-   ex: visualisation.html?dep=54&commune=Nancy&rayon=30
-   =========================== */
-function getQueryParams() {
-  const params = {};
-  const q = location.search.substring(1);
-  if(!q) return params;
-  q.split('&').forEach(p => {
-    const [k,v] = p.split('=').map(decodeURIComponent);
-    if(k) params[k] = v || '';
-  });
-  return params;
+// ==========================
+//  PARAMÈTRES D'URL (pré-remplissage)
+// ==========================
+function getParams(){
+  return Object.fromEntries(new URLSearchParams(location.search));
 }
 
 (async function initFromParams(){
-  const params = getQueryParams();
-  // attendre le chargement des départements
-  await new Promise(resolve => {
-    const check = () => {
-      if(departSelectReady()) resolve();
-      else setTimeout(check, 150);
-    };
-    check();
+  const p = getParams();
+  if(!p.dep) return;
+
+  // attendre départements
+  await new Promise(r => {
+    const i = setInterval(()=>{
+      if(departSelect.options.length>1){ clearInterval(i); r(); }
+    },100);
   });
 
-  if(params.dep){
-    // sélectionne le département puis force le chargement des communes
-    departSelect.value = params.dep;
-    departSelect.dispatchEvent(new Event('change'));
-    // attendre que les communes soient chargées (simple poll)
-    const waitComm = () => new Promise(res => {
-      const t0 = Date.now();
-      const loop = () => {
-        if(communes.length > 0) return res();
-        if(Date.now() - t0 > 8000) return res(); // timeout 8s
-        setTimeout(loop, 150);
-      };
-      loop();
-    });
-    await waitComm();
-    if(params.commune){
-      communeSelect.value = params.commune;
-    }
-    if(params.rayon){
-      rayonSelect.value = params.rayon;
-    }
-    // si on a assez d'infos on peut afficher directement
-    if(communeSelect.value) {
-      // légère attente pour laisser le rendu se faire
-      setTimeout(() => afficherBtn.click(), 300);
-    }
+  departSelect.value = p.dep;
+  departSelect.dispatchEvent(new Event('change'));
+
+  // attendre communes
+  await new Promise(r => {
+    const i = setInterval(()=>{
+      if(communes.length>0){ clearInterval(i); r(); }
+    },150);
+  });
+
+  if(p.commune) communeSelect.value = p.commune;
+
+  if(p.rayon){
+    const match = p.rayon.match(/\d+/);
+    if(match) rayonSelect.value = match[0];
   }
 
-  function departSelectReady(){
-    return departSelect && departSelect.options && departSelect.options.length > 1;
-  }
+  if(p.commune) setTimeout(()=>afficherBtn.click(),300);
 })();
 </script>
 
 </body>
 </html>
+
 
