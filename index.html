@@ -382,7 +382,18 @@ sendCodeBtn.addEventListener("click", async () => {
     
     console.log("Réponse serveur sendCode:", j);
     console.log("🔍 DEBUG - alreadySent =", j.alreadySent);
-    
+
+      //  Gestion du cooldown
+    if (j.error === "COOLDOWN_ACTIVE") {
+      const heures = Math.floor(j.minutesRestantes / 60);
+      const minutes = j.minutesRestantes % 60;
+      const tempsRestant = heures > 0 ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}` : `${minutes} minutes`;
+      
+      emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Veuillez patienter</span><br>
+        <span style="color:#6b7280">Vous avez récemment soumis le formulaire. Vous pourrez redemander un code dans environ ${tempsRestant}.</span>`;
+      sendCodeBtn.disabled = false;
+      return;
+    }
     // Vérifier si le quota est dépassé (prioritaire)
     if (j.error === "SERVICE_QUOTA_EXCEEDED") {
       emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Service temporairement indisponible</span><br>
