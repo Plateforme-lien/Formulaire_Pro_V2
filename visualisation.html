@@ -16,19 +16,167 @@
       --primary:#0ea5a4;
       --primary-dark:#0d8887;
       --muted:#6b7280;
+      --section-bg:#f9fafb;
     }
-    body{font-family:Inter,Arial,sans-serif;background:var(--bg);margin:0;padding:24px;color:#0f1724;}
-    .wrap{max-width:980px;margin:18px auto;}
-    .card{background:var(--card);border-radius:16px;padding:32px 36px;box-shadow:0 8px 30px rgba(2,6,23,0.06);}
-    h1{font-size:24px;margin:0 0 8px;}
-    h2{font-size:17px;margin:0 0 16px;color:var(--muted);}
-    label{display:block;margin-top:20px;font-weight:600;}
-    select, button, textarea{width:100%;padding:12px;border:2px solid #e6eef6;border-radius:8px;margin-top:8px;}
-    button{background:var(--primary);color:#fff;border:none;margin-top:16px;cursor:pointer;font-weight:600;}
-    button:hover{background:var(--primary-dark);}
-    #map{height:500px;margin-top:15px;border-radius:12px;border:2px solid #e6eef6;}
-    .info-box{background:#e6f7f7;padding:16px;border-left:4px solid var(--primary);border-radius:8px;margin-bottom:20px;}
-    textarea{min-height:150px;}
+    
+    body{
+      font-family:Inter,Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      margin:0;
+      padding:24px;
+      line-height:1.6;
+      color:#0f1724;
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:18px auto;
+    }
+    
+    .card{
+      background:var(--card);
+      border-radius:16px;
+      padding:32px 36px;
+      box-shadow:0 8px 30px rgba(2,6,23,0.06);
+      margin-bottom:24px;
+    }
+    
+    h1{
+      margin:0 0 8px;
+      font-size:24px;
+      color:#0f1724;
+    }
+    
+    h2{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:17px;
+      font-weight:600;
+      line-height:1.6;
+    }
+    
+    h3{
+      margin:24px 0 12px;
+      font-size:16px;
+      font-weight:700;
+      color:#0f1724;
+    }
+    
+    p.lead{
+      margin:0 0 24px;
+      color:var(--muted);
+      font-size:15px;
+    }
+    
+    label{
+      display:block;
+      margin-top:20px;
+      font-weight:600;
+      color:#0f1724;
+      font-size:15px;
+    }
+    
+    label:first-of-type{
+      margin-top:0;
+    }
+    
+    select, button, textarea{
+      width:100%;
+      padding:12px 14px;
+      margin-top:8px;
+      border:2px solid #e6eef6;
+      border-radius:8px;
+      font-size:15px;
+      transition:border-color 0.2s;
+      box-sizing:border-box;
+    }
+    
+    select:focus{
+      outline:none;
+      border-color:var(--primary);
+    }
+    
+    button{
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      margin-top:15px;
+      cursor:pointer;
+      font-weight:600;
+      transition:all 0.2s;
+      padding:12px 14px;
+      border-radius:8px;
+    }
+    
+    button:hover{
+      background:var(--primary-dark);
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(14,165,164,0.3);
+    }
+    
+    button:active{
+      transform:translateY(0);
+    }
+    
+    .btn-secondary{
+      background:#eef2f7;
+      color:#0f1724;
+      margin-top:20px;
+    }
+    
+    .btn-secondary:hover{
+      background:#e1e7ef;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    #map{
+      height:500px;
+      margin-top:15px;
+      border-radius:12px;
+      overflow:hidden;
+      border:2px solid #e6eef6;
+    }
+
+    .info-box{
+      background:#e6f7f7;
+      padding:16px 20px;
+      border-left:4px solid var(--primary);
+      border-radius:8px;
+      margin-bottom:20px;
+      color:#0f1724;
+    }
+    
+    .info-box strong{
+      color:var(--primary);
+    }
+
+    textarea{
+      font-family:Arial, sans-serif;
+      line-height:1.4;
+      min-height:150px;
+      max-height:400px;
+      resize:vertical;
+      overflow-y:auto;
+    }
+
+    .leaflet-control-scale{
+      z-index:1000 !important;
+    }
+    
+    @media(max-width:768px){
+      body{
+        padding:16px;
+      }
+      .card{
+        padding:24px 20px;
+      }
+      h1{
+        font-size:20px;
+      }
+      #map{
+        height:400px;
+      }
+    }
   </style>
 </head>
 
@@ -37,18 +185,25 @@
 <div class="wrap">
   <div class="card">
     <h1>🗺️ Visualisation de votre zone d'intervention</h1>
-    <h2>Visualisez les communes couvertes par votre rayon</h2>
+    <h2>Identifiez facilement les communes couvertes par votre rayon d'action</h2>
 
     <div class="info-box">
-      <strong>💡 Astuce :</strong> Votre commune et votre rayon devraient se remplir automatiquement.
+      <strong>💡 Mode d'emploi :</strong> Sélectionnez d'abord le département, puis la commune centrale et votre rayon d'intervention pour visualiser sur la carte toutes les communes que vous pouvez couvrir.
     </div>
 
+    <!-- Nouveau : sélection du département -->
+    <label for="departement">Département</label>
+    <select id="departement">
+      <option value="">⏳ Chargement des départements...</option>
+    </select>
+
     <label for="commune">Commune centrale</label>
-    <select id="commune"></select>
+    <select id="commune">
+      <option value="">-- choisissez d'abord le département --</option>
+    </select>
 
     <label for="rayon">Rayon d'intervention (km)</label>
     <select id="rayon">
-      <option value="">-- Choisissez un rayon --</option>
       <option value="10">10 km</option>
       <option value="15">15 km</option>
       <option value="20">20 km</option>
@@ -58,84 +213,266 @@
       <option value="50">50 km</option>
     </select>
 
-    <button id="afficher">📍 Afficher ma zone</button>
+    <button id="afficher">📍 Afficher ma zone d'intervention</button>
 
     <div id="map"></div>
 
     <h3>📋 Communes couvertes</h3>
-    <textarea id="liste" placeholder="Elles apparaîtront ici..."></textarea>
+    <textarea id="liste" rows="8" placeholder="Les communes apparaîtront ici après avoir cliqué sur 'Afficher ma zone d'intervention'"></textarea>
     
-    <button class="btn-secondary" onclick="window.close()">← Retour</button>
+    <button class="btn-secondary" onclick="window.close()">← Retour au questionnaire</button>
   </div>
 </div>
 
 <script>
-// Récupération paramètres URL
-const params = new URLSearchParams(window.location.search);
-const depChoisi = params.get("dep");
-const communeChoisie = params.get("commune");
-const rayonChoisi = params.get("rayon");
+/* ===========================
+   Configuration / helpers
+   =========================== */
+const DEPT_API = "https://geo.api.gouv.fr/departements";
+const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre`;
 
-// Carte
-const map = L.map('map').setView([46.5, 2], 6);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(map);
-L.control.scale({position:'bottomleft'}).addTo(map);
+/* DOM */
+const departSelect = document.getElementById('departement');
+const communeSelect = document.getElementById('commune');
+const rayonSelect = document.getElementById('rayon');
+const afficherBtn = document.getElementById('afficher');
+const listeBox = document.getElementById('liste');
 
+/* Carte Leaflet - vue initiale large France */
+const map = L.map('map').setView([46.8, 2.5], 6);
+
+/* Fond de carte */
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+/* Échelle */
+L.control.scale({
+  position: 'bottomleft',
+  metric: true,
+  imperial: false,
+  maxWidth: 200
+}).addTo(map);
+
+/* stockage temporaire des communes chargées pour le département choisi */
 let communes = [];
 
-// Charger communes du département reçu
-async function chargerCommunes() {
-  const select = document.getElementById("commune");
-  select.innerHTML = "<option>⏳ Chargement...</option>";
-
-  const url = `https://geo.api.gouv.fr/departements/${depChoisi}/communes?fields=nom,centre`;
-
-  const res = await fetch(url);
-  communes = await res.json();
-  communes.sort((a,b)=>a.nom.localeCompare(b.nom));
-
-  select.innerHTML = '<option value="">-- Sélectionnez --</option>';
-  communes.forEach(c=> {
-    const o = document.createElement("option");
-    o.value = c.nom; o.textContent = c.nom;
-    select.appendChild(o);
-  });
-
-  if(communeChoisie) select.value = communeChoisie;
-  if(rayonChoisi) document.getElementById("rayon").value = rayonChoisi;
-
-  if(communeChoisie && rayonChoisi) {
-    setTimeout(()=>document.getElementById("afficher").click(), 400);
+/* ===========================
+   Charger départements
+   =========================== */
+async function chargerDepartements(){
+  departSelect.innerHTML = '<option value="">⏳ Chargement des départements...</option>';
+  try {
+    const res = await fetch(DEPT_API);
+    if(!res.ok) throw new Error("Réponse serveur départements non OK");
+    const data = await res.json();
+    // tri par code (01,02,...)
+    data.sort((a,b) => a.code.localeCompare(b.code));
+    departSelect.innerHTML = '<option value="">-- Sélectionnez un département --</option>';
+    data.forEach(dep => {
+      const opt = document.createElement('option');
+      opt.value = dep.code;
+      opt.textContent = `${dep.code} — ${dep.nom}`;
+      departSelect.appendChild(opt);
+    });
+  } catch(err){
+    console.error("Erreur chargement départements:", err);
+    departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
   }
 }
-chargerCommunes();
+chargerDepartements();
 
-// Bouton afficher
-document.getElementById("afficher").addEventListener("click", ()=>{
-  const nom = document.getElementById("commune").value;
-  const rayon = parseFloat(document.getElementById("rayon").value);
-  if(!nom || !rayon) return alert("Sélectionnez une commune & un rayon");
+/* ===========================
+   Lors du changement de département
+   =========================== */
+departSelect.addEventListener('change', async (e) => {
+  const code = (e.target.value || "").trim();
+  communes = [];
+  communeSelect.innerHTML = '<option value="">⏳ Chargement des communes...</option>';
+  listeBox.value = ''; // effacer la liste précédente
+  if(!code){
+    communeSelect.innerHTML = '<option value="">-- choisissez d\'abord le département --</option>';
+    return;
+  }
 
-  const centrale = communes.find(c=>c.nom===nom);
+  try {
+    const res = await fetch(COMMUNE_API(code));
+    if(!res.ok) throw new Error("Réponse serveur communes non OK");
+    const data = await res.json();
+    // Trier alphabétiquement
+    data.sort((a,b) => a.nom.localeCompare(b.nom));
+    communes = data;
+
+    // remplir le select commune
+    communeSelect.innerHTML = '<option value="">-- Sélectionnez votre commune --</option>';
+    communes.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.nom;
+      opt.text = c.nom;
+      communeSelect.appendChild(opt);
+    });
+
+    // Zoomer sur l'étendue du département (approximation via bounding box des communes)
+    if(communes.length > 0){
+      const lats = communes.map(c => c.centre.coordinates[1]);
+      const lngs = communes.map(c => c.centre.coordinates[0]);
+      const minLat = Math.min(...lats);
+      const maxLat = Math.max(...lats);
+      const minLng = Math.min(...lngs);
+      const maxLng = Math.max(...lngs);
+      const bounds = [[minLat, minLng], [maxLat, maxLng]];
+      // Protections au cas où bounds seraient invalides
+      if(isFinite(minLat) && isFinite(maxLat) && isFinite(minLng) && isFinite(maxLng)) {
+        map.fitBounds(bounds, { padding: [40,40] });
+      }
+    }
+
+  } catch(err){
+    console.error("Erreur chargement communes pour le département", code, err);
+    communeSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+  }
+});
+
+/* ===========================
+   Afficher la zone d'intervention
+   =========================== */
+afficherBtn.addEventListener('click', () => {
+  const nomCentrale = communeSelect.value;
+  const rayonKm = parseFloat(rayonSelect.value) || 0;
+
+  if(!nomCentrale){
+    alert("⚠️ Merci de sélectionner une commune centrale");
+    return;
+  }
+
+  const centrale = communes.find(c => c.nom === nomCentrale);
+  if(!centrale || !centrale.centre || !centrale.centre.coordinates){
+    alert("❌ Commune centrale introuvable ou sans coordonnées");
+    return;
+  }
+
   const centre = L.latLng(centrale.centre.coordinates[1], centrale.centre.coordinates[0]);
 
-  map.eachLayer(l=>{ if(l instanceof L.Marker || l instanceof L.Circle) map.removeLayer(l); });
+  // Effacer anciens markers/cercle (on garde les tuiles)
+  const toRemove = [];
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker || layer instanceof L.Circle) {
+      toRemove.push(layer);
+    }
+  });
+  toRemove.forEach(l => map.removeLayer(l));
 
-  const cercle = L.circle(centre,{radius:rayon*1000,color:"#0ea5a4",fillColor:"#0ea5a4",fillOpacity:.15}).addTo(map);
-  L.marker(centre).addTo(map).bindPopup(nom).openPopup();
-  map.fitBounds(cercle.getBounds());
+  // Cercle
+  const cercle = L.circle(centre, {
+    radius: rayonKm * 1000,
+    color: "#0ea5a4",
+    fillColor: "#0ea5a4",
+    fillOpacity: 0.15,
+    weight: 2
+  }).addTo(map);
 
-  const zones = communes.filter(c=>{
-    const pt=L.latLng(c.centre.coordinates[1],c.centre.coordinates[0]);
-    return map.distance(centre,pt)<=rayon*1000 && c.nom!==nom;
+  // Marker central
+  L.marker(centre, {
+    icon: L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    })
+  }).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+
+  // Ajuster la vue pour que tout le cercle soit visible
+  try {
+    map.fitBounds(cercle.getBounds(), { padding: [30,30] });
+  } catch(e) {
+    // fallback simple
+    map.setView(centre, 12);
+  }
+
+  // Communes dans rayon
+  const communesDansZone = [];
+  communes.forEach(c => {
+    if(!c.centre || !c.centre.coordinates) return;
+    const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+    const distance = map.distance(centre, pt);
+    if(distance <= rayonKm * 1000 && c.nom !== nomCentrale){
+      communesDansZone.push(c);
+      L.marker(pt).addTo(map).bindPopup(c.nom);
+    }
   });
 
-  document.getElementById("liste").value =
-    `Commune centrale : ${nom}\n`+
-    `Rayon : ${rayon} km\n\n`+
-    `Communes couvertes (${zones.length}) :\n\n`+
-    zones.map(c=>`- ${c.nom}`).join("\n");
+  // Formatage de la liste
+  const total = communesDansZone.length + 1;
+  const sortedNames = communesDansZone.map(c => c.nom).sort((a,b) => a.localeCompare(b));
+  const listeFormattee = `📍 Commune centrale : ${nomCentrale}\n\n` +
+    `✅ ${communesDansZone.length} commune(s) supplémentaire(s) couverte(s) :\n\n` +
+    sortedNames.map((c,i) => `${i+1}. ${c}`).join("\n") +
+    `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+
+  listeBox.value = listeFormattee;
 });
+
+/* ===========================
+   (Optionnel) charger un département par paramètre d'URL
+   ex: visualisation.html?dep=54&commune=Nancy&rayon=30
+   =========================== */
+function getQueryParams() {
+  const params = {};
+  const q = location.search.substring(1);
+  if(!q) return params;
+  q.split('&').forEach(p => {
+    const [k,v] = p.split('=').map(decodeURIComponent);
+    if(k) params[k] = v || '';
+  });
+  return params;
+}
+
+(async function initFromParams(){
+  const params = getQueryParams();
+  // attendre le chargement des départements
+  await new Promise(resolve => {
+    const check = () => {
+      if(departSelectReady()) resolve();
+      else setTimeout(check, 150);
+    };
+    check();
+  });
+
+  if(params.dep){
+    // sélectionne le département puis force le chargement des communes
+    departSelect.value = params.dep;
+    departSelect.dispatchEvent(new Event('change'));
+    // attendre que les communes soient chargées (simple poll)
+    const waitComm = () => new Promise(res => {
+      const t0 = Date.now();
+      const loop = () => {
+        if(communes.length > 0) return res();
+        if(Date.now() - t0 > 8000) return res(); // timeout 8s
+        setTimeout(loop, 150);
+      };
+      loop();
+    });
+    await waitComm();
+    if(params.commune){
+      communeSelect.value = params.commune;
+    }
+    if(params.rayon){
+      rayonSelect.value = params.rayon;
+    }
+    // si on a assez d'infos on peut afficher directement
+    if(communeSelect.value) {
+      // légère attente pour laisser le rendu se faire
+      setTimeout(() => afficherBtn.click(), 300);
+    }
+  }
+
+  function departSelectReady(){
+    return departSelect && departSelect.options && departSelect.options.length > 1;
+  }
+})();
 </script>
 
 </body>
