@@ -275,7 +275,7 @@
               <option>40 km</option>
               <option>Tout mon département</option>
             </select>
-            <a href="visualisation.html" target="_blank" style="display:inline-block;margin-top:8px;color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+            <a href="#" id="visualiserLink" target="_blank" style="display:inline-block;margin-top:8px;color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
               🗺️ Visualiser les communes couvertes par mon rayon
             </a>
             <div class="small">Si vous intervenez uniquement en cabinet, sélectionnez "Aucun - en cabinet".</div>
@@ -747,6 +747,18 @@ resetBtn.addEventListener('click', () => {
   noNum.classList.add("hidden");
   submitMsg.textContent = "";
 });
+
+document.getElementById("visualiserLink").addEventListener("click", function (e) {
+    e.preventDefault(); // empêche l'ouverture directe
+
+    const dep = document.getElementById("departement").value;
+    const commune = document.getElementById("commune").value;
+    const rayon = document.getElementById("rayon").value;
+
+    const url = `visualisation.html?dep=${dep}&commune=${commune}&rayon=${rayon}`;
+    window.open(url, "_blank");
+});
+
 
 </script>
 </body>
