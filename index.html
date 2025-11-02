@@ -436,6 +436,7 @@ verifyBtn.addEventListener("click", async () => {
     CURRENT_EMAIL = mail;
     // 🆕 Masquer UNIQUEMENT la zone du code (garder l'email visible)
     codeArea.style.display = "none";
+    emailMsg.style.display = "none";  
     
     await loadDepartements();
     
