@@ -159,6 +159,25 @@
           <button id="resendBtn" class="btn-ghost" type="button">Renvoyer</button>
         </div>
         <div id="codeMsg" class="small"></div>
+
+        <div id="codeMsg" class="small"></div>
+
+      <!-- Actions utilisateur après connexion -->
+      <div id="userActions" class="hidden" style="background:#fff9e6; border:2px solid #fbbf24; padding:20px; border-radius:12px; margin:24px 0;">
+        <h3 style="margin:0 0 12px; font-size:16px; color:#0f1724;">✅ Compte vérifié</h3>
+        <p style="margin:0 0 16px; font-size:14px; color:#6b7280;">
+          Vous pouvez modifier vos informations ci-dessous ou supprimer définitivement votre compte.
+        </p>
+        <button id="deleteAccountBtn" type="button" style="background:#dc2626; color:white; padding:10px 20px; font-size:14px; border-radius:8px; border:none; cursor:pointer; font-weight:600;">
+          🗑️ Supprimer mes données
+        </button>
+        <p style="margin:8px 0 0; font-size:12px; color:#6b7280;">
+          ⚠️ Action irréversible - toutes vos données seront effacées du système
+        </p>
+      </div>
+
+      <!-- FORM -->
+      <form id="form" class="hidden" onsubmit="return false;">
       </div>
 
       <!-- FORM -->
@@ -478,6 +497,7 @@ verifyBtn.addEventListener("click", async () => {
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
     
     codeMsg.textContent = "✅ E-mail vérifié avec succès !";
+    document.getElementById("userActions").classList.remove("hidden");
     CURRENT_EMAIL = mail;
     // 🆕 Masquer la zone du code et verrouiller l'email
     codeArea.style.display = "none";
@@ -759,6 +779,58 @@ document.getElementById("visualiserLink").addEventListener("click", function (e)
     window.open(url, "_blank");
 });
 
+  /* ========== SUPPRESSION DE COMPTE ========== */
+const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+
+deleteAccountBtn.addEventListener("click", async () => {
+  if (!CURRENT_EMAIL) {
+    alert("❌ Erreur : email non identifié");
+    return;
+  }
+  
+  const confirmer = confirm(
+    "⚠️ ATTENTION !\n\n" +
+    "Cette action supprimera DÉFINITIVEMENT toutes vos données :\n" +
+    "• Vos informations personnelles\n" +
+    "• Vos coordonnées\n" +
+    "• Votre référencement\n\n" +
+    "Êtes-vous VRAIMENT sûr(e) de vouloir continuer ?"
+  );
+  
+  if (!confirmer) return;
+  
+  const confirmer2 = confirm(
+    "📢 DERNIÈRE CONFIRMATION\n\n" +
+    "Cette action est IRRÉVERSIBLE.\n" +
+    "Pour vous réinscrire, vous devrez tout recommencer.\n\n" +
+    "Supprimer maintenant ?"
+  );
+  
+  if (!confirmer2) return;
+  
+  deleteAccountBtn.disabled = true;
+  deleteAccountBtn.textContent = "⏳ Suppression en cours...";
+  
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=deleteAccount&email=${encodeURIComponent(CURRENT_EMAIL)}`);
+    const j = await res.json();
+    
+    if (j.ok) {
+      alert("✅ Vos données ont été définitivement supprimées.\n\nVous allez être redirigé vers la page d'accueil.");
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      alert("❌ Erreur lors de la suppression : " + (j.error || "Erreur inconnue"));
+      deleteAccountBtn.disabled = false;
+      deleteAccountBtn.textContent = "🗑️ Supprimer mes données";
+    }
+  } catch (err) {
+    alert("❌ Erreur réseau lors de la suppression");
+    deleteAccountBtn.disabled = false;
+    deleteAccountBtn.textContent = "🗑️ Supprimer mes données";
+  }
+});
+
+</script>
 
 </script>
 </body>
