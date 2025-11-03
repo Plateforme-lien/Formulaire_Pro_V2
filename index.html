@@ -159,49 +159,37 @@
           <button id="resendBtn" class="btn-ghost" type="button">Renvoyer</button>
         </div>
         <div id="codeMsg" class="small"></div>
-
-        <div id="codeMsg" class="small"></div>
-
-      <!-- Actions utilisateur après connexion -->
-      <div id="userActions" class="hidden" style="background:#fff9e6; border:2px solid #fbbf24; padding:20px; border-radius:12px; margin:24px 0;">
-        <h3 style="margin:0 0 12px; font-size:16px; color:#0f1724;">✅ Compte vérifié</h3>
-        <p style="margin:0 0 16px; font-size:14px; color:#6b7280;">
-          Vous pouvez modifier vos informations ci-dessous ou supprimer définitivement votre compte.
-        </p>
-        <button id="deleteAccountBtn" type="button" style="background:#dc2626; color:white; padding:10px 20px; font-size:14px; border-radius:8px; border:none; cursor:pointer; font-weight:600;">
-          🗑️ Supprimer mes données
-        </button>
-        <p style="margin:8px 0 0; font-size:12px; color:#6b7280;">
-          ⚠️ Action irréversible - toutes vos données seront effacées du système
-        </p>
-      </div>
-
-      <!-- FORM -->
-      <form id="form" class="hidden" onsubmit="return false;">
       </div>
 
       <!-- FORM -->
       <form id="form" class="hidden" onsubmit="return false;">
         <!-- Numéro professionnel -->
-<div class="prereq-section">
-  <div class="prereq-title">
-    Prérequis
-  </div>
-  
-  <label style="margin-top:0" class="required">Avez-vous un numéro SIRET ?</label>
-  <div style="margin-top:12px">
-    <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j'ai un numéro SIRET</label>
-    <label class="inline"><input type="radio" name="numType" value="none"> Non, je n'ai pas de numéro</label>
-  </div>
-  
-  <div id="siretBlock" class="hidden">
-    <label for="siretNum" class="required">Quel est votre numéro SIRET ?</label>
-    <input id="siretNum" name="siretNum" type="text" maxlength="14" inputmode="numeric" placeholder="14 chiffres"/>
-    <div id="siretErr" class="error"></div>
-  </div>
-  
-  <div id="noNum" class="error hidden">Ce questionnaire n'est autorisé que pour les professionnels ayant un numéro SIRET.</div>
-</div>
+         <div class="prereq-section">
+          <div class="prereq-title">
+            Prérequis
+          </div>
+          
+          <label style="margin-top:0" class="required">Avez-vous un numéro professionnel ?</label>
+          <div style="margin-top:12px">
+            <label class="inline"><input type="radio" name="numType" value="adeli"> Oui, j'ai un numéro ADELI</label>
+            <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j'ai un numéro SIRET</label>
+            <label class="inline"><input type="radio" name="numType" value="none"> Non, je n'ai pas de numéro</label>
+          </div>
+          
+          <div id="adeliBlock" class="hidden">
+            <label for="adeliNum" class="required">Quel est votre numéro ADELI ?</label>
+            <input id="adeliNum" name="adeliNum" type="text" maxlength="9" inputmode="numeric" placeholder="9 chiffres"/>
+            <div id="adeliErr" class="error"></div>
+          </div>
+          
+          <div id="siretBlock" class="hidden">
+            <label for="siretNum" class="required">Quel est votre numéro SIRET ?</label>
+            <input id="siretNum" name="siretNum" type="text" maxlength="14" inputmode="numeric" placeholder="14 chiffres"/>
+            <div id="siretErr" class="error"></div>
+          </div>
+          
+          <div id="noNum" class="error hidden">Ce questionnaire n'est autorisé que pour les professionnels ayant un numéro ADELI ou SIRET.</div>
+        </div>
 
         <!-- Rest of form -->
         <div id="rest" class="hidden">
@@ -361,10 +349,13 @@ const verifyBtn = document.getElementById("verifyBtn");
 const resendBtn = document.getElementById("resendBtn");
 const codeMsg = document.getElementById("codeMsg");
 const formEl = document.getElementById("form");
+const adeliBlock = document.getElementById("adeliBlock");
 const siretBlock = document.getElementById("siretBlock");
 const noNum = document.getElementById("noNum");
 const rest = document.getElementById("rest");
+const adeliNum = document.getElementById("adeliNum");
 const siretNum = document.getElementById("siretNum");
+const adeliErr = document.getElementById("adeliErr");
 const siretErr = document.getElementById("siretErr");
 const submitBtn = document.getElementById("submit");
 const submitMsg = document.getElementById("submitMsg");
@@ -487,7 +478,6 @@ verifyBtn.addEventListener("click", async () => {
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
     
     codeMsg.textContent = "✅ E-mail vérifié avec succès !";
-
     CURRENT_EMAIL = mail;
     // 🆕 Masquer la zone du code et verrouiller l'email
     codeArea.style.display = "none";
@@ -497,9 +487,6 @@ verifyBtn.addEventListener("click", async () => {
     
     await loadDepartements();
     
-// 🆕 Afficher le bloc actions utilisateur
-    document.getElementById("userActions").classList.remove("hidden");
-    
     if (j.existing && j.data) {
       EXISTING = true;
       EXISTING_DATA = j.data;
@@ -508,7 +495,7 @@ verifyBtn.addEventListener("click", async () => {
       EXISTING = false;
       EXISTING_DATA = null;
       formEl.classList.remove("hidden");
-      rest.classList.add("hidden");  // Le formulaire reste caché jusqu'à la sélection du numéro pro
+      rest.classList.add("hidden");
     }
   } catch (err) {
     codeMsg.textContent = "Erreur réseau lors de la vérification.";
@@ -522,16 +509,19 @@ async function showFormAndPrefill(data) {
   formEl.classList.remove("hidden");
   rest.classList.remove("hidden");
   
-const numType = data.numType || "";
-  if (numType === "siret") {
+  const numType = data.numType || "";
+  if (numType === "adeli") {
+    document.querySelector('input[name="numType"][value="adeli"]').checked = true;
+    adeliBlock.classList.remove("hidden");
+    siretBlock.classList.add("hidden");
+    noNum.classList.add("hidden");
+    adeliNum.value = data.numPro || "";
+  } else if (numType === "siret") {
     document.querySelector('input[name="numType"][value="siret"]').checked = true;
     siretBlock.classList.remove("hidden");
+    adeliBlock.classList.add("hidden");
     noNum.classList.add("hidden");
     siretNum.value = data.numPro || "";
-  } else if (numType === "none") {
-    document.querySelector('input[name="numType"][value="none"]').checked = true;
-    noNum.classList.remove("hidden");
-    siretBlock.classList.add("hidden");
   }
   
   document.getElementById("nom").value = data.nom || "";
@@ -580,38 +570,34 @@ const numType = data.numType || "";
 /* ========== LISTENERS: numType toggles ========== */
 document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
   const v = e.target.value;
-  siretErr.textContent = "";
-  siretNum.value = "";
-  siretBlock.classList.add("hidden");
-  noNum.classList.add("hidden");
+  adeliErr.textContent = ""; siretErr.textContent = "";
+  adeliNum.value = ""; siretNum.value = "";
+  adeliBlock.classList.add("hidden"); siretBlock.classList.add("hidden"); noNum.classList.add("hidden");
   rest.classList.add("hidden");
-  
-  if (v === "siret") {
-    siretBlock.classList.remove("hidden");
-  } else if (v === "none") {
-    noNum.classList.remove("hidden");
-  }
+  if (v === "adeli") adeliBlock.classList.remove("hidden");
+  else if (v === "siret") siretBlock.classList.remove("hidden");
+  else noNum.classList.remove("hidden");
 }));
 
-/* ========== VALIDATION SIRET ========== */
-siretNum.addEventListener('input', () => {
-  const v = siretNum.value.trim();
-  if (v.length === 14 && validSiret(v)) {
-    siretErr.textContent = ""; 
+/* ========== VALIDATION on blur for ADELI/SIRET ========== */
+adeliNum.addEventListener('input', () => {
+  const v = adeliNum.value.trim();
+  if (v.length === 9 && validAdeli(v)) {
+    adeliErr.textContent = ""; 
     rest.classList.remove("hidden");
-  } else if (v.length === 14) {
-    siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; 
+  } else if (v.length === 9) {
+    adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; 
     rest.classList.add("hidden");
   }
 });
 
-siretNum.addEventListener('blur', () => {
-  const v = siretNum.value.trim();
-  if (!validSiret(v)) { 
-    siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; 
+adeliNum.addEventListener('blur', () => {
+  const v = adeliNum.value.trim();
+  if (!validAdeli(v)) { 
+    adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; 
     rest.classList.add("hidden"); 
   } else { 
-    siretErr.textContent = ""; 
+    adeliErr.textContent = ""; 
     rest.classList.remove("hidden");
   }
 });
@@ -700,6 +686,7 @@ submitBtn.addEventListener('click', async () => {
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
   if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
   const numType = numTypeChecked.value;
+  if (numType === "adeli" && !validAdeli(adeliNum.value.trim())) { submitMsg.textContent = "Numéro ADELI invalide."; return; }
   if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
   if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
   if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
@@ -720,6 +707,7 @@ submitBtn.addEventListener('click', async () => {
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
   fd.append("numType", numType);
+  fd.append("adeliNum", adeliNum.value.trim());
   fd.append("siretNum", siretNum.value.trim());
   fd.append("nom", document.getElementById("nom").value.trim());
   fd.append("prenom", document.getElementById("prenom").value.trim());
@@ -771,58 +759,6 @@ document.getElementById("visualiserLink").addEventListener("click", function (e)
     window.open(url, "_blank");
 });
 
-  /* ========== SUPPRESSION DE COMPTE ========== */
-const deleteAccountBtn = document.getElementById("deleteAccountBtn");
-
-deleteAccountBtn.addEventListener("click", async () => {
-  if (!CURRENT_EMAIL) {
-    alert("❌ Erreur : email non identifié");
-    return;
-  }
-  
-  const confirmer = confirm(
-    "⚠️ ATTENTION !\n\n" +
-    "Cette action supprimera DÉFINITIVEMENT toutes vos données :\n" +
-    "• Vos informations personnelles\n" +
-    "• Vos coordonnées\n" +
-    "• Votre référencement\n\n" +
-    "Êtes-vous VRAIMENT sûr(e) de vouloir continuer ?"
-  );
-  
-  if (!confirmer) return;
-  
-  const confirmer2 = confirm(
-    "📢 DERNIÈRE CONFIRMATION\n\n" +
-    "Cette action est IRRÉVERSIBLE.\n" +
-    "Pour vous réinscrire, vous devrez tout recommencer.\n\n" +
-    "Supprimer maintenant ?"
-  );
-  
-  if (!confirmer2) return;
-  
-  deleteAccountBtn.disabled = true;
-  deleteAccountBtn.textContent = "⏳ Suppression en cours...";
-  
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=deleteAccount&email=${encodeURIComponent(CURRENT_EMAIL)}`);
-    const j = await res.json();
-    
-    if (j.ok) {
-      alert("✅ Vos données ont été définitivement supprimées.\n\nVous allez être redirigé vers la page d'accueil.");
-      setTimeout(() => location.reload(), 2000);
-    } else {
-      alert("❌ Erreur lors de la suppression : " + (j.error || "Erreur inconnue"));
-      deleteAccountBtn.disabled = false;
-      deleteAccountBtn.textContent = "🗑️ Supprimer mes données";
-    }
-  } catch (err) {
-    alert("❌ Erreur réseau lors de la suppression");
-    deleteAccountBtn.disabled = false;
-    deleteAccountBtn.textContent = "🗑️ Supprimer mes données";
-  }
-});
-
-</script>
 
 </script>
 </body>
