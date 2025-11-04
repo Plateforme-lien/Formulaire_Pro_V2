@@ -646,7 +646,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
 /* ========== PREFILL FUNCTION ========== */
 async function showFormAndPrefill(data) {
   console.log("Données reçues pour pré-remplissage:", data);
-  
+
   formEl.classList.remove("hidden");
   rest.classList.remove("hidden");
   
@@ -660,7 +660,7 @@ async function showFormAndPrefill(data) {
   } */ else if (numType === "siret") {
     document.querySelector('input[name="numType"][value="siret"]').checked = true;
     siretBlock.classList.remove("hidden");
-    adeliBlock.classList.add("hidden");
+    // adeliBlock.classList.add("hidden");
     noNum.classList.add("hidden");
     siretNum.value = data.numPro || "";
   }
@@ -895,7 +895,7 @@ resetBtn.addEventListener('click', () => {
   formEl.reset();
   document.getElementById("consent").checked = false;
   rest.classList.add("hidden");
-  adeliBlock.classList.add("hidden");
+  //adeliBlock.classList.add("hidden");
   siretBlock.classList.add("hidden");
   noNum.classList.add("hidden");
   submitMsg.textContent = "";
