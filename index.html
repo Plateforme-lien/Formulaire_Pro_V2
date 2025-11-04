@@ -132,13 +132,6 @@
       <h1>Référencement de professionnels spécialisés TSA</h1>
       <h2>Renseignez ou actualisez vos informations pour que les particuliers puissent vous trouver selon votre secteur d'intervention, vos disponibilités et le public que vous accompagnez.</h2>
       
-      <!-- 🆕 ZONE ADMIN QUOTA  : pas utilisée pour le moment --> 
-     <!--> <div id="adminQuota" style="display:none; background:#fff3cd; border:2px solid #ffc107; padding:16px; border-radius:8px; margin-bottom:20px;">
-        <strong>📊 Admin - Quota emails :</strong> 
-        <span id="quotaDisplay">Chargement...</span>
-        <button id="refreshQuota" type="button" style="padding:6px 12px; font-size:13px; margin-left:10px;">🔄 Actualiser</button>
-      </div> <!--> 
-      
       <p class="lead">Commencez par vérifier votre e-mail — un code sera envoyé. Si vous avez déjà rempli le formulaire auparavant, il sera pré-rempli.</p>
       <p class="small" style="margin-top:-16px;margin-bottom:16px">Les champs marqués d'un <span style="color:#dc2626;font-weight:700">*</span> sont obligatoires.</p>
 
@@ -159,6 +152,51 @@
           <button id="resendBtn" class="btn-ghost" type="button">Renvoyer</button>
         </div>
         <div id="codeMsg" class="small"></div>
+      </div>
+
+      <!-- MESSAGE NOUVEL UTILISATEUR -->
+      <div id="newUserMessage" class="hidden" style="background:#e6f7f7;border:2px solid #0ea5a4;padding:24px;border-radius:12px;margin-top:24px;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">👋</div>
+        <h3 style="margin:0 0 8px;color:#0f1724;font-size:20px">Bienvenue !</h3>
+        <p style="margin:0;color:#6b7280;font-size:15px">Vous êtes un nouvel utilisateur. Merci de remplir le formulaire ci-dessous.</p>
+      </div>
+
+      <!-- CHOIX UTILISATEUR EXISTANT -->
+      <div id="existingUserChoice" class="hidden" style="margin-top:24px">
+        <div style="background:#f0f9ff;border:2px solid #3b82f6;padding:24px;border-radius:12px;text-align:center">
+          <div style="font-size:48px;margin-bottom:12px">✅</div>
+          <h3 style="margin:0 0 8px;color:#0f1724;font-size:20px">Bon retour !</h3>
+          <p style="margin:0 0 20px;color:#6b7280;font-size:15px">Vos informations sont déjà enregistrées. Que souhaitez-vous faire ?</p>
+          
+          <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+            <button id="modifyBtn" type="button" style="background:#3b82f6;padding:16px 32px;font-size:16px;font-weight:600">
+              ✏️ Modifier mes informations
+            </button>
+            <button id="deleteBtn" type="button" class="btn-ghost" style="padding:16px 32px;font-size:16px;font-weight:600;background:#fee;color:#dc2626;border:2px solid #dc2626">
+              🗑️ Supprimer mes informations
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIRMATION SUPPRESSION -->
+      <div id="deleteConfirmation" class="hidden" style="margin-top:24px">
+        <div style="background:#fee;border:2px solid #dc2626;padding:24px;border-radius:12px">
+          <h3 style="margin:0 0 12px;color:#dc2626;font-size:18px">⚠️ Confirmer la suppression</h3>
+          <p style="margin:0 0 20px;color:#6b7280;font-size:15px">
+            Êtes-vous sûr(e) de vouloir supprimer définitivement vos informations de la plateforme ? 
+            Cette action est <b>irréversible</b>.
+          </p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button id="confirmDeleteBtn" type="button" style="background:#dc2626;padding:12px 24px">
+              ✓ Oui, supprimer mes données
+            </button>
+            <button id="cancelDeleteBtn" type="button" class="btn-ghost">
+              ✕ Annuler
+            </button>
+          </div>
+          <div id="deleteMsg" class="small" style="margin-top:12px"></div>
+        </div>
       </div>
 
       <!-- FORM -->
@@ -364,6 +402,14 @@ const communeSelect = document.getElementById("commune");
 const dateBlock = document.getElementById("dateBlock");
 const dateInput = document.getElementById("dateDispo");
 const resetBtn = document.getElementById("resetBtn");
+const newUserMessage = document.getElementById("newUserMessage");
+const existingUserChoice = document.getElementById("existingUserChoice");
+const deleteConfirmation = document.getElementById("deleteConfirmation");
+const modifyBtn = document.getElementById("modifyBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const deleteMsg = document.getElementById("deleteMsg");
 
 let CURRENT_EMAIL = null;
 let EXISTING = false;
@@ -391,7 +437,6 @@ sendCodeBtn.addEventListener("click", async () => {
       console.log("✅ Nouveau code envoyé par email");
     }
 
-    // 🆕 Gestion limite quotidienne (3 codes/jour)
     if (j.error === "DAILY_LIMIT_REACHED") {
       emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
         <span style="color:#6b7280">Vous avez déjà demandé ${j.codesEnvoyes || 3} codes aujourd'hui. Maximum autorisé : 3 codes par jour. Réessayez demain.</span>`;
@@ -399,7 +444,6 @@ sendCodeBtn.addEventListener("click", async () => {
       return;
     }
 
-      //  Gestion du cooldown
     if (j.error === "COOLDOWN_ACTIVE") {
       const heures = Math.floor(j.minutesRestantes / 60);
       const minutes = j.minutesRestantes % 60;
@@ -410,7 +454,7 @@ sendCodeBtn.addEventListener("click", async () => {
       sendCodeBtn.disabled = false;
       return;
     }
-    // Vérifier si le quota est dépassé (prioritaire)
+
     if (j.error === "SERVICE_QUOTA_EXCEEDED") {
       emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Service temporairement indisponible</span><br>
         <span style="color:#6b7280">Le quota d'emails quotidien est atteint. Merci de réessayer demain.</span>`;
@@ -418,9 +462,7 @@ sendCodeBtn.addEventListener("click", async () => {
       return;
     }
     
-    // Si vraiment ok
     if (j.ok) {
-      // Vérifier si c'est un code déjà envoyé ou un nouveau code
       if (j.alreadySent) {
         emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">Code déjà envoyé</span><br>
           <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable. Vérifiez votre boîte mail (pensez aux spams).</span>`;
@@ -431,10 +473,9 @@ sendCodeBtn.addEventListener("click", async () => {
       
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
-      sendCodeBtn.style.display = "none";  // Masquer le bouton une fois le code envoyé
+      sendCodeBtn.style.display = "none";
       codeEl.focus();
     } else {
-      // Autres erreurs
       emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible d'envoyer le code"}</span>`;
     }
   } catch (err) {
@@ -445,7 +486,6 @@ sendCodeBtn.addEventListener("click", async () => {
   }
 });
 
-// permet d'appuyer sur Entrée)
 emailEl.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -479,26 +519,73 @@ verifyBtn.addEventListener("click", async () => {
     
     codeMsg.textContent = "✅ E-mail vérifié avec succès !";
     CURRENT_EMAIL = mail;
-    // 🆕 Masquer la zone du code et verrouiller l'email
     codeArea.style.display = "none";
     emailMsg.style.display = "none";
-    emailEl.disabled = true;  // Verrouiller le champ email
-    sendCodeBtn.style.display = "none";  // Masquer le bouton "Vérifier mon mail"
+    emailEl.disabled = true;
+    sendCodeBtn.style.display = "none";
     
     await loadDepartements();
     
     if (j.existing && j.data) {
       EXISTING = true;
       EXISTING_DATA = j.data;
-      await showFormAndPrefill(j.data);
+      existingUserChoice.classList.remove("hidden");
     } else {
       EXISTING = false;
       EXISTING_DATA = null;
+      newUserMessage.classList.remove("hidden");
       formEl.classList.remove("hidden");
       rest.classList.add("hidden");
     }
   } catch (err) {
     codeMsg.textContent = "Erreur réseau lors de la vérification.";
+  }
+});
+
+/* ========== BOUTON MODIFIER (utilisateur existant) ========== */
+modifyBtn.addEventListener("click", async () => {
+  existingUserChoice.classList.add("hidden");
+  await showFormAndPrefill(EXISTING_DATA);
+});
+
+/* ========== BOUTON SUPPRIMER (utilisateur existant) ========== */
+deleteBtn.addEventListener("click", () => {
+  existingUserChoice.classList.add("hidden");
+  deleteConfirmation.classList.remove("hidden");
+});
+
+/* ========== ANNULER LA SUPPRESSION ========== */
+cancelDeleteBtn.addEventListener("click", () => {
+  deleteConfirmation.classList.add("hidden");
+  existingUserChoice.classList.remove("hidden");
+  deleteMsg.textContent = "";
+});
+
+/* ========== CONFIRMER LA SUPPRESSION ========== */
+confirmDeleteBtn.addEventListener("click", async () => {
+  deleteMsg.textContent = "Suppression en cours...";
+  confirmDeleteBtn.disabled = true;
+  
+  try {
+    const fd = new FormData();
+    fd.append("action", "deleteUser");
+    fd.append("email", CURRENT_EMAIL);
+    
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
+    const j = await res.json();
+    
+    if (j.ok) {
+      deleteMsg.innerHTML = '<span style="color:#059669;font-weight:600">✅ Vos informations ont été supprimées avec succès.</span>';
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } else {
+      deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur : ' + (j.error || "Impossible de supprimer") + '</span>';
+      confirmDeleteBtn.disabled = false;
+    }
+  } catch (err) {
+    deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur réseau lors de la suppression.</span>';
+    confirmDeleteBtn.disabled = false;
   }
 });
 
@@ -562,6 +649,19 @@ async function showFormAndPrefill(data) {
   }
   
   document.getElementById("rayon").value = data.rayon || "";
+  
+  if (data.disponibilite) {
+    const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
+    if (dispoRadio) {
+      dispoRadio.checked = true;
+      if (data.disponibilite === "oui") {
+        dateBlock.classList.remove("hidden");
+        if (data.dateDisponibilite) {
+          dateInput.value = data.dateDisponibilite;
+        }
+      }
+    }
+  }
   
   const consentValue = String(data.consentement || "").toLowerCase();
   document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
@@ -749,7 +849,7 @@ resetBtn.addEventListener('click', () => {
 });
 
 document.getElementById("visualiserLink").addEventListener("click", function (e) {
-    e.preventDefault(); // empêche l'ouverture directe
+    e.preventDefault();
 
     const dep = document.getElementById("departement").value;
     const commune = document.getElementById("commune").value;
@@ -758,7 +858,6 @@ document.getElementById("visualiserLink").addEventListener("click", function (e)
     const url = `visualisation.html?dep=${dep}&commune=${commune}&rayon=${rayon}`;
     window.open(url, "_blank");
 });
-
 
 </script>
 </body>
