@@ -439,11 +439,23 @@ sendCodeBtn.addEventListener("click", async () => {
     }
 
     if (j.error === "DAILY_LIMIT_REACHED") {
-      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
-        <span style="color:#6b7280">Vous avez déjà demandé ${j.codesEnvoyes || 3} codes aujourd'hui. Maximum autorisé : 3 codes par jour. Réessayez demain.</span>`;
+      if (j.minutesRestantes && j.minutesRestantes > 0) {
+        const heures = Math.floor(j.minutesRestantes / 60);
+        const minutes = j.minutesRestantes % 60;
+        const tempsRestant = heures > 0
+          ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}`
+          : `${minutes} minutes`;
+
+        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Vous avez déjà demandé trois codes aujourd’hui</span><br>
+          <span style="color:#6b7280">Le dernier vous a été envoyé il y a moins de 15 minutes. Il est encore valable pendant environ ${tempsRestant}.</span>`;
+      } else {
+        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
+          <span style="color:#6b7280">Vous avez déjà demandé ${j.codesEnvoyes || 3} codes aujourd'hui. Maximum autorisé : 3 codes par jour. Réessayez demain.</span>`;
+      }
       sendCodeBtn.disabled = false;
       return;
     }
+
 
     if (j.error === "COOLDOWN_ACTIVE") {
       const heures = Math.floor(j.minutesRestantes / 60);
@@ -514,9 +526,22 @@ resendBtn.addEventListener("click", async () => {
     } else if (j.ok) {
       emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code renvoyé avec succès</span><br>
       <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
+       // ✅ AJOUT pour gestion 15 min / 3 codes
     } else if (j.error === "DAILY_LIMIT_REACHED") {
-      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
-      <span style="color:#6b7280">Maximum 3 codes par jour.</span>`;
+      if (j.minutesRestantes && j.minutesRestantes > 0) {
+        const heures = Math.floor(j.minutesRestantes / 60);
+        const minutes = j.minutesRestantes % 60;
+        const tempsRestant = heures > 0
+          ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}`
+          : `${minutes} minutes`;
+        
+        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Vous avez déjà demandé trois codes aujourd’hui</span><br>
+          <span style="color:#6b7280">Le dernier vous a été envoyé il y a moins de 15 minutes. Il est encore valable pendant environ ${tempsRestant}.</span>`;
+      } else {
+        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
+        <span style="color:#6b7280">Maximum 3 codes par jour. Réessayez demain.</span>`;
+      }
+
     } else {
       emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible de renvoyer"}</span>`;
     }
