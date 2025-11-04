@@ -464,9 +464,11 @@ sendCodeBtn.addEventListener("click", async () => {
     }
     
     if (j.ok) {
+       if (j.ok) {
         if (j.alreadySent) {
-          codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé</span><br>
+          emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé</span><br>
           <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
+          codeMsg.textContent = "";
         } else {
           emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
           <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
@@ -496,15 +498,34 @@ emailEl.addEventListener("keypress", (e) => {
 });
 
 /* ========== RESEND ========== */
-resendBtn.addEventListener("click", () => {
-  codeMsg.textContent = "Envoi en cours..."; 
-  emailMsg.textContent = ""; 
+resendBtn.addEventListener("click", async () => {
+  emailMsg.textContent = "Renvoi du code en cours...";
+  codeMsg.textContent = ""; 
   resendBtn.disabled = true;
   
-  setTimeout(() => {
+  const mail = (emailEl.value || "").trim().toLowerCase();
+  
+  try {
+    const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`);
+    const j = await r.json();
+    
+    if (j.alreadySent) {
+      emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé récemment</span><br>
+      <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
+    } else if (j.ok) {
+      emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code renvoyé avec succès</span><br>
+      <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
+    } else if (j.error === "DAILY_LIMIT_REACHED") {
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
+      <span style="color:#6b7280">Maximum 3 codes par jour.</span>`;
+    } else {
+      emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible de renvoyer"}</span>`;
+    }
+  } catch (err) {
+    emailMsg.innerHTML = `<span style="color:#dc2626">Erreur réseau</span>`;
+  } finally {
     resendBtn.disabled = false;
-    resendBtn.textContent = "Renvoyer";
-  }, 5000); // 5 secondes
+  }
 });
 
 /* ========== TOUCHE ENTRÉE POUR VALIDER LE CODE ========== */
