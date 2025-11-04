@@ -89,7 +89,7 @@
     font-size:15px;font-weight:600;transition:all 0.2s}
   button:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,164,0.3)}
   button:active{transform:translateY(0)}
-  button:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+  button:disabled{opacity:0.6;cursor:not-allowed;transform:none;background:#9ca3af !important}
   .btn-ghost{background:#eef2f7;color:#0f1724}
   .btn-ghost:hover{background:#e1e7ef;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
   
@@ -495,7 +495,14 @@ emailEl.addEventListener("keypress", (e) => {
 
 /* ========== RESEND ========== */
 resendBtn.addEventListener("click", () => {
+  resendBtn.disabled = true;
+  resendBtn.textContent = "⏳ Patientez...";
   sendCodeBtn.click();
+  
+  setTimeout(() => {
+    resendBtn.disabled = false;
+    resendBtn.textContent = "Renvoyer";
+  }, 5000); // 5 secondes
 });
 
 /* ========== TOUCHE ENTRÉE POUR VALIDER LE CODE ========== */
