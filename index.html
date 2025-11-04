@@ -89,7 +89,8 @@
     font-size:15px;font-weight:600;transition:all 0.2s}
   button:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,164,0.3)}
   button:active{transform:translateY(0)}
-  button:disabled{opacity:0.6;cursor:not-allowed;transform:none;background:#9ca3af !important}
+  button:disabled::after{content:" ⏳";animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
   .btn-ghost{background:#eef2f7;color:#0f1724}
   .btn-ghost:hover{background:#e1e7ef;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
   
@@ -463,13 +464,15 @@ sendCodeBtn.addEventListener("click", async () => {
     }
     
     if (j.ok) {
-      if (j.alreadySent) {
-        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">Code déjà envoyé</span><br>
-          <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable. Vérifiez votre boîte mail (pensez aux spams).</span>`;
-      } else {
-        emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
+      if (j.ok) {
+        if (j.alreadySent) {
+          codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé</span><br>
+          <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
+        } else {
+          emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
           <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
-      }
+          codeMsg.textContent = ""; 
+        }
       
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
@@ -495,9 +498,9 @@ emailEl.addEventListener("keypress", (e) => {
 
 /* ========== RESEND ========== */
 resendBtn.addEventListener("click", () => {
+  codeMsg.textContent = "Envoi en cours..."; 
+  emailMsg.textContent = ""; 
   resendBtn.disabled = true;
-  resendBtn.textContent = "⏳ Patientez...";
-  sendCodeBtn.click();
   
   setTimeout(() => {
     resendBtn.disabled = false;
