@@ -427,7 +427,7 @@ sendCodeBtn.addEventListener("click", async () => {
   sendCodeBtn.disabled = true;
   
   try {
-    const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}`);
+    const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`);
     const j = await r.json();
     
     console.log("Réponse serveur sendCode:", j);
@@ -513,7 +513,7 @@ verifyBtn.addEventListener("click", async () => {
   if (!mail || !code) { codeMsg.textContent = "Merci d'indiquer l'adresse e-mail et le code."; return; }
   codeMsg.textContent = "Vérification...";
   try {
-    const r = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}`);
+    const r = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}&_t=${Date.now()}`);
     const j = await r.json();
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
     
