@@ -210,16 +210,9 @@
           
           <label style="margin-top:0" class="required">Avez-vous un numéro professionnel ?</label>
           <div style="margin-top:12px">
-            <!-- <label class="inline"><input type="radio" name="numType" value="adeli"> Oui, j'ai un numéro ADELI</label> -->
             <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j'ai un numéro SIRET</label>
             <label class="inline"><input type="radio" name="numType" value="none"> Non, je n'ai pas de numéro</label>
           </div>
-          
-          <!--  <div id="adeliBlock" class="hidden">
-            <label for="adeliNum" class="required">Quel est votre numéro ADELI ?</label>
-            <input id="adeliNum" name="adeliNum" type="text" maxlength="9" inputmode="numeric" placeholder="9 chiffres"/>
-            <div id="adeliErr" class="error"></div>
-          </div> -->
           
           <div id="siretBlock" class="hidden">
             <label for="siretNum" class="required">Quel est votre numéro SIRET ?</label>
@@ -227,7 +220,7 @@
             <div id="siretErr" class="error"></div>
           </div>
           
-          <div id="noNum" class="error hidden">Ce questionnaire n'est autorisé que pour les professionnels ayant un numéro ADELI ou SIRET.</div>
+          <div id="noNum" class="error hidden">Ce questionnaire n'est autorisé que pour les professionnels ayant un numéro de SIRET.</div>
         </div>
 
         <!-- Rest of form -->
@@ -370,7 +363,6 @@ const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/commun
 
 /* ========== HELPERS VALIDATION ========== */
 const isDigits = s => /^\d+$/.test(s||"");
-// const validAdeli = v => isDigits(v) && v.length === 9;
 const validSiret = v => isDigits(v) && v.length === 14;
 const validPhone = v => {
   if(!v) return true;
@@ -388,13 +380,10 @@ const verifyBtn = document.getElementById("verifyBtn");
 const resendBtn = document.getElementById("resendBtn");
 const codeMsg = document.getElementById("codeMsg");
 const formEl = document.getElementById("form");
-// const adeliBlock = document.getElementById("adeliBlock");
 const siretBlock = document.getElementById("siretBlock");
 const noNum = document.getElementById("noNum");
 const rest = document.getElementById("rest");
-// const adeliNum = document.getElementById("adeliNum");
 const siretNum = document.getElementById("siretNum");
-// const adeliErr = document.getElementById("adeliErr");
 const siretErr = document.getElementById("siretErr");
 const submitBtn = document.getElementById("submit");
 const submitMsg = document.getElementById("submitMsg");
@@ -651,16 +640,9 @@ async function showFormAndPrefill(data) {
   rest.classList.remove("hidden");
   
   const numType = data.numType || "";
-  /*if (numType === "adeli") {
-    document.querySelector('input[name="numType"][value="adeli"]').checked = true;
-    adeliBlock.classList.remove("hidden");
-    siretBlock.classList.add("hidden");
-    noNum.classList.add("hidden");
-    adeliNum.value = data.numPro || "";
-  } */ else if (numType === "siret") {
+  if (numType === "siret") {
     document.querySelector('input[name="numType"][value="siret"]').checked = true;
     siretBlock.classList.remove("hidden");
-    // adeliBlock.classList.add("hidden");
     noNum.classList.add("hidden");
     siretNum.value = data.numPro || "";
   }
@@ -732,28 +714,7 @@ document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListen
   else noNum.classList.remove("hidden");
 }));
 
-/* ========== VALIDATION on blur for ADELI/SIRET ========== */
-/* adeliNum.addEventListener('input', () => {
-  const v = adeliNum.value.trim();
-  if (v.length === 9 && validAdeli(v)) {
-    adeliErr.textContent = ""; 
-    rest.classList.remove("hidden");
-  } else if (v.length === 9) {
-    adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; 
-    rest.classList.add("hidden");
-  }
-});
-
-adeliNum.addEventListener('blur', () => {
-  const v = adeliNum.value.trim();
-  if (!validAdeli(v)) { 
-    adeliErr.textContent = "Un numéro ADELI doit contenir exactement 9 chiffres."; 
-    rest.classList.add("hidden"); 
-  } else { 
-    adeliErr.textContent = ""; 
-    rest.classList.remove("hidden");
-  }
-}); */
+/* ========== VALIDATION on blur for SIRET ========== */
 
 siretNum.addEventListener('input', () => {
   const v = siretNum.value.trim();
@@ -839,7 +800,6 @@ submitBtn.addEventListener('click', async () => {
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
   if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
   const numType = numTypeChecked.value;
-  //if (numType === "adeli" && !validAdeli(adeliNum.value.trim())) { submitMsg.textContent = "Numéro ADELI invalide."; return; }
   if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
   if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
   if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
@@ -860,7 +820,6 @@ submitBtn.addEventListener('click', async () => {
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
   fd.append("numType", numType);
-  //fd.append("adeliNum", adeliNum.value.trim());
   fd.append("siretNum", siretNum.value.trim());
   fd.append("nom", document.getElementById("nom").value.trim());
   fd.append("prenom", document.getElementById("prenom").value.trim());
@@ -895,7 +854,6 @@ resetBtn.addEventListener('click', () => {
   formEl.reset();
   document.getElementById("consent").checked = false;
   rest.classList.add("hidden");
-  //adeliBlock.classList.add("hidden");
   siretBlock.classList.add("hidden");
   noNum.classList.add("hidden");
   submitMsg.textContent = "";
