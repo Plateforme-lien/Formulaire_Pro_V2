@@ -460,7 +460,10 @@ let FORM_LOCKED = false;
 /* ========== FONCTIONS DE VERROUILLAGE ========== */
 function lockForm() {
   FORM_LOCKED = true;
+  
+  // Masquer TOUT sauf la bannière
   rest.style.display = 'none';
+  document.querySelector('.prereq-section').style.display = 'none';
   
   // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
