@@ -877,27 +877,27 @@ departSelect.addEventListener('change', e => {
 
 /* ========== SUBMIT FORM ========== */
 submitBtn.addEventListener('click', async () => {
+  submitBtn.disabled = true; 
   submitMsg.textContent = "";
   
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
-  if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
+  if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; submitBtn.disabled = false; return; }
   const numType = numTypeChecked.value;
-  if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
-  if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
-  if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
-  if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
-  if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
-  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; return; }
-  if (!Array.from(document.querySelectorAll('input[name="mode"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un mode d'intervention."; return; }
-  if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
-  if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
-  if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
-  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; return; }
+  if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; submitBtn.disabled = false; return; }
+  if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; submitBtn.disabled = false; return; }
+  if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; submitBtn.disabled = false; return; }
+  if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; submitBtn.disabled = false; return; }
+  if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; submitBtn.disabled = false; return; }
+  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; submitBtn.disabled = false; return; }
+  if (!Array.from(document.querySelectorAll('input[name="mode"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un mode d'intervention."; submitBtn.disabled = false; return; }
+  if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; submitBtn.disabled = false; return; }
+  if (!departSelect.value) { submitMsg.textContent = "Département requis."; submitBtn.disabled = false; return; }
+  if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; submitBtn.disabled = false; return; }
+  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; submitBtn.disabled = false; return; }
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
-  if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
-  if (dispoChecked.value === "oui" && !dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; return; }
-  if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
-
+  if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; submitBtn.disabled = false; return; }
+  if (dispoChecked.value === "oui" && !dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; submitBtn.disabled = false; return; }
+  if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; submitBtn.disabled = false; return; }
   const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
@@ -926,13 +926,14 @@ submitBtn.addEventListener('click', async () => {
     
     if (j.ok) {
       submitMsg.innerHTML = '<span style="color:#059669;font-weight:600">✅ Formulaire envoyé avec succès !</span>';
-      
+  
       // Verrouiller le formulaire après envoi réussi
       setTimeout(() => {
         lockForm();
       }, 1000);
       
     } else {
+      submitBtn.disabled = false;
       if (j.error === "SIRET_ALREADY_EXISTS") {
         submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ SIRET déjà enregistré</span><br>' +
           '<span style="color:#6b7280">Ce numéro SIRET est déjà utilisé par un autre professionnel. ' +
@@ -941,7 +942,6 @@ submitBtn.addEventListener('click', async () => {
         submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur</span><br>' +
           '<span style="color:#6b7280">' + (j.error || j.detail || "Erreur inconnue") + '</span>';
       }
-      submitBtn.disabled = false;
     }
   } catch (err) {
     submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur réseau</span><br>' +
