@@ -836,18 +836,35 @@ submitBtn.addEventListener('click', async () => {
   fd.append("consent", document.getElementById("consent").checked ? "oui" : "non");
 
   submitMsg.textContent = "Envoi en cours...";
+  submitBtn.disabled = true;
+  
   try {
     const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
     const j = await res.json();
+    
     if (j.ok) {
-      submitMsg.textContent = "✅ Formulaire envoyé !";
+      submitMsg.innerHTML = '<span style="color:#059669;font-weight:600">✅ Formulaire envoyé avec succès !</span>';
+      setTimeout(() => {
+        submitMsg.innerHTML += '<br><span style="color:#6b7280">Vous allez recevoir un email de confirmation.</span>';
+      }, 1000);
     } else {
-      submitMsg.textContent = "❌ Erreur : " + (j.error || "erreur inconnue");
+      if (j.error === "SIRET_ALREADY_EXISTS") {
+        submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ SIRET déjà enregistré</span><br>' +
+          '<span style="color:#6b7280">Ce numéro SIRET est déjà utilisé par un autre professionnel. ' +
+          'Si vous pensez qu\'il s\'agit d\'une erreur, contactez-nous.</span>';
+      } else {
+        submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur</span><br>' +
+          '<span style="color:#6b7280">' + (j.error || j.detail || "Erreur inconnue") + '</span>';
+      }
     }
   } catch (err) {
-    submitMsg.textContent = "❌ Erreur réseau lors de l'envoi.";
+    submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur réseau</span><br>' +
+      '<span style="color:#6b7280">Impossible de communiquer avec le serveur.</span>';
+  } finally {
+    submitBtn.disabled = false;
   }
 });
+ 
 
 /* ========== RESET ========== */
 resetBtn.addEventListener('click', () => {
