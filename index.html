@@ -456,7 +456,7 @@ function lockForm() {
   // Masquer TOUT sauf la bannière
   rest.style.display = 'none';
   document.querySelector('.prereq-section').style.display = 'none';
-  newUserMessage.style.display = 'none';
+  newUserMessage.classList.add('hidden');  // ← MODIFIEZ CETTE LIGNE
   
   // Masquer le titre, sous-titre et section email (avant le form)
   document.querySelector('h1').style.display = 'none';
@@ -477,7 +477,7 @@ function lockForm() {
   // Faire défiler vers la bannière
   successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
-
+  
 function unlockForm() {
   FORM_LOCKED = false;
   
