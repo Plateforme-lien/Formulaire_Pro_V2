@@ -465,6 +465,7 @@ function lockForm() {
   FORM_LOCKED = true;
   
   // Masquer complètement le formulaire
+  formEl.style.display = 'none';
   rest.style.display = 'none';
   
   // Masquer tous les boutons d'action
@@ -951,19 +952,10 @@ submitBtn.addEventListener('click', async () => {
     
     console.log("Réponse serveur submitForm:", j);
     
-   if (j.ok) {
-      // Masquer le message de chargement
-      submitMsg.textContent = "";
-      
-      // Afficher la grande bannière de succès
-      successBanner.classList.remove('hidden');
-      
-      // Faire défiler vers la bannière
-      setTimeout(() => {
-        successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-      
-    } else {
+    if (j.ok) {
+      // Verrouiller et afficher uniquement la bannière
+      lockForm();
+          } else {
       // Réactiver le bouton en cas d'erreur
       submitBtn.disabled = false;
       
