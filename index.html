@@ -465,6 +465,14 @@ function lockForm() {
   rest.style.display = 'none';
   document.querySelector('.prereq-section').style.display = 'none';
   
+  // Masquer le titre, sous-titre et section email (avant le form)
+  document.querySelector('h1').style.display = 'none';
+  document.querySelector('h2').style.display = 'none';
+  document.querySelector('.lead').style.display = 'none';
+  document.querySelectorAll('.small')[0].style.display = 'none';
+  emailEl.parentElement.parentElement.querySelector('label').style.display = 'none';
+  emailEl.parentElement.style.display = 'none';
+  
   // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
   resetBtn.classList.add('hidden');
