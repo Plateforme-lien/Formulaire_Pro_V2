@@ -377,17 +377,31 @@
           </div>
 
           <div class="actions">
-            <button id="submit" type="button">✓ Valider mon inscription ou les modifications</button>
+            <button id="submit" type="button">✓ Enregistrer mes informations</button>
             <button id="editBtn" type="button" class="hidden">✏️ Modifier mes informations</button>
             <button id="resetBtn" type="button" class="btn-ghost">Réinitialiser</button>
           </div>
           <div id="submitMsg" class="small"></div>
           <div id="successBanner" class="success-banner hidden">
-            <div style="font-size:48px;margin-bottom:12px">✅</div>
-            <h3 style="margin:0 0 8px;color:#0f1724;font-size:20px">Formulaire envoyé avec succès !</h3>
-            <p style="margin:0;color:#059669;font-size:15px;font-weight:600">Vous avez reçu un email de confirmation.</p>
-            <p style="margin:12px 0 0;color:#6b7280;font-size:14px">Vos informations ont été enregistrées et sont maintenant verrouillées.</p>
-          </div>
+            <div style="font-size:64px;margin-bottom:16px">✅</div>
+            <h3 style="margin:0 0 12px;color:#0f1724;font-size:24px;font-weight:700">Formulaire envoyé avec succès !</h3>
+            <p style="margin:0 0 16px;color:#059669;font-size:16px;font-weight:600">📧 Vous avez reçu un email de confirmation.</p>
+            <p style="margin:0 0 24px;color:#6b7280;font-size:15px">Vos informations ont été enregistrées et sont maintenant verrouillées.</p>
+            
+            <div style="background:#f0f9ff;border:2px solid #3b82f6;padding:20px;border-radius:12px;margin-top:24px">
+              <p style="margin:0 0 12px;color:#0f1724;font-size:15px;font-weight:600">✨ Que faire maintenant ?</p>
+              <ul style="margin:0;padding-left:20px;text-align:left;color:#6b7280;font-size:14px;line-height:1.8">
+                <li>Vos informations sont enregistrées dans notre base de données</li>
+                <li>Les particuliers pourront vous trouver selon vos critères</li>
+                <li>Vous pouvez fermer cette page en toute sécurité</li>
+              </ul>
+            </div>
+  
+  <button onclick="window.close()" style="margin-top:24px;background:#3b82f6;color:white;padding:14px 32px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">
+    ✕ Fermer cette page
+  </button>
+  <p style="margin:12px 0 0;color:#9ca3af;font-size:13px">Si le bouton ne fonctionne pas, fermez manuellement l'onglet.</p>
+</div>
         </div>
       </form>
     </div>
@@ -450,16 +464,12 @@ let FORM_LOCKED = false;
 function lockForm() {
   FORM_LOCKED = true;
   
-  // Désactiver tous les inputs
-  document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
-    el.disabled = true;
-  });
+  // Masquer complètement le formulaire
+  rest.style.display = 'none';
   
   // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
   resetBtn.classList.add('hidden');
-  
-  // Ne plus permettre la modification après envoi (pour tout le monde)
   editBtn.classList.add('hidden');
   
   // Afficher la bannière de succès
@@ -786,6 +796,7 @@ async function showFormAndPrefill(data) {
   
   const consentValue = String(data.consentement || "").toLowerCase();
   document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
+  submitBtn.textContent = "✓ Mettre à jour mes informations";
 }
 
 /* ========== LISTENERS: numType toggles ========== */
