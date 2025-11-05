@@ -951,13 +951,17 @@ submitBtn.addEventListener('click', async () => {
     
     console.log("Réponse serveur submitForm:", j);
     
-    if (j.ok) {
-      submitMsg.innerHTML = '<span style="color:#059669;font-weight:600">✅ Formulaire envoyé avec succès !</span>';
+   if (j.ok) {
+      // Masquer le message de chargement
+      submitMsg.textContent = "";
       
-      // Verrouiller le formulaire après envoi réussi
+      // Afficher la grande bannière de succès
+      successBanner.classList.remove('hidden');
+      
+      // Faire défiler vers la bannière
       setTimeout(() => {
-        lockForm();
-      }, 1000);
+        successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
       
     } else {
       // Réactiver le bouton en cas d'erreur
