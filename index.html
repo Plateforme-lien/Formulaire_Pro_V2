@@ -455,10 +455,12 @@ function lockForm() {
     el.disabled = true;
   });
   
-  // Masquer le bouton submit, afficher le bouton edit
+  // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
-  editBtn.classList.remove('hidden');
   resetBtn.classList.add('hidden');
+  
+  // Ne plus permettre la modification après envoi (pour tout le monde)
+  editBtn.classList.add('hidden');
   
   // Afficher la bannière de succès
   successBanner.classList.remove('hidden');
@@ -877,27 +879,35 @@ departSelect.addEventListener('change', e => {
 
 /* ========== SUBMIT FORM ========== */
 submitBtn.addEventListener('click', async () => {
-  submitBtn.disabled = true; 
+  // Réinitialiser les messages
   submitMsg.textContent = "";
+  successBanner.classList.add("hidden");
   
+  // Validations
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
-  if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; submitBtn.disabled = false; return; }
+  if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
   const numType = numTypeChecked.value;
-  if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; submitBtn.disabled = false; return; }
-  if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; submitBtn.disabled = false; return; }
-  if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; submitBtn.disabled = false; return; }
-  if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; submitBtn.disabled = false; return; }
-  if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; submitBtn.disabled = false; return; }
-  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; submitBtn.disabled = false; return; }
-  if (!Array.from(document.querySelectorAll('input[name="mode"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un mode d'intervention."; submitBtn.disabled = false; return; }
-  if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; submitBtn.disabled = false; return; }
-  if (!departSelect.value) { submitMsg.textContent = "Département requis."; submitBtn.disabled = false; return; }
-  if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; submitBtn.disabled = false; return; }
-  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; submitBtn.disabled = false; return; }
+  if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
+  if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
+  if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
+  if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
+  if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
+  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; return; }
+  if (!Array.from(document.querySelectorAll('input[name="mode"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un mode d'intervention."; return; }
+  if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
+  if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
+  if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
+  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; return; }
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
-  if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; submitBtn.disabled = false; return; }
-  if (dispoChecked.value === "oui" && !dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; submitBtn.disabled = false; return; }
-  if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; submitBtn.disabled = false; return; }
+  if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
+  if (dispoChecked.value === "oui" && !dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; return; }
+  if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
+  
+  // Désactiver le bouton et afficher le message de chargement
+  submitBtn.disabled = true;
+  submitMsg.innerHTML = '<span style="color:#6b7280">⏳ Envoi en cours...</span>';
+  
+  // Préparer les données
   const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
@@ -916,37 +926,52 @@ submitBtn.addEventListener('click', async () => {
   fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
   fd.append("dateDispo", dateInput.value);
   fd.append("consent", document.getElementById("consent").checked ? "oui" : "non");
-
-  submitMsg.textContent = "Envoi en cours...";
-  submitBtn.disabled = true;
+  
+  // Ajouter un timeout de 30 secondes
+  const timeoutPromise = new Promise((_, reject) => 
+    setTimeout(() => reject(new Error('TIMEOUT')), 30000)
+  );
+  
+  const fetchPromise = fetch(SCRIPT_URL, { method: "POST", body: fd });
   
   try {
-    const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
+    const res = await Promise.race([fetchPromise, timeoutPromise]);
     const j = await res.json();
+    
+    console.log("Réponse serveur submitForm:", j);
     
     if (j.ok) {
       submitMsg.innerHTML = '<span style="color:#059669;font-weight:600">✅ Formulaire envoyé avec succès !</span>';
-  
+      
       // Verrouiller le formulaire après envoi réussi
       setTimeout(() => {
         lockForm();
       }, 1000);
       
     } else {
+      // Réactiver le bouton en cas d'erreur
       submitBtn.disabled = false;
+      
       if (j.error === "SIRET_ALREADY_EXISTS") {
         submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ SIRET déjà enregistré</span><br>' +
           '<span style="color:#6b7280">Ce numéro SIRET est déjà utilisé par un autre professionnel. ' +
           'Si vous pensez qu\'il s\'agit d\'une erreur, contactez-nous.</span>';
       } else {
-        submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur</span><br>' +
+        submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur lors de l\'envoi</span><br>' +
           '<span style="color:#6b7280">' + (j.error || j.detail || "Erreur inconnue") + '</span>';
       }
     }
   } catch (err) {
-    submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur réseau</span><br>' +
-      '<span style="color:#6b7280">Impossible de communiquer avec le serveur.</span>';
+    console.error("Erreur réseau:", err);
     submitBtn.disabled = false;
+    
+    if (err.message === 'TIMEOUT') {
+      submitMsg.innerHTML = '<span style="color:#f59e0b;font-weight:600">⏱️ Délai d\'attente dépassé</span><br>' +
+        '<span style="color:#6b7280">Le serveur met trop de temps à répondre. Vos données ont peut-être été enregistrées. Vérifiez vos emails de confirmation.</span>';
+    } else {
+      submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur réseau</span><br>' +
+        '<span style="color:#6b7280">Impossible de communiquer avec le serveur. Vérifiez votre connexion et réessayez.</span>';
+    }
   }
 });
 
