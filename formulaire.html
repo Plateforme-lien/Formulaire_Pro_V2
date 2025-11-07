@@ -269,21 +269,65 @@
         <div class="small" style="margin-top:4px;">Si vous intervenez uniquement en cabinet, sélectionnez "Aucun - en cabinet".</div>
 
 
-        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
-
+       <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
         <div style="margin-top:12px">
           <label><input type="radio" name="dispo" value="oui"> Oui</label>
           <label><input type="radio" name="dispo" value="non"> Non</label>
         </div>
-
+        
         <div id="dateBlock" class="hidden">
           <label for="dateDispo" class="required">À partir de quelle date êtes-vous disponible ?</label>
           <input id="dateDispo" name="dateDispo" type="date"/>
+          
+          <label for="placesDisponibles" class="required" style="margin-top:20px">
+            Combien de nouveaux bénéficiaires pourrez-vous accueillir ?
+          </label>
+          <input 
+            id="placesDisponibles" 
+            name="placesDisponibles" 
+            type="number" 
+            min="1" 
+            max="10" 
+            placeholder="Ex: 1"
+            style="width: 150px;margin-top:8px"
+            />
+          <div class="small" style="margin-top:6px;color:#6b7280">
+            Indiquez le nombre de places disponibles (entre 1 et 10)
+          </div>
         </div>
 
-        <div class="section-title"><span class="section-number">5</span> Consentement</div>
-
+<!-- SECTION 5 : MODE DE CONTACT (apparaît seulement si dispo = oui) -->
+        <div id="modeContactBlock" class="hidden">
+          <div class="section-title" style="margin-top:32px"><span class="section-number">5</span> Préférences de contact</div>
+          
+          <label class="required">Comment souhaitez-vous être contacté par les particuliers ?</label>
+          <div class="info-box" style="margin-top:8px">
+            <strong>ℹ️ Important :</strong> Cette option détermine si vos coordonnées (email et téléphone) 
+            seront visibles directement ou si les particuliers devront passer par un formulaire de contact.
+          </div>
+          
+          <div style="margin-top:12px">
+            <label>
+              <input type="radio" name="modeContact" value="direct" checked>
+              <strong>📧 Contact direct</strong>
+              <div class="small" style="margin-left:24px;margin-top:4px">
+                Mon email et mon téléphone seront affichés. Les particuliers peuvent me contacter directement.
+              </div>
+            </label>
+            
+            <label style="margin-top:12px">
+              <input type="radio" name="modeContact" value="formulaire">
+              <strong>📝 Contact via formulaire uniquement</strong>
+              <div class="small" style="margin-left:24px;margin-top:4px">
+                Mes coordonnées restent privées. Les particuliers m'envoient un message via un formulaire.
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- SECTION 6 : CONSENTEMENT -->
+        <div class="section-title" style="margin-top:32px"><span class="section-number" id="consentNumber">5</span> Consentement</div>
         <label style="margin-top:0;display:flex;align-items:start;gap:8px" class="required">
           <input id="consent" name="consent" type="checkbox" style="margin-top:4px"/>
           <span>J'accepte que mes données soient utilisées uniquement dans le cadre de cette mise en relation.</span>
@@ -304,7 +348,6 @@
         <p style="margin:0 0 24px;color:#6b7280;font-size:15px">Vos informations ont été enregistrées. Vous pouvez fermer cette page.</p>
       </div>
     </form>
-
   </div>
 
     <footer>
@@ -319,7 +362,6 @@
   
 </div>
 <script>
-/* === JavasScript repris de ta page de test (conservé quasiment tel quel) === */
 
 /* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
