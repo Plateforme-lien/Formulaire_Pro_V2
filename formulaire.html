@@ -241,17 +241,19 @@
           <label><input type="radio" name="visio" value="oui"> Oui</label>
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
-
+        
         <div id="section-geo" class="hidden">
-  <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
+          <div class="section-title" style="margin-top:32px"><span class="section-number">3</span> Zone géographique d'intervention</div>
 
   <!-- DÉPARTEMENT (toujours visible dans section 3) -->
   <label for="departement" class="required">Dans quel département intervenez-vous ?</label>
   <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
 
-  <!-- COMMUNE (toujours visible dans section 3) -->
+          <!-- COMMUNE (visible après sélection département) -->
+<div id="blocCommune" class="hidden">
   <label for="commune" class="required" id="labelCommune">Quelle est votre commune d'intervention ?</label>
   <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
+</div>
 
   <!-- QUESTIONS POUR DÉPLACEMENTS (cachées par défaut) -->
   <div id="questionsDeplacements" class="hidden">
@@ -463,29 +465,39 @@ function updateSectionGeo() {
   const codeDept = departSelect.value;
   
   const sectionGeo = document.getElementById('section-geo');
+  const blocCommune = document.getElementById('blocCommune');
   const questionsDeplacements = document.getElementById('questionsDeplacements');
   const zoneMetropole = document.getElementById('zoneMetropole');
   const zoneOutreMer = document.getElementById('zoneOutreMer');
   const labelCommune = document.getElementById('labelCommune');
   
-  // Réinitialiser
+  // Réinitialiser tout
   sectionGeo.classList.add('hidden');
+  blocCommune.classList.add('hidden');
   questionsDeplacements.classList.add('hidden');
   zoneMetropole.classList.add('hidden');
   zoneOutreMer.classList.add('hidden');
   
+  // Si aucun mode sélectionné, on arrête là
   if (!modeIntervention) return;
   
   const valeur = modeIntervention.value;
   
   if (valeur === 'cabinet') {
-    // Cabinet uniquement : juste département + commune
+    // CAS 1 : Cabinet uniquement
+    // Afficher section 3 avec juste département + commune
     sectionGeo.classList.remove('hidden');
     labelCommune.textContent = 'Quelle est votre commune d\'intervention ?';
     questionsDeplacements.classList.add('hidden');
     
+    // Afficher commune uniquement si département déjà sélectionné
+    if (departSelect.value) {
+      blocCommune.classList.remove('hidden');
+    }
+    
   } else if (valeur === 'deplacement' || valeur === 'mixte') {
-    // Se déplace : afficher section complète
+    // CAS 2 : Se déplace (seul ou mixte)
+    // Afficher section 3 complète
     sectionGeo.classList.remove('hidden');
     labelCommune.textContent = 'Quelle est votre commune principale d\'intervention ?';
     
@@ -494,10 +506,14 @@ function updateSectionGeo() {
       loadDepartements();
     }
     
-    // Si département sélectionné, afficher les bonnes questions
+    // Afficher commune uniquement si département déjà sélectionné
     if (codeDept) {
+      blocCommune.classList.remove('hidden');
+      
+      // Afficher les questions de déplacement
       questionsDeplacements.classList.remove('hidden');
       
+      // Différencier Métropole / Outre-mer
       if (DEPS_METRO.includes(codeDept)) {
         // France métropolitaine : temps de trajet
         zoneMetropole.classList.remove('hidden');
@@ -1118,10 +1134,11 @@ resetBtn.addEventListener('click', () => {
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
-  document.getElementById('section-geo').classList.add('hidden');
-  document.getElementById('questionsDeplacements').classList.add('hidden');
-  document.getElementById('zoneMetropole').classList.add('hidden');
-  document.getElementById('zoneOutreMer').classList.add('hidden');
+document.getElementById('section-geo').classList.add('hidden');
+document.getElementById('blocCommune').classList.add('hidden');
+document.getElementById('questionsDeplacements').classList.add('hidden');
+document.getElementById('zoneMetropole').classList.add('hidden');
+document.getElementById('zoneOutreMer').classList.add('hidden');
   document.getElementById('precisionsGeo').value = '';
   document.getElementById('rayonOuTemps').value = '';
   
