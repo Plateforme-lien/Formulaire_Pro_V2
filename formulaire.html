@@ -255,46 +255,52 @@
   <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
 </div>
 
-  <!-- QUESTIONS POUR DÉPLACEMENTS (cachées par défaut) -->
-  <div id="questionsDeplacements" class="hidden">
-    
-    <!-- ZONE MÉTROPOLE : Temps de trajet -->
-    <div id="zoneMetropole" class="hidden">
-      <label for="rayonOuTemps" class="required">Quel est votre temps de trajet maximal ?</label>
-      <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-        <select id="rayonOuTemps" name="rayonOuTemps" style="flex:1;">
-          <option value="">-- Sélectionnez --</option>
-          <option>15 min</option>
-          <option>20 min</option>
-          <option>30 min</option>
-          <option>45 min</option>
-          <option>60 min</option>
-        </select>
-        <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-          📍 Visualiser ma zone
-        </a>
-      </div>
-      <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
-    </div>
+          <!-- QUESTIONS POUR DÉPLACEMENTS (cachées par défaut) -->
+<div id="questionsDeplacements" class="hidden">
+  
+  <!-- ZONE MÉTROPOLE : Temps de trajet -->
+  <div id="zoneMetropole" class="hidden">
+    <label for="rayonOuTemps" class="required">Quel est votre temps de trajet maximal ?</label>
+    <select id="rayonOuTemps" name="rayonOuTemps" style="margin-top:8px;">
+      <option value="">-- Sélectionnez --</option>
+      <option>15 min</option>
+      <option>20 min</option>
+      <option>30 min</option>
+      <option>45 min</option>
+      <option>60 min</option>
+    </select>
+    <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
+  </div>
 
-    <!-- ZONE OUTRE-MER : Rayon en km + Précisions -->
-    <div id="zoneOutreMer" class="hidden">
-      <label for="rayonOuTemps" class="required">Quel est votre rayon d'intervention (en km) ?</label>
-      <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-        <select id="rayonOuTemps" name="rayonOuTemps" style="flex:1;">
-          <option value="">-- Sélectionnez --</option>
-          <option>10 km</option>
-          <option>15 km</option>
-          <option>20 km</option>
-          <option>25 km</option>
-          <option>30 km</option>
-          <option>40 km</option>
-          <option>Tout mon département</option>
-        </select>
-        <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-          📍 Visualiser ma zone
-        </a>
-      </div>
+  <!-- ZONE OUTRE-MER : Rayon en km + Précisions -->
+  <div id="zoneOutreMer" class="hidden">
+    <label for="rayonOuTemps" class="required">Quel est votre rayon d'intervention (en km) ?</label>
+    <select id="rayonOuTemps" name="rayonOuTemps" style="margin-top:8px;">
+      <option value="">-- Sélectionnez --</option>
+      <option>10 km</option>
+      <option>15 km</option>
+      <option>20 km</option>
+      <option>25 km</option>
+      <option>30 km</option>
+      <option>40 km</option>
+      <option>Tout mon département</option>
+    </select>
+    <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
+
+    <!-- Précisions géographiques (uniquement Outre-Mer) -->
+    <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
+    <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers, je ne me déplace pas dans certaines zones..."></textarea>
+    <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile sur votre zone d'intervention.</div>
+  </div>
+
+  <!-- Lien de visualisation (commun aux deux zones) -->
+  <div style="margin-top:12px;">
+    <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;display:inline-block;">
+      📍 Visualiser les communes couvertes par mon rayon
+    </a>
+  </div>
+</div>
+
       <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
 
       <!-- Précisions géographiques (uniquement Outre-Mer) -->
@@ -1025,13 +1031,14 @@ submitBtn.addEventListener('click', async () => {
   if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
   if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
   
-  const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
-  if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
-    if (!document.getElementById("rayonOuTemps").value) { 
-      submitMsg.textContent = "Indiquez votre temps de trajet ou rayon d'intervention."; 
-      return; 
-    }
+const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
+if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
+  const rayonOuTempsValue = document.getElementById("rayonOuTemps").value.trim();
+  if (!rayonOuTempsValue || rayonOuTempsValue === "-- Sélectionnez --") { 
+    submitMsg.textContent = "Indiquez votre temps de trajet ou rayon d'intervention."; 
+    return; 
   }
+}
   
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
   if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
