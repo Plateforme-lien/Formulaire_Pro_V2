@@ -207,16 +207,17 @@
       <!-- Zone Outre-mer : Rayon en km -->
       <div id="zoneOutreMer" style="display:none;">
         <label for="rayon">Rayon d'intervention (km)</label>
-        <select id="rayon">
-          <option value="">-- Sélectionnez --</option>
-          <option value="10">10 km</option>
-          <option value="15">15 km</option>
-          <option value="20">20 km</option>
-          <option value="25">25 km</option>
-          <option value="30">30 km</option>
-          <option value="40">40 km</option>
-          <option value="50">50 km</option>
-        </select>
+<select id="rayon">
+  <option value="">-- Sélectionnez --</option>
+  <option value="10">10 km</option>
+  <option value="15">15 km</option>
+  <option value="20">20 km</option>
+  <option value="25">25 km</option>
+  <option value="30">30 km</option>
+  <option value="40">40 km</option>
+  <option value="50">50 km</option>
+  <option value="Tout mon département">Tout mon département</option>
+</select>
       </div>
     </div>
 
@@ -464,15 +465,46 @@ afficherBtn.addEventListener('click', async () => {
         dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
         `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
 
-    } else if (DEPS_DOMTOM.includes(currentDeptCode)) {
-      // ===== OUTRE-MER : RAYON EN KM =====
-      const rayonKm = parseFloat(rayonSelect.value);
-      
-      if (!rayonKm) {
-        alert("⚠️ Sélectionnez un rayon");
-        loadingMsg.style.display = 'none';
-        return;
-      }
+
+      } else if (DEPS_DOMTOM.includes(currentDeptCode)) {
+  // ===== OUTRE-MER : RAYON EN KM =====
+  const rayonValue = rayonSelect.value;
+  
+  if (!rayonValue) {
+    alert("⚠️ Sélectionnez un rayon");
+    loadingMsg.style.display = 'none';
+    return;
+  }
+
+  if (rayonValue === "Tout mon département") {
+    // Afficher toutes les communes du département
+    dansZone = communes.filter(c => c.nom !== nomCentrale);
+
+    dansZone.forEach(c => {
+      const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+      L.marker(pt).addTo(map).bindPopup(c.nom);
+    });
+
+    // Marker central
+    L.marker(centre).addTo(map)
+      .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+
+    // Ajuster la vue sur tout le département
+    const lats = communes.map(c => c.centre.coordinates[1]);
+    const lngs = communes.map(c => c.centre.coordinates[0]);
+    const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+    map.fitBounds(bounds, { padding: [50, 50] });
+
+    // Liste
+    const total = dansZone.length + 1;
+    listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
+      `✅ ${dansZone.length} commune(s) dans tout le département :\n\n` +
+      dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+      `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+
+  } else {
+    // Rayon en km normal
+    const rayonKm = parseFloat(rayonValue);
 
       // Cercle
       const cercle = L.circle(centre, {
@@ -571,17 +603,21 @@ function getParams(){
   if(p.commune) communeSelect.value = p.commune;
 
   // Pré-remplir le critère
-  if(p.rayon || p.rayonOuTemps) {
-    const valeur = p.rayon || p.rayonOuTemps;
+ if(p.rayonOuTemps) {
+    const valeur = p.rayonOuTemps;
     
     if (DEPS_METRO.includes(p.dep)) {
-      // Extraire les minutes
+      // Extraire les minutes (ex: "30 min" → 30)
       const match = valeur.match(/\d+/);
       if(match) tempsSelect.value = match[0];
     } else if (DEPS_DOMTOM.includes(p.dep)) {
-      // Extraire les km
-      const match = valeur.match(/\d+/);
-      if(match) rayonSelect.value = match[0];
+      // Extraire les km (ex: "15 km" → 15) ou garder "Tout mon département"
+      if (valeur.includes('département')) {
+        rayonSelect.value = 'Tout mon département';
+      } else {
+        const match = valeur.match(/\d+/);
+        if(match) rayonSelect.value = match[0];
+      }
     }
   }
 
