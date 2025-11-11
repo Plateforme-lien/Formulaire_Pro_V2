@@ -242,33 +242,67 @@
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
 
-        <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
+        <div id="section-geo" class="hidden">
+  <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
 
-        <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
-        <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
+  <!-- DÉPARTEMENT (toujours visible dans section 3) -->
+  <label for="departement" class="required">Dans quel département intervenez-vous ?</label>
+  <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
 
-        <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
-        <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
-        
-        <label for="rayon" class="required">Quel est votre rayon d'intervention ?</label>
-        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-          <select id="rayon" name="rayon" style="flex:1;">
-            <option value="">-- Sélectionnez --</option>
-            <option>Aucun - en cabinet</option>
-            <option>10 km</option>
-            <option>15 km</option>
-            <option>20 km</option>
-            <option>25 km</option>
-            <option>30 km</option>
-            <option>40 km</option>
-            <option>Tout mon département</option>
-          </select>
-          <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-            Visualiser les communes couvertes par mon rayon
-          </a>
-        </div>
-        <div class="small" style="margin-top:4px;">Si vous intervenez uniquement en cabinet, sélectionnez "Aucun - en cabinet".</div>
+  <!-- COMMUNE (toujours visible dans section 3) -->
+  <label for="commune" class="required" id="labelCommune">Quelle est votre commune d'intervention ?</label>
+  <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
 
+  <!-- QUESTIONS POUR DÉPLACEMENTS (cachées par défaut) -->
+  <div id="questionsDeplacements" class="hidden">
+    
+    <!-- ZONE MÉTROPOLE : Temps de trajet -->
+    <div id="zoneMetropole" class="hidden">
+      <label for="rayonOuTemps" class="required">Quel est votre temps de trajet maximal ?</label>
+      <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+        <select id="rayonOuTemps" name="rayonOuTemps" style="flex:1;">
+          <option value="">-- Sélectionnez --</option>
+          <option>15 min</option>
+          <option>20 min</option>
+          <option>30 min</option>
+          <option>45 min</option>
+          <option>60 min</option>
+        </select>
+        <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+          📍 Visualiser ma zone
+        </a>
+      </div>
+      <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
+    </div>
+
+    <!-- ZONE OUTRE-MER : Rayon en km + Précisions -->
+    <div id="zoneOutreMer" class="hidden">
+      <label for="rayonOuTemps" class="required">Quel est votre rayon d'intervention (en km) ?</label>
+      <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+        <select id="rayonOuTemps" name="rayonOuTemps" style="flex:1;">
+          <option value="">-- Sélectionnez --</option>
+          <option>10 km</option>
+          <option>15 km</option>
+          <option>20 km</option>
+          <option>25 km</option>
+          <option>30 km</option>
+          <option>40 km</option>
+          <option>Tout mon département</option>
+        </select>
+        <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+          📍 Visualiser ma zone
+        </a>
+      </div>
+      <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
+
+      <!-- Précisions géographiques (uniquement Outre-Mer) -->
+      <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
+      <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers, je ne me déplace pas dans certaines zones..."></textarea>
+      <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile sur votre zone d'intervention.</div>
+    </div>
+
+  </div>
+</div>
 
        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
@@ -363,7 +397,6 @@
   
 </div>
 <script>
-
 /* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
 const DEPT_API = "https://geo.api.gouv.fr/departements";
@@ -420,53 +453,109 @@ let EXISTING = false;
 let EXISTING_DATA = null;
 let FORM_LOCKED = false;
 
+/* ========== AFFICHAGE DYNAMIQUE SECTION 3 (MODE + DÉPARTEMENT) ========== */
+const DEPS_METRO = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','2A','2B','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95'];
+const DEPS_DOMTOM = ['971','972','973','974','976'];
+
+// Fonction pour mettre à jour l'affichage de la section 3
+function updateSectionGeo() {
+  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
+  const codeDept = departSelect.value;
+  
+  const sectionGeo = document.getElementById('section-geo');
+  const questionsDeplacements = document.getElementById('questionsDeplacements');
+  const zoneMetropole = document.getElementById('zoneMetropole');
+  const zoneOutreMer = document.getElementById('zoneOutreMer');
+  const labelCommune = document.getElementById('labelCommune');
+  
+  // Réinitialiser
+  sectionGeo.classList.add('hidden');
+  questionsDeplacements.classList.add('hidden');
+  zoneMetropole.classList.add('hidden');
+  zoneOutreMer.classList.add('hidden');
+  
+  if (!modeIntervention) return;
+  
+  const valeur = modeIntervention.value;
+  
+  if (valeur === 'cabinet') {
+    // Cabinet uniquement : juste département + commune
+    sectionGeo.classList.remove('hidden');
+    labelCommune.textContent = 'Quelle est votre commune d\'intervention ?';
+    questionsDeplacements.classList.add('hidden');
+    
+  } else if (valeur === 'deplacement' || valeur === 'mixte') {
+    // Se déplace : afficher section complète
+    sectionGeo.classList.remove('hidden');
+    labelCommune.textContent = 'Quelle est votre commune principale d\'intervention ?';
+    
+    // Charger départements si pas encore fait
+    if (departSelect.options.length <= 1) {
+      loadDepartements();
+    }
+    
+    // Si département sélectionné, afficher les bonnes questions
+    if (codeDept) {
+      questionsDeplacements.classList.remove('hidden');
+      
+      if (DEPS_METRO.includes(codeDept)) {
+        // France métropolitaine : temps de trajet
+        zoneMetropole.classList.remove('hidden');
+        zoneOutreMer.classList.add('hidden');
+        
+        // Vider le champ précisions géo
+        document.getElementById('precisionsGeo').value = '';
+        
+      } else if (DEPS_DOMTOM.includes(codeDept)) {
+        // Outre-mer : rayon en km + précisions
+        zoneMetropole.classList.add('hidden');
+        zoneOutreMer.classList.remove('hidden');
+      }
+    }
+  }
+}
+
+// Listener sur le mode d'intervention
+document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
+  radio.addEventListener('change', updateSectionGeo);
+});
+
 /* ========== FONCTIONS DE VERROUILLAGE ========== */
 function lockForm() {
   FORM_LOCKED = true;
   
-  // Masquer TOUT sauf la bannière
   rest.style.display = 'none';
   document.querySelector('.prereq-section').style.display = 'none';
   newUserMessage.classList.add('hidden');
-
   
-  // Masquer le titre, sous-titre et section email (avant le form)
-  document.getElementById('section-email').style.display = 'none';  // Masquer "Vérification de votre identité"
-  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });  // Masquer les astérisques/questions obligatoires
+  document.getElementById('section-email').style.display = 'none';
+  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });
   document.querySelector('h1').style.display = 'none';
   document.querySelector('h2').style.display = 'none';
   document.querySelector('.info-box').style.display = 'none';
   emailEl.parentElement.parentElement.querySelector('label').style.display = 'none';
   emailEl.parentElement.style.display = 'none';
   
-  // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
   resetBtn.classList.add('hidden');
   editBtn.classList.add('hidden');
   
-  // Afficher la bannière de succès
   successBanner.classList.remove('hidden');
-  
-  // Faire défiler vers la bannière
   successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
   
 function unlockForm() {
   FORM_LOCKED = false;
   
-  // Réactiver tous les inputs
   document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
     el.disabled = false;
   });
   
-  // Afficher le bouton submit, masquer le bouton edit
   submitBtn.classList.remove('hidden');
   editBtn.classList.add('hidden');
   resetBtn.classList.remove('hidden');
   
-  // Masquer la bannière de succès
   successBanner.classList.add('hidden');
-  
   submitMsg.textContent = "";
 }
 
@@ -731,7 +820,6 @@ async function showFormAndPrefill(data) {
       const modeRadio = document.querySelector(`input[name="modeIntervention"][value="${data.modeIntervention}"]`);
       if (modeRadio) modeRadio.checked = true;
     }
-  }
     
     if (data.visio) {
       const visioRadio = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
@@ -751,39 +839,45 @@ async function showFormAndPrefill(data) {
       }, 100);
     }
     
-    document.getElementById("rayon").value = data.rayon || "";
+    document.getElementById("rayonOuTemps").value = data.rayonOuTemps || "";
+    document.getElementById("precisionsGeo").value = data.precisionsGeo || "";
     
-if (data.disponibilite) {
-  const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
-  if (dispoRadio) {
-    dispoRadio.checked = true;
-    if (data.disponibilite === "oui") {
-      dateBlock.classList.remove("hidden");
-      modeContactBlock.classList.remove("hidden");
-      consentNumber.textContent = "6";
-      
-      if (data.dateDisponibilite) {
-        dateInput.value = data.dateDisponibilite;
+    if (data.disponibilite) {
+      const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
+      if (dispoRadio) {
+        dispoRadio.checked = true;
+        if (data.disponibilite === "oui") {
+          dateBlock.classList.remove("hidden");
+          modeContactBlock.classList.remove("hidden");
+          consentNumber.textContent = "6";
+          
+          if (data.dateDisponibilite) {
+            dateInput.value = data.dateDisponibilite;
+          }
+          if (data.placesDisponibles) {
+            placesInput.value = data.placesDisponibles;
+          }
+          if (data.modeContact) {
+            const modeContactRadio = document.querySelector(`input[name="modeContact"][value="${data.modeContact}"]`);
+            if (modeContactRadio) modeContactRadio.checked = true;
+          }
+        } else {
+          modeContactBlock.classList.add("hidden");
+          consentNumber.textContent = "5";
+        }
       }
-      if (data.placesDisponibles) {
-        placesInput.value = data.placesDisponibles;
-      }
-      if (data.modeContact) {
-        const modeContactRadio = document.querySelector(`input[name="modeContact"][value="${data.modeContact}"]`);
-        if (modeContactRadio) modeContactRadio.checked = true;
-      }
-    } else {
-      modeContactBlock.classList.add("hidden");
-      consentNumber.textContent = "5";
     }
-  }
-}
 
-const consentValue = String(data.consentement || "").toLowerCase();
+    const consentValue = String(data.consentement || "").toLowerCase();
     document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
     submitBtn.textContent = "✓ Mettre à jour mes informations";
+    
+    // Déclencher l'affichage dynamique après pré-remplissage
+    setTimeout(() => {
+      updateSectionGeo();
+    }, 200);
   }
-
+}
 
 /* ========== LISTENERS: numType toggles ========== */
 document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
@@ -820,13 +914,11 @@ siretNum.addEventListener('blur', () => {
 });
 
 /* ========== DISPO date logic ========== */
-/* ========== DISPO date logic ========== */
 document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener('change', e => {
   const show = e.target.value === "oui";
   dateBlock.classList.toggle("hidden", !show);
   modeContactBlock.classList.toggle("hidden", !show);
   
-  // Mise à jour de la numérotation de la section Consentement
   consentNumber.textContent = show ? "6" : "5";
   
   if (show) {
@@ -834,7 +926,6 @@ document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener
   } else {
     dateInput.value = "";
     placesInput.value = "";
-    // Remettre la valeur par défaut du mode de contact
     document.querySelector('input[name="modeContact"][value="direct"]').checked = true;
   }
 }));
@@ -891,15 +982,14 @@ departSelect.addEventListener('change', e => {
     return; 
   }
   loadCommunes(v);
+  updateSectionGeo();
 });
 
 /* ========== SUBMIT FORM ========== */
 submitBtn.addEventListener('click', async () => {
-  // Réinitialiser les messages
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
-  // Validations
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
   if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
   const numType = numTypeChecked.value;
@@ -909,14 +999,24 @@ submitBtn.addEventListener('click', async () => {
   if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
   if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
   if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; return; }
+  
   if (!document.querySelector('input[name="modeIntervention"]:checked')) { 
-  submitMsg.textContent = "Sélectionnez votre mode d'intervention."; 
-  return; 
-}
+    submitMsg.textContent = "Sélectionnez votre mode d'intervention."; 
+    return; 
+  }
+  
   if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
   if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
   if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
-  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; return; }
+  
+  const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
+  if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
+    if (!document.getElementById("rayonOuTemps").value) { 
+      submitMsg.textContent = "Indiquez votre temps de trajet ou rayon d'intervention."; 
+      return; 
+    }
+  }
+  
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
   if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
   if (dispoChecked.value === "oui") {
@@ -935,11 +1035,10 @@ submitBtn.addEventListener('click', async () => {
   }
   
   if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
-  // Désactiver le bouton et afficher le message de chargement
+  
   submitBtn.disabled = true;
   submitMsg.innerHTML = '<span style="color:#6b7280">⏳ Envoi en cours...</span>';
   
-  // Préparer les données
   const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
@@ -950,18 +1049,21 @@ submitBtn.addEventListener('click', async () => {
   fd.append("phone", document.getElementById("phone").value.trim());
   fd.append("profession", document.getElementById("profession").value);
   fd.append("publics", Array.from(document.querySelectorAll('input[name="public"]:checked')).map(i=>i.value).join(","));
+  
   const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
-  fd.append("modeIntervention", modeIntervention ? modeIntervention.value : "");  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
+  fd.append("modeIntervention", modeIntervention ? modeIntervention.value : "");
+  
+  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   fd.append("departement", departSelect.value);
   fd.append("commune", communeSelect.value);
-  fd.append("rayon", document.getElementById("rayon").value);
- fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
+  fd.append("rayonOuTemps", document.getElementById("rayonOuTemps").value);
+  fd.append("precisionsGeo", document.getElementById("precisionsGeo").value.trim());
+  fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
   fd.append("dateDispo", dateInput.value);
   fd.append("placesDisponibles", placesInput.value || "");
   fd.append("modeContact", document.querySelector('input[name="modeContact"]:checked')?.value || "direct");
   fd.append("consent", document.getElementById("consent").checked ? "oui" : "non");
   
-  // Ajouter un timeout de 30 secondes
   const timeoutPromise = new Promise((_, reject) => 
     setTimeout(() => reject(new Error('TIMEOUT')), 30000)
   );
@@ -975,10 +1077,8 @@ submitBtn.addEventListener('click', async () => {
     console.log("Réponse serveur submitForm:", j);
     
     if (j.ok) {
-      // Verrouiller et afficher uniquement la bannière
       lockForm();
-          } else {
-      // Réactiver le bouton en cas d'erreur
+    } else {
       submitBtn.disabled = false;
       
       if (j.error === "SIRET_ALREADY_EXISTS") {
@@ -1017,6 +1117,14 @@ resetBtn.addEventListener('click', () => {
   noNum.classList.add("hidden");
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
+  
+  document.getElementById('section-geo').classList.add('hidden');
+  document.getElementById('questionsDeplacements').classList.add('hidden');
+  document.getElementById('zoneMetropole').classList.add('hidden');
+  document.getElementById('zoneOutreMer').classList.add('hidden');
+  document.getElementById('precisionsGeo').value = '';
+  document.getElementById('rayonOuTemps').value = '';
+  
   unlockForm();
 });
 
@@ -1025,7 +1133,7 @@ visualiserLink.addEventListener("click", function (e) {
 
     const dep = document.getElementById("departement").value;
     const commune = document.getElementById("commune").value;
-    const rayon = document.getElementById("rayon").value;
+    const rayon = document.getElementById("rayonOuTemps").value;
 
     const url = `visualisation.html?dep=${dep}&commune=${commune}&rayon=${rayon}`;
     window.open(url, "_blank");
