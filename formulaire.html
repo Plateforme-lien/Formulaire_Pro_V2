@@ -1204,27 +1204,28 @@ function ouvrirVisualisation(e) {
 
   const codeDept = dep.split(' ')[0]; // Extraire juste le code (ex: "54" de "54 — Meurthe-et-Moselle")
   
-  let rayonOuTemps = "";
-  
+  let url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}`;
+
   if (DEPS_METRO.includes(codeDept)) {
     // Métropole : récupérer le temps
-    rayonOuTemps = document.getElementById("tempsTrajet").value;
-    if (!rayonOuTemps) {
+    const tempsValue = document.getElementById("tempsTrajet").value;
+    if (!tempsValue) {
       alert("⚠️ Veuillez d'abord sélectionner un temps de trajet.");
       return;
     }
+    url += `&temps=${encodeURIComponent(tempsValue)}`;
   } else if (DEPS_DOMTOM.includes(codeDept)) {
     // Outre-mer : récupérer le rayon
-    rayonOuTemps = document.getElementById("rayonKm").value;
-    if (!rayonOuTemps) {
+    const rayonValue = document.getElementById("rayonKm").value;
+    if (!rayonValue) {
       alert("⚠️ Veuillez d'abord sélectionner un rayon d'intervention.");
       return;
     }
+    url += `&rayon=${encodeURIComponent(rayonValue)}`;
   }
 
-const url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}&rayonOuTemps=${encodeURIComponent(rayonOuTemps)}`;
-window.open(url, "_blank");
-
+  window.open(url, "_blank");
+} // 👈 <<=== la fameuse accolade manquante ici !!
 
 // Attacher l'événement aux deux liens
 if (visualiserLinkMetro) {
@@ -1234,7 +1235,6 @@ if (visualiserLinkMetro) {
 if (visualiserLinkOM) {
   visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
 }
-  
 </script>
 </body>
 </html>
