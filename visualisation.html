@@ -398,32 +398,27 @@ async function calculerIsochrone(lon, lat, minutes) {
 // ==========================
 //  FONCTION : Générer 5 points de test pour une commune
 // ==========================
-function genererPointsTest(commune) {
-  const centre = commune.centre.coordinates;
-  const points = [
-    L.latLng(centre[1], centre[0]) // Point central
-  ];
+// Vérifier chaque commune avec ses 5 points de test
+communes.forEach(c => {
+  if (c.nom === nomCentrale) return;
   
-  // Si on a le contour, calculer les 4 coins de la bounding box
-  if (commune.contour && commune.contour.coordinates) {
-    const coords = commune.contour.coordinates[0];
-    const lats = coords.map(c => c[1]);
-    const lngs = coords.map(c => c[0]);
-    
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLng = Math.min(...lngs);
-    const maxLng = Math.max(...lngs);
-    
-    // Ajouter les 4 coins
-    points.push(L.latLng(minLat, minLng)); // Coin bas-gauche
-    points.push(L.latLng(minLat, maxLng)); // Coin bas-droite
-    points.push(L.latLng(maxLat, minLng)); // Coin haut-gauche
-    points.push(L.latLng(maxLat, maxLng)); // Coin haut-droite
+  const pointsTest = genererPointsTest(c);
+  let communeCouverteParIsochrone = false;
+  
+  // Si AU MOINS UN des 5 points est dans l'isochrone, la commune est couverte
+  for (const point of pointsTest) {
+    if (polygon.getBounds().contains(point) && isPointInPolygon(point, polygonCoords)) {
+      communeCouverteParIsochrone = true;
+      break;
+    }
   }
   
-  return points;
-}
+  if (communeCouverteParIsochrone) {
+    dansZone.push(c);
+    const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+    L.marker(pt).addTo(map).bindPopup(c.nom);
+  }
+});
 
 // ==========================
 //  AFFICHER LA ZONE D'INTERVENTION
