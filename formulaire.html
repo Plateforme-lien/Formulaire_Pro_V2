@@ -1202,7 +1202,8 @@ function ouvrirVisualisation(e) {
   }
 
   const codeDept = dep.split(' ')[0]; // Extraire juste le code (ex: "54" de "54 — Meurthe-et-Moselle")
-  
+
+  // Base de l’URL
   let url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}`;
 
   if (DEPS_METRO.includes(codeDept)) {
@@ -1213,6 +1214,7 @@ function ouvrirVisualisation(e) {
       return;
     }
     url += `&temps=${encodeURIComponent(tempsValue)}`;
+
   } else if (DEPS_DOMTOM.includes(codeDept)) {
     // Outre-mer : récupérer le rayon
     const rayonValue = document.getElementById("rayonKm").value;
@@ -1223,8 +1225,13 @@ function ouvrirVisualisation(e) {
     url += `&rayon=${encodeURIComponent(rayonValue)}`;
   }
 
+  // ✅ Ouvrir la visualisation dans un nouvel onglet
   window.open(url, "_blank");
-} // 👈 <<=== la fameuse accolade manquante ici !!
+}
+
+// ========== LIENS VISUALISATION MÉTROPOLE ET OUTRE-MER ==========
+const visualiserLinkMetro = document.getElementById("visualiserLinkMetro");
+const visualiserLinkOM = document.getElementById("visualiserLinkOM");
 
 // Attacher l'événement aux deux liens
 if (visualiserLinkMetro) {
@@ -1234,6 +1241,7 @@ if (visualiserLinkMetro) {
 if (visualiserLinkOM) {
   visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
 }
+
 </script>
 </body>
 </html>
