@@ -850,35 +850,47 @@ async function showFormAndPrefill(data) {
       let deptCode = String(data.departement).trim();
       if (deptCode.length === 1) deptCode = "0" + deptCode;
       
-      setTimeout(() => {
+      // Charger le département et les communes
+      setTimeout(async () => {
         departSelect.value = deptCode;
         
         if (data.commune) {
-          loadCommunes(deptCode, data.commune);
+          await loadCommunes(deptCode, data.commune);
         }
-      }, 100);
-    }
-    
-    // 🔧 CORRECTION : Gestion séparée rayon / temps
-        if (data.rayon || data.temps) {
-      const deptCode = String(data.departement).split('-')[0].trim();
-      
-      console.log(`🔍 Pré-remplissage zone : département=${deptCode}, rayon=${data.rayon}, temps=${data.temps}`);
-      
-      setTimeout(() => {
-        if (DEPS_METRO.includes(deptCode) && data.temps) {
-          console.log(`✅ Métropole : temps=${data.temps}`);
-          document.getElementById("tempsTrajet").value = data.temps;
-        } else if (DEPS_DOMTOM.includes(deptCode) && data.rayon) {
-          console.log(`✅ Outre-mer : rayon=${data.rayon}`);
-          document.getElementById("rayonKm").value = data.rayon;
+
+        // 🔧 Pré-remplissage temps ou rayon après que le select soit prêt
+        const codeDept = deptCode.split('-')[0].trim();
+
+        if (DEPS_METRO.includes(codeDept) && data.temps) {
+          document.getElementById("zoneMetropole").classList.remove("hidden");
+          const select = document.getElementById("tempsTrajet");
+          const optionExists = Array.from(select.options).some(opt => opt.value === data.temps);
+          if (!optionExists) {
+            const opt = document.createElement("option");
+            opt.value = data.temps;
+            opt.textContent = data.temps;
+            select.appendChild(opt);
+          }
+          select.value = data.temps;
+
+        } else if (DEPS_DOMTOM.includes(codeDept) && data.rayon) {
+          document.getElementById("zoneOutreMer").classList.remove("hidden");
+          const select = document.getElementById("rayonKm");
+          const optionExists = Array.from(select.options).some(opt => opt.value === data.rayon);
+          if (!optionExists) {
+            const opt = document.createElement("option");
+            opt.value = data.rayon;
+            opt.textContent = data.rayon;
+            select.appendChild(opt);
+          }
+          select.value = data.rayon;
         }
-      }, 300);
+
+        document.getElementById("precisionsGeo").value = data.precisionsGeo || "";
+      }, 200);
     }
-    
-    
-    document.getElementById("precisionsGeo").value = data.precisionsGeo || "";
-    
+
+    // Disponibilités
     if (data.disponibilite) {
       const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
       if (dispoRadio) {
@@ -888,12 +900,8 @@ async function showFormAndPrefill(data) {
           modeContactBlock.classList.remove("hidden");
           consentNumber.textContent = "6";
           
-          if (data.dateDisponibilite) {
-            dateInput.value = data.dateDisponibilite;
-          }
-          if (data.placesDisponibles) {
-            placesInput.value = data.placesDisponibles;
-          }
+          if (data.dateDisponibilite) dateInput.value = data.dateDisponibilite;
+          if (data.placesDisponibles) placesInput.value = data.placesDisponibles;
           if (data.modeContact) {
             const modeContactRadio = document.querySelector(`input[name="modeContact"][value="${data.modeContact}"]`);
             if (modeContactRadio) modeContactRadio.checked = true;
@@ -910,11 +918,10 @@ async function showFormAndPrefill(data) {
     submitBtn.textContent = "✓ Mettre à jour mes informations";
     
     // Déclencher l'affichage dynamique après pré-remplissage
-    setTimeout(() => {
-      updateSectionGeo();
-    }, 200);
+    setTimeout(() => updateSectionGeo(), 300);
   }
 }
+
 
 /* ========== LISTENERS: numType toggles ========== */
 document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
