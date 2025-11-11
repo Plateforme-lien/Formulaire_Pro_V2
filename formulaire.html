@@ -258,55 +258,51 @@
   <!-- QUESTIONS DÉPLACEMENTS -->
   <div id="questionsDeplacements" class="hidden">
     
-<!-- MÉTROPOLE : Temps -->
-<div id="zoneMetropole" class="hidden">
-  <label for="tempsTrajet" class="required">Quel est votre temps de trajet maximal ?</label>
-  <select id="tempsTrajet" name="tempsTrajet" style="margin-top:8px;">
-    <option value="">-- Sélectionnez --</option>
-    <option>15 min</option>
-    <option>20 min</option>
-    <option>30 min</option>
-    <option>45 min</option>
-    <option>60 min</option>
-  </select>
-  <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
-
-  <div style="margin-top:12px;">
-    <a href="javascript:void(0)" id="visualiserLinkMetro"
-       style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-      📍 Visualiser les communes couvertes
-    </a>
-  </div>
+    <!-- MÉTROPOLE : Temps -->
+    <div id="zoneMetropole" class="hidden">
+      <label for="tempsTrajet" class="required">Quel est votre temps de trajet maximal ?</label>
+      <select id="tempsTrajet" name="tempsTrajet" style="margin-top:8px;">
+        <option value="">-- Sélectionnez --</option>
+        <option>15 min</option>
+        <option>20 min</option>
+        <option>30 min</option>
+        <option>45 min</option>
+        <option>60 min</option>
+      </select>
+      <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
+      
+<div style="margin-top:12px;">
+  <a href="#" id="visualiserLinkMetro" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+    📍 Visualiser les communes couvertes
+  </a>
 </div>
 
-<!-- OUTRE-MER : Rayon -->
-<div id="zoneOutreMer" class="hidden">
-  <label for="rayonKm" class="required">Quel est votre rayon d'intervention (en km) ?</label>
-  <select id="rayonKm" name="rayonKm" style="margin-top:8px;">
-    <option value="">-- Sélectionnez --</option>
-    <option>10 km</option>
-    <option>15 km</option>
-    <option>20 km</option>
-    <option>25 km</option>
-    <option>30 km</option>
-    <option>40 km</option>
-    <option>Tout mon département</option>
-  </select>
-  <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
+    </div>
 
-  <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
-  <textarea id="precisionsGeo" name="precisionsGeo" rows="3"
-            placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
-  <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
+    <!-- OUTRE-MER : Rayon -->
+    <div id="zoneOutreMer" class="hidden">
+      <label for="rayonKm" class="required">Quel est votre rayon d'intervention (en km) ?</label>
+      <select id="rayonKm" name="rayonKm" style="margin-top:8px;">
+        <option value="">-- Sélectionnez --</option>
+        <option>10 km</option>
+        <option>15 km</option>
+        <option>20 km</option>
+        <option>25 km</option>
+        <option>30 km</option>
+        <option>40 km</option>
+        <option>Tout mon département</option>
+      </select>
+      <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
 
-  <div style="margin-top:12px;">
-    <a href="javascript:void(0)" id="visualiserLinkOM"
-       style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-      📍 Visualiser les communes couvertes
-    </a>
-  </div>
+      <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
+      <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
+      <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
+      
+<div style="margin-top:12px;">
+  <a href="#" id="visualiserLinkOM" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+    📍 Visualiser les communes couvertes
+  </a>
 </div>
-
     </div>
 
   </div>
