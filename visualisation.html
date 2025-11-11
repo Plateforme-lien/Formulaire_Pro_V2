@@ -537,15 +537,38 @@ function selectionnerCritere(dep, rayonKm, tempsTrajet) {
   const blockCritere = document.getElementById('critereBlock');
   const zoneMetropole = document.getElementById('zoneMetropole');
   const zoneOutreMer = document.getElementById('zoneOutreMer');
+  
   blockCritere.style.display = 'block';
+  
   if (DEPS_METRO.includes(dep)) {
     zoneMetropole.style.display = 'block';
     zoneOutreMer.style.display = 'none';
-    if (tempsTrajet) tempsSelect.value = tempsTrajet;
+    
+    if (tempsTrajet) {
+      // Décoder et nettoyer la valeur
+      const valeurNettoyee = decodeURIComponent(tempsTrajet).trim();
+      console.log("⏱️ Tentative de sélection du temps:", valeurNettoyee);
+      
+      // Attendre un peu que le select soit bien affiché
+      setTimeout(() => {
+        tempsSelect.value = valeurNettoyee;
+        console.log("✅ Temps sélectionné:", tempsSelect.value);
+      }, 100);
+    }
+    
   } else if (DEPS_DOMTOM.includes(dep)) {
     zoneMetropole.style.display = 'none';
     zoneOutreMer.style.display = 'block';
-    if (rayonKm) rayonSelect.value = decodeURIComponent(rayonKm);
+    
+    if (rayonKm) {
+      const valeurNettoyee = decodeURIComponent(rayonKm).trim();
+      console.log("📍 Tentative de sélection du rayon:", valeurNettoyee);
+      
+      setTimeout(() => {
+        rayonSelect.value = valeurNettoyee;
+        console.log("✅ Rayon sélectionné:", rayonSelect.value);
+      }, 100);
+    }
   }
 }
 
@@ -553,21 +576,28 @@ async function preRemplirDepuisURL() {
   const params = new URLSearchParams(window.location.search);
   const dep = params.get("dep");
   const commune = params.get("commune");
-  const rayon = params.get("rayonKm");
-  const temps = params.get("tempsTrajet");
+  const rayonKm = params.get("rayonKm");
+  const tempsTrajet = params.get("tempsTrajet");
+  
   if (!dep) return;
-  console.log("📦 Paramètres URL :", { dep, commune, rayonKm, tempsTrajet });
+  
+  console.log("📦 Paramètres URL reçus :", { dep, commune, rayonKm, tempsTrajet });
+  
   await chargerDepartements();
   departSelect.value = dep;
   departSelect.dispatchEvent(new Event("change"));
+  
   const waitForCommunes = () => new Promise(resolve => {
     const interval = setInterval(() => {
       if (communes.length > 0) { clearInterval(interval); resolve(); }
     }, 300);
   });
+  
   await waitForCommunes();
+  
   if (commune) communeSelect.value = commune;
-  selectionnerCritere(dep, rayonKm, temps);
+  selectionnerCritere(dep, rayonKm, tempsTrajet);
+  
   setTimeout(() => { afficherBtn.click(); }, 1000);
 }
 window.addEventListener("load", preRemplirDepuisURL);
