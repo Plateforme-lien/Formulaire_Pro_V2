@@ -437,12 +437,29 @@ afficherBtn.addEventListener('click', async () => {
 
 communes.forEach(c => {
   if (c.nom === nomCentrale) return;
-  const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-  if (polygon.getBounds().contains(pt)) {
-    if (isPointInPolygon(pt, polygonCoords)) {
-      dansZone.push(c);
-      L.marker(pt).addTo(map).bindPopup(c.nom);
+  
+  const lat = c.centre.coordinates[1];
+  const lon = c.centre.coordinates[0];
+  
+  // Tester le centre + 4 points cardinaux
+  const pointsAVerifier = getPointsCardinaux(lat, lon, 3);
+  
+  let communeIncluse = false;
+  
+  for (const point of pointsAVerifier) {
+    const pt = L.latLng(point.lat, point.lng);
+    if (polygon.getBounds().contains(pt)) {
+      if (isPointInPolygon(pt, polygonCoords)) {
+        communeIncluse = true;
+        break; // Au moins un point est dans la zone, on arrête
+      }
     }
+  }
+  
+  if (communeIncluse) {
+    dansZone.push(c);
+    const ptCentre = L.latLng(lat, lon);
+    L.marker(ptCentre).addTo(map).bindPopup(c.nom);
   }
 });
 
@@ -513,6 +530,24 @@ communes.forEach(c => {
     loadingMsg.style.display = 'none';
   }
 });
+
+  // ==========================
+//  CALCULER LES 4 POINTS CARDINAUX D'UNE COMMUNE
+// ==========================
+function getPointsCardinaux(lat, lon, rayonKm = 3) {
+  // Approximation : 1 degré latitude ≈ 111 km
+  // Pour la longitude, ça dépend de la latitude (cos)
+  const deltaLat = rayonKm / 111;
+  const deltaLon = rayonKm / (111 * Math.cos(lat * Math.PI / 180));
+  
+  return [
+    { lat: lat, lng: lon },                    // Centre
+    { lat: lat + deltaLat, lng: lon },         // Nord
+    { lat: lat - deltaLat, lng: lon },         // Sud
+    { lat: lat, lng: lon + deltaLon },         // Est
+    { lat: lat, lng: lon - deltaLon }          // Ouest
+  ];
+}
 
 // ==========================
 //  FONCTION UTILITAIRE : point dans polygone
