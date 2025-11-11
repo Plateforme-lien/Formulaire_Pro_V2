@@ -1197,6 +1197,7 @@ const visualiserLinkMetro = document.getElementById("visualiserLinkMetro");
 const visualiserLinkOM = document.getElementById("visualiserLinkOM");
 
 // Fonction commune pour ouvrir la visualisation
+// Fonction commune pour ouvrir la visualisation
 function ouvrirVisualisation(e) {
   e.preventDefault();
 
@@ -1225,7 +1226,7 @@ function ouvrirVisualisation(e) {
       return;
     }
 
-    url += `&temps=${encodeURIComponent(tempsValue)}`;
+    url += `&tempsTrajet=${encodeURIComponent(tempsValue)}`;
 
   } else if (DEPS_DOMTOM.includes(codeDept)) {
     const select = document.getElementById("rayonKm");
@@ -1241,7 +1242,7 @@ function ouvrirVisualisation(e) {
       return;
     }
 
-    url += `&rayon=${encodeURIComponent(rayonValue)}`;
+    url += `&rayonKm=${encodeURIComponent(rayonValue)}`;
   }
 
   window.open(url, "_blank");
