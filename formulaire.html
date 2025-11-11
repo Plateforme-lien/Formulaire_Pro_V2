@@ -1157,9 +1157,14 @@ visualiserLink.addEventListener("click", function (e) {
 
     const dep = document.getElementById("departement").value;
     const commune = document.getElementById("commune").value;
-    const rayon = document.getElementById("rayonOuTemps").value;
+    const rayonOuTemps = document.getElementById("rayonOuTemps").value;
 
-    const url = `visualisation.html?dep=${dep}&commune=${commune}&rayon=${rayon}`;
+    if (!dep || !commune || !rayonOuTemps) {
+        alert("⚠️ Veuillez d'abord sélectionner le département, la commune et le rayon/temps de trajet.");
+        return;
+    }
+
+    const url = `visualisation.html?dep=${encodeURIComponent(dep)}&commune=${encodeURIComponent(commune)}&rayonOuTemps=${encodeURIComponent(rayonOuTemps)}`;
     window.open(url, "_blank");
 });
 </script>
