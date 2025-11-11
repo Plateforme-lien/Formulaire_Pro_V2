@@ -392,12 +392,13 @@
 </div>
 <script>
 
+<script>
+
 /* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
 const DEPT_API = "https://geo.api.gouv.fr/departements";
 const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes`;
 const DOM_TOM = ['971','972','973','974','975','976','977','978'];
-
 
 /* ========== HELPERS VALIDATION ========== */
 const isDigits = s => /^\d+$/.test(s||"");
@@ -453,57 +454,37 @@ let FORM_LOCKED = false;
 /* ========== FONCTIONS DE VERROUILLAGE ========== */
 function lockForm() {
   FORM_LOCKED = true;
-  
-  // Masquer TOUT sauf la bannière
   rest.style.display = 'none';
   document.querySelector('.prereq-section').style.display = 'none';
   newUserMessage.classList.add('hidden');
-
-  
-  // Masquer le titre, sous-titre et section email (avant le form)
-  document.getElementById('section-email').style.display = 'none';  // Masquer "Vérification de votre identité"
-  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });  // Masquer les astérisques/questions obligatoires
+  document.getElementById('section-email').style.display = 'none';
+  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });
   document.querySelector('h1').style.display = 'none';
   document.querySelector('h2').style.display = 'none';
   document.querySelector('.info-box').style.display = 'none';
   emailEl.parentElement.parentElement.querySelector('label').style.display = 'none';
   emailEl.parentElement.style.display = 'none';
-  
-  // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
   resetBtn.classList.add('hidden');
   editBtn.classList.add('hidden');
-  
-  // Afficher la bannière de succès
   successBanner.classList.remove('hidden');
-  
-  // Faire défiler vers la bannière
   successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
   
 function unlockForm() {
   FORM_LOCKED = false;
-  
-  // Réactiver tous les inputs
   document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
     el.disabled = false;
   });
-  
-  // Afficher le bouton submit, masquer le bouton edit
   submitBtn.classList.remove('hidden');
   editBtn.classList.add('hidden');
   resetBtn.classList.remove('hidden');
-  
-  // Masquer la bannière de succès
   successBanner.classList.add('hidden');
-  
   submitMsg.textContent = "";
 }
 
 /* ========== BOUTON MODIFIER ========== */
-editBtn.addEventListener('click', () => {
-  unlockForm();
-});
+editBtn.addEventListener('click', () => { unlockForm(); });
 
 /* ========== SEND CODE ========== */
 sendCodeBtn.addEventListener("click", async () => {
