@@ -312,12 +312,29 @@ departSelect.addEventListener('change', async e => {
     const data = await res.json();
     communes = data.sort((a,b) => a.nom.localeCompare(b.nom));
     communeSelect.innerHTML = '<option value="">-- Sélectionnez votre commune --</option>';
-    communes.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.nom;
-      opt.text = c.nom;
-      communeSelect.appendChild(opt);
-    });
+communes.forEach(c => {
+  if (c.nom === nomCentrale) return;
+  
+  // Générer les 5 points de test (centre + 4 coins)
+  const pointsTest = genererPointsTest(c);
+  
+  // Vérifier si AU MOINS UN des points est dans la zone
+  let auMoinsUnPointDedans = false;
+  
+  for (const pt of pointsTest) {
+    if (polygon.getBounds().contains(pt) && isPointInPolygon(pt, polygonCoords)) {
+      auMoinsUnPointDedans = true;
+      break; // Pas besoin de vérifier les autres points
+    }
+  }
+  
+  if (auMoinsUnPointDedans) {
+    dansZone.push(c);
+    // Afficher le marqueur au centre (plus lisible sur la carte)
+    const centre = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+    L.marker(centre).addTo(map).bindPopup(c.nom);
+  }
+});
 
     // Afficher le bon critère selon le département
     document.getElementById('critereBlock').style.display = 'block';
