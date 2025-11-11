@@ -921,7 +921,6 @@ departSelect.addEventListener('change', e => {
 });
 
 /* ========== SUBMIT FORM ========== */
-/* ========== SUBMIT FORM ========== */
 submitBtn.addEventListener('click', async () => {
   // Réinitialiser les messages
   submitMsg.textContent = "";
@@ -994,8 +993,8 @@ fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   fd.append("commune", communeSelect.value);
   
   // Envoyer le rayon approprié selon le mode et le département
-  const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
-  if (domicileCoche) {
+const domicileCocheSubmit = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
+if (domicileCocheSubmit) {
     const isDomTom = DOM_TOM.includes(departSelect.value);
     const rayonValue = isDomTom 
       ? document.getElementById("rayonDomTom")?.value 
