@@ -962,8 +962,11 @@ submitBtn.addEventListener('click', async () => {
   if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
   if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
   if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
+  
   // Validation rayon uniquement si "se déplace à domicile" est coché
-  const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
+  const domicileCheckbox = document.querySelector('input[name="mode"][value="domicile"]');
+  const domicileCoche = domicileCheckbox ? domicileCheckbox.checked : false;
+  
   if (domicileCoche) {
     const isDomTom = DOM_TOM.includes(departSelect.value);
     const rayonField = isDomTom ? document.getElementById("rayonDomTom") : document.getElementById("tempsTrajet");
@@ -972,6 +975,7 @@ submitBtn.addEventListener('click', async () => {
       return; 
     }
   }
+  
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
   if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
   if (dispoChecked.value === "oui") {
