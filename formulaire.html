@@ -391,6 +391,9 @@
   
 </div>
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+
+
 /* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
 const DEPT_API = "https://geo.api.gouv.fr/departements";
@@ -1121,6 +1124,8 @@ document.querySelectorAll('input[name="mode"]').forEach(checkbox => {
 
 departSelect.addEventListener('change', mettreAJourAffichageZoneGeo);
 communeSelect.addEventListener('change', mettreAJourAffichageZoneGeo);
+});
+
 </script>
 </body>
 </html>
