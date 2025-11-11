@@ -240,34 +240,59 @@
           <label><input type="radio" name="visio" value="oui"> Oui</label>
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
-
+        
         <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
-
         <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
         <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
-
         <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
         <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
         
-        <label for="rayon" class="required">Quel est votre rayon d'intervention ?</label>
-        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-          <select id="rayon" name="rayon" style="flex:1;">
-            <option value="">-- Sélectionnez --</option>
-            <option>Aucun - en cabinet</option>
-            <option>10 km</option>
-            <option>15 km</option>
-            <option>20 km</option>
-            <option>25 km</option>
-            <option>30 km</option>
-            <option>40 km</option>
-            <option>Tout mon département</option>
-          </select>
-          <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-            Visualiser les communes couvertes par mon rayon
-          </a>
+        <div id="blocCabinetSeul" class="hidden">
+          <div class="info-box">
+            <strong>🏢 Cabinet uniquement</strong><br>
+            Vous recevez uniquement dans votre cabinet à <strong id="communeCabinet"></strong>.<br>
+            Les particuliers devront se déplacer jusqu'à votre commune.
+          </div>
         </div>
-        <div class="small" style="margin-top:4px;">Si vous intervenez uniquement en cabinet, sélectionnez "Aucun - en cabinet".</div>
-
+        
+        <div id="blocMetropole" class="hidden">
+          <label for="tempsTrajet" class="required">Temps de trajet maximum (en voiture)</label>
+          <select id="tempsTrajet" name="tempsTrajet">
+            <option value="">-- Sélectionnez --</option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="departement">Tout mon département</option>
+          </select>
+          
+          <label for="precisions">Précisions géographiques (optionnel)</label>
+          <textarea id="precisions" name="precisions" rows="2" maxlength="200" placeholder="Ex: N'intervient pas en zone rurale isolée"></textarea>
+          <div class="small" style="margin-top:4px">Indiquez ici d'éventuelles contraintes géographiques.</div>
+        </div>
+        
+        <div id="blocDomTom" class="hidden">
+          <label for="rayonDomTom" class="required">Rayon d'intervention (km)</label>
+          <select id="rayonDomTom" name="rayonDomTom">
+            <option value="">-- Sélectionnez --</option>
+            <option value="10">10 km</option>
+            <option value="15">15 km</option>
+            <option value="20">20 km</option>
+            <option value="25">25 km</option>
+            <option value="30">30 km</option>
+            <option value="40">40 km</option>
+            <option value="departement">Tout mon département</option>
+          </select>
+          
+          <div class="info-box" style="background:#fff3e0;border-color:#ff9800;margin-top:12px">
+            <strong>ℹ️ Calcul à vol d'oiseau</strong><br>
+            Pour votre territoire, la distance est calculée à vol d'oiseau (les calculs GPS ne sont pas disponibles).
+          </div>
+          
+          <label for="precisions">Précisions géographiques (optionnel)</label>
+          <textarea id="precisions" name="precisions" rows="2" maxlength="200" placeholder="Ex: Uniquement Grande-Terre"></textarea>
+          <div class="small" style="margin-top:4px">Indiquez ici d'éventuelles contraintes géographiques.</div>
+        </div>
 
        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
@@ -1027,6 +1052,48 @@ visualiserLink.addEventListener("click", function (e) {
     const url = `visualisation.html?dep=${dep}&commune=${commune}&rayon=${rayon}`;
     window.open(url, "_blank");
 });
+
+/* ========== GESTION ZONE GÉOGRAPHIQUE (3 CAS) ========== */
+const DOM_TOM = ['971','972','973','974','975','976','977','978'];
+const blocCabinetSeul = document.getElementById('blocCabinetSeul');
+const blocMetropole = document.getElementById('blocMetropole');
+const blocDomTom = document.getElementById('blocDomTom');
+const communeCabinet = document.getElementById('communeCabinet');
+
+function mettreAJourAffichageZoneGeo() {
+  const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
+  const cabinetCoche = document.querySelector('input[name="mode"][value="cabinet"]')?.checked || false;
+  const dept = departSelect.value;
+  const commune = communeSelect.value;
+  const isDomTom = DOM_TOM.includes(dept);
+  
+  blocCabinetSeul.classList.add('hidden');
+  blocMetropole.classList.add('hidden');
+  blocDomTom.classList.add('hidden');
+  
+  if (cabinetCoche && !domicileCoche) {
+    blocCabinetSeul.classList.remove('hidden');
+    if (commune) {
+      communeCabinet.textContent = commune;
+    }
+    return;
+  }
+  
+  if (domicileCoche) {
+    if (isDomTom) {
+      blocDomTom.classList.remove('hidden');
+    } else {
+      blocMetropole.classList.remove('hidden');
+    }
+  }
+}
+
+document.querySelectorAll('input[name="mode"]').forEach(checkbox => {
+  checkbox.addEventListener('change', mettreAJourAffichageZoneGeo);
+});
+
+departSelect.addEventListener('change', mettreAJourAffichageZoneGeo);
+communeSelect.addEventListener('change', mettreAJourAffichageZoneGeo);
 </script>
 </body>
 </html>
