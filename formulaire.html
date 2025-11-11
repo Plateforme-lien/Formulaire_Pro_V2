@@ -396,6 +396,8 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
 const DEPT_API = "https://geo.api.gouv.fr/departements";
 const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes`;
+const DOM_TOM = ['971','972','973','974','975','976','977','978'];
+
 
 /* ========== HELPERS VALIDATION ========== */
 const isDigits = s => /^\d+$/.test(s||"");
@@ -1098,7 +1100,6 @@ visualiserLink.addEventListener("click", function (e) {
 });
 
 /* ========== GESTION ZONE GÉOGRAPHIQUE (3 CAS) ========== */
-const DOM_TOM = ['971','972','973','974','975','976','977','978'];
 const blocCabinetSeul = document.getElementById('blocCabinetSeul');
 const blocMetropole = document.getElementById('blocMetropole');
 const blocDomTom = document.getElementById('blocDomTom');
