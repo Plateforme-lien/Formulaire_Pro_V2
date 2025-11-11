@@ -242,26 +242,26 @@
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
 
-        <div id="section-geo" class="hidden">
+ <div id="section-geo" class="hidden">
   <div class="section-title" style="margin-top:32px"><span class="section-number">3</span> Zone géographique d'intervention</div>
 
-  <!-- DÉPARTEMENT (toujours visible dans section 3) -->
+  <!-- DÉPARTEMENT -->
   <label for="departement" class="required">Dans quel département intervenez-vous ?</label>
   <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
 
-  <!-- COMMUNE (visible après sélection département) -->
+  <!-- COMMUNE -->
   <div id="blocCommune" class="hidden">
     <label for="commune" class="required" id="labelCommune">Quelle est votre commune d'intervention ?</label>
     <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
   </div>
 
-  <!-- QUESTIONS POUR DÉPLACEMENTS (cachées par défaut) -->
+  <!-- QUESTIONS DÉPLACEMENTS -->
   <div id="questionsDeplacements" class="hidden">
     
-    <!-- ZONE MÉTROPOLE : Temps de trajet -->
+    <!-- MÉTROPOLE : Temps -->
     <div id="zoneMetropole" class="hidden">
-      <label for="rayonOuTemps" class="required">Quel est votre temps de trajet maximal ?</label>
-      <select id="rayonOuTemps" name="rayonOuTemps" style="margin-top:8px;">
+      <label for="tempsTrajet" class="required">Quel est votre temps de trajet maximal ?</label>
+      <select id="tempsTrajet" name="tempsTrajet" style="margin-top:8px;">
         <option value="">-- Sélectionnez --</option>
         <option>15 min</option>
         <option>20 min</option>
@@ -270,12 +270,18 @@
         <option>60 min</option>
       </select>
       <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
+      
+      <div style="margin-top:12px;">
+        <a href="#" id="visualiserLinkMetro" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+          📍 Visualiser les communes couvertes
+        </a>
+      </div>
     </div>
 
-    <!-- ZONE OUTRE-MER : Rayon en km + Précisions -->
+    <!-- OUTRE-MER : Rayon -->
     <div id="zoneOutreMer" class="hidden">
-      <label for="rayonOuTemps" class="required">Quel est votre rayon d'intervention (en km) ?</label>
-      <select id="rayonOuTemps" name="rayonOuTemps" style="margin-top:8px;">
+      <label for="rayonKm" class="required">Quel est votre rayon d'intervention (en km) ?</label>
+      <select id="rayonKm" name="rayonKm" style="margin-top:8px;">
         <option value="">-- Sélectionnez --</option>
         <option>10 km</option>
         <option>15 km</option>
@@ -287,17 +293,15 @@
       </select>
       <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
 
-      <!-- Précisions géographiques (uniquement Outre-Mer) -->
       <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
-      <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers, je ne me déplace pas dans certaines zones..."></textarea>
-      <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile sur votre zone d'intervention.</div>
-    </div>
-
-    <!-- Lien de visualisation (commun aux deux zones) -->
-    <div style="margin-top:12px;">
-      <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;display:inline-block;">
-        📍 Visualiser les communes couvertes par mon rayon
-      </a>
+      <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
+      <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
+      
+      <div style="margin-top:12px;">
+        <a href="#" id="visualiserLinkOM" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+          📍 Visualiser les communes couvertes
+        </a>
+      </div>
     </div>
 
   </div>
@@ -854,7 +858,24 @@ async function showFormAndPrefill(data) {
       }, 100);
     }
     
-    document.getElementById("rayonOuTemps").value = data.rayonOuTemps || "";
+    // 🔧 CORRECTION : Gestion séparée rayon / temps
+        if (data.rayon || data.temps) {
+      const deptCode = String(data.departement).split('-')[0].trim();
+      
+      console.log(`🔍 Pré-remplissage zone : département=${deptCode}, rayon=${data.rayon}, temps=${data.temps}`);
+      
+      setTimeout(() => {
+        if (DEPS_METRO.includes(deptCode) && data.temps) {
+          console.log(`✅ Métropole : temps=${data.temps}`);
+          document.getElementById("tempsTrajet").value = data.temps;
+        } else if (DEPS_DOMTOM.includes(deptCode) && data.rayon) {
+          console.log(`✅ Outre-mer : rayon=${data.rayon}`);
+          document.getElementById("rayonKm").value = data.rayon;
+        }
+      }, 300);
+    }
+    
+    
     document.getElementById("precisionsGeo").value = data.precisionsGeo || "";
     
     if (data.disponibilite) {
@@ -1026,10 +1047,20 @@ submitBtn.addEventListener('click', async () => {
   
 const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
 if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
-  const rayonOuTempsValue = document.getElementById("rayonOuTemps").value.trim();
-  if (!rayonOuTempsValue || rayonOuTempsValue === "-- Sélectionnez --") { 
-    submitMsg.textContent = "Indiquez votre temps de trajet ou rayon d'intervention."; 
-    return; 
+  const codeDept = departSelect.value.split(' ')[0];
+  
+  if (DEPS_METRO.includes(codeDept)) {
+    const tempsValue = document.getElementById("tempsTrajet").value.trim();
+    if (!tempsValue || tempsValue === "-- Sélectionnez --") { 
+      submitMsg.textContent = "Indiquez votre temps de trajet maximal."; 
+      return; 
+    }
+  } else if (DEPS_DOMTOM.includes(codeDept)) {
+    const rayonValue = document.getElementById("rayonKm").value.trim();
+    if (!rayonValue || rayonValue === "-- Sélectionnez --") { 
+      submitMsg.textContent = "Indiquez votre rayon d'intervention."; 
+      return; 
+    }
   }
 }
   
@@ -1069,10 +1100,19 @@ if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
   const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
   fd.append("modeIntervention", modeIntervention ? modeIntervention.value : "");
   
-  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
-  fd.append("departement", departSelect.value);
-  fd.append("commune", communeSelect.value);
-  fd.append("rayonOuTemps", document.getElementById("rayonOuTemps").value);
+fd.append("departement", departSelect.value);
+fd.append("commune", communeSelect.value);
+
+// Envoyer les deux champs séparés
+const codeDept = departSelect.value.split(' ')[0];
+
+if (DEPS_METRO.includes(codeDept)) {
+  fd.append("rayon", "");
+  fd.append("temps", document.getElementById("tempsTrajet").value);
+} else if (DEPS_DOMTOM.includes(codeDept)) {
+  fd.append("rayon", document.getElementById("rayonKm").value);
+  fd.append("temps", "");
+}
   fd.append("precisionsGeo", document.getElementById("precisionsGeo").value.trim());
   fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
   fd.append("dateDispo", dateInput.value);
