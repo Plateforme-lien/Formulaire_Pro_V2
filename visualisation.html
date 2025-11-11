@@ -428,16 +428,16 @@ afficherBtn.addEventListener('click', async () => {
 
       map.fitBounds(polygon.getBounds(), { padding: [50, 50] });
 
-      communes.forEach(c => {
-        if (c.nom === nomCentrale) return;
-        const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-        if (polygon.getBounds().contains(pt)) {
-          if x(isPointInPolygon(pt, polygonCoords)) {
-            dansZone.push(c);
-            L.marker(pt).addTo(map).bindPopup(c.nom);
-          }
-        }
-      });
+communes.forEach(c => {
+  if (c.nom === nomCentrale) return;
+  const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+  if (polygon.getBounds().contains(pt)) {
+    if (isPointInPolygon(pt, polygonCoords)) {
+      dansZone.push(c);
+      L.marker(pt).addTo(map).bindPopup(c.nom);
+    }
+  }
+});
 
       const total = dansZone.length + 1;
       listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
@@ -569,6 +569,8 @@ window.addEventListener("load", preRemplirDepuisURL);
 
 </body>
 </html>
+
+
 
 
 
