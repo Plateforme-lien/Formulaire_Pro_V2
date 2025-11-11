@@ -242,323 +242,149 @@
     <button class="btn-secondary" onclick="window.close()">← Retour au questionnaire</button>
   </div>
 </div>
-
 <script>
-const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImYyNjcyNmMzZTU3YTQyNzk4Y2UxYzMxZmQ2YTZhYzZjIiwiaCI6Im11cm11cjY0In0=';
+/* ------------------------------
+   CONFIGURATION
+--------------------------------*/
+const ORS_API_KEY = "TON_CLE_API_ICI"; // ⚠️ À remplacer par ta vraie clé (ou proxy sécurisé)
 const DEPT_API = "https://geo.api.gouv.fr/departements";
-const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre,contour`;
+const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre`;
 
-const DEPS_METRO = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','2A','2B','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95'];
+const DEPS_METRO = [
+  '01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','2A','2B','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95'
+];
 const DEPS_DOMTOM = ['971','972','973','974','976'];
 
-const departSelect = document.getElementById('departement');
-const communeSelect = document.getElementById('commune');
-const tempsSelect = document.getElementById('tempsTrajet');
-const rayonSelect = document.getElementById('rayonKm');
-const afficherBtn = document.getElementById('afficher');
-const listeBox = document.getElementById('liste');
-const loadingMsg = document.getElementById('loadingMsg');
-const errorMsg = document.getElementById('errorMsg');
+/* ------------------------------
+   ÉLÉMENTS DOM
+--------------------------------*/
+const departSelect = document.getElementById("departement");
+const communeSelect = document.getElementById("commune");
+const tempsSelect = document.getElementById("tempsTrajet");
+const rayonSelect = document.getElementById("rayonKm");
+const afficherBtn = document.getElementById("afficher");
+const listeBox = document.getElementById("liste");
+const loadingMsg = document.getElementById("loadingMsg");
+const errorMsg = document.getElementById("errorMsg");
 
-const map = L.map('map').setView([46.8, 2.5], 6);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+/* ------------------------------
+   INITIALISATION CARTE LEAFLET
+--------------------------------*/
+const map = L.map("map").setView([46.8, 2.5], 6);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 18,
-  attribution: '© OpenStreetMap'
+  attribution: "© OpenStreetMap"
 }).addTo(map);
-L.control.scale({ position: 'bottomleft', metric: true }).addTo(map);
+L.control.scale({ position: "bottomleft", metric: true }).addTo(map);
 
+/* ------------------------------
+   VARIABLES GLOBALES
+--------------------------------*/
 let communes = [];
 let currentDeptCode = null;
 
-// ==========================
-//  CHARGEMENT DES DÉPARTEMENTS
-// ==========================
-async function chargerDepartements(){
-  departSelect.innerHTML = '<option value="">⏳ Chargement des départements...</option>';
+/* ------------------------------
+   CHARGER LES DÉPARTEMENTS
+--------------------------------*/
+async function chargerDepartements() {
+  departSelect.innerHTML = "<option>⏳ Chargement...</option>";
   try {
     const res = await fetch(DEPT_API);
     const data = await res.json();
     data.sort((a,b) => a.code.localeCompare(b.code));
     departSelect.innerHTML = '<option value="">-- Sélectionnez un département --</option>';
     data.forEach(dep => {
-      const opt = document.createElement('option');
+      const opt = document.createElement("option");
       opt.value = dep.code;
       opt.textContent = `${dep.code} — ${dep.nom}`;
       departSelect.appendChild(opt);
     });
-  } catch {
-    departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+  } catch (err) {
+    console.error("Erreur chargement départements :", err);
+    departSelect.innerHTML = "<option value=''>❌ Erreur de chargement</option>";
   }
 }
 chargerDepartements();
 
-// ==========================
-//  CHARGEMENT DES COMMUNES
-// ==========================
-departSelect.addEventListener('change', async e => {
+/* ------------------------------
+   CHARGER LES COMMUNES
+--------------------------------*/
+departSelect.addEventListener("change", async e => {
   const code = e.target.value;
   currentDeptCode = code;
   communes = [];
-  communeSelect.innerHTML = '<option>⏳ Chargement des communes...</option>';
-  
-  document.getElementById('critereBlock').style.display = 'none';
-  document.getElementById('zoneMetropole').style.display = 'none';
-  document.getElementById('zoneOutreMer').style.display = 'none';
-  
-  if(!code) return;
+  communeSelect.innerHTML = "<option>⏳ Chargement...</option>";
+  document.getElementById("critereBlock").style.display = "none";
+  document.getElementById("zoneMetropole").style.display = "none";
+  document.getElementById("zoneOutreMer").style.display = "none";
+
+  if (!code) return;
 
   try {
     const res = await fetch(COMMUNE_API(code));
     const data = await res.json();
     communes = data.sort((a,b) => a.nom.localeCompare(b.nom));
     communeSelect.innerHTML = '<option value="">-- Sélectionnez votre commune --</option>';
-communes.forEach(c => {
-  if (c.nom === nomCentrale) return;
-  
-  // Générer les 5 points de test (centre + 4 coins)
-  const pointsTest = genererPointsTest(c);
-  
-  // Vérifier si AU MOINS UN des points est dans la zone
-  let auMoinsUnPointDedans = false;
-  
-  for (const pt of pointsTest) {
-    if (polygon.getBounds().contains(pt) && isPointInPolygon(pt, polygonCoords)) {
-      auMoinsUnPointDedans = true;
-      break; // Pas besoin de vérifier les autres points
-    }
-  }
-  
-  if (auMoinsUnPointDedans) {
-    dansZone.push(c);
-    // Afficher le marqueur au centre (plus lisible sur la carte)
-    const centre = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-    L.marker(centre).addTo(map).bindPopup(c.nom);
-  }
-});
+    communes.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.nom;
+      opt.textContent = c.nom;
+      communeSelect.appendChild(opt);
+    });
 
-    // Afficher le bon critère selon le département
-    document.getElementById('critereBlock').style.display = 'block';
-    
+    // Affiche le bon bloc selon le département
+    document.getElementById("critereBlock").style.display = "block";
     if (DEPS_METRO.includes(code)) {
-      document.getElementById('zoneMetropole').style.display = 'block';
-      document.getElementById('zoneOutreMer').style.display = 'none';
+      document.getElementById("zoneMetropole").style.display = "block";
     } else if (DEPS_DOMTOM.includes(code)) {
-      document.getElementById('zoneMetropole').style.display = 'none';
-      document.getElementById('zoneOutreMer').style.display = 'block';
+      document.getElementById("zoneOutreMer").style.display = "block";
     }
 
     // Zoom sur le département
     const lats = communes.map(c => c.centre.coordinates[1]);
     const lngs = communes.map(c => c.centre.coordinates[0]);
     const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
-    map.fitBounds(bounds, { padding: [30,30] });
-
-  } catch {
-    communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
-  }
-});
-
-// ==========================
-//  CALCUL ISOCHRONE (Métropole)
-// ==========================
-async function calculerIsochrone(lon, lat, minutes) {
-  const url = `https://api.openrouteservice.org/v2/isochrones/driving-car`;
-  
-  const body = {
-    locations: [[lon, lat]],
-    range: [minutes * 60], // Convertir minutes en secondes
-    range_type: 'time'
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': ORS_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erreur API ORS:', errorText);
-      throw new Error(`Erreur API: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.features[0].geometry.coordinates[0];
-    
-  } catch (error) {
-    console.error('Erreur calcul isochrone:', error);
-    throw error;
-  }
-} 
-
-// ==========================
-//  FONCTION : Générer 5 points de test pour une commune
-// ==========================
-// Vérifier chaque commune avec ses 5 points de test
-communes.forEach(c => {
-  if (c.nom === nomCentrale) return;
-  
-  const pointsTest = genererPointsTest(c);
-  let communeCouverteParIsochrone = false;
-  
-  // Si AU MOINS UN des 5 points est dans l'isochrone, la commune est couverte
-  for (const point of pointsTest) {
-    if (polygon.getBounds().contains(point) && isPointInPolygon(point, polygonCoords)) {
-      communeCouverteParIsochrone = true;
-      break;
-    }
-  }
-  
-  if (communeCouverteParIsochrone) {
-    dansZone.push(c);
-    const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-    L.marker(pt).addTo(map).bindPopup(c.nom);
-  }
-});
-
-// ==========================
-//  AFFICHER LA ZONE D'INTERVENTION
-// ==========================
-afficherBtn.addEventListener('click', async () => {
-  const nomCentrale = communeSelect.value;
-  
-  if(!nomCentrale) {
-    alert("⚠️ Sélectionnez une commune centrale");
-    return;
-  }
-
-  const centrale = communes.find(c => c.nom === nomCentrale);
-  if(!centrale) {
-    alert("❌ Commune introuvable");
-    return;
-  }
-
-  const centre = L.latLng(centrale.centre.coordinates[1], centrale.centre.coordinates[0]);
-  const lon = centrale.centre.coordinates[0];
-  const lat = centrale.centre.coordinates[1];
-
-  map.eachLayer(layer => {
-    if (layer instanceof L.Marker || layer instanceof L.Circle || layer instanceof L.Polygon) {
-      map.removeLayer(layer);
-    }
-  });
-
-  loadingMsg.style.display = 'block';
-  errorMsg.style.display = 'none';
-  listeBox.value = '';
-
-  try {
-    let dansZone = [];
-
-    if (DEPS_METRO.includes(currentDeptCode)) {
-      const minutes = parseInt(tempsSelect.value);
-      if (!minutes) {
-        alert("⚠️ Sélectionnez un temps de trajet");
-        loadingMsg.style.display = 'none';
-        return;
-      }
-
-      const isochroneCoords = await calculerIsochrone(lon, lat, minutes);
-      const polygonCoords = isochroneCoords.map(coord => [coord[1], coord[0]]);
-      
-      const polygon = L.polygon(polygonCoords, {
-        color: "#0ea5a4",
-        fillColor: "#0ea5a4",
-        fillOpacity: 0.15,
-        weight: 2
-      }).addTo(map);
-
-      L.marker(centre).addTo(map)
-        .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
-
-      map.fitBounds(polygon.getBounds(), { padding: [50, 50] });
-
-communes.forEach(c => {
-  if (c.nom === nomCentrale) return;
-  const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-  if (polygon.getBounds().contains(pt)) {
-    if (isPointInPolygon(pt, polygonCoords)) {
-      dansZone.push(c);
-      L.marker(pt).addTo(map).bindPopup(c.nom);
-    }
-  }
-});
-
-      const total = dansZone.length + 1;
-      listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
-        `✅ ${dansZone.length} commune(s) accessible(s) en ${minutes} minutes :\n\n` +
-        dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
-        `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
-
-    } else if (DEPS_DOMTOM.includes(currentDeptCode)) {
-      const rayonValue = rayonSelect.value;
-      if (!rayonValue) {
-        alert("⚠️ Sélectionnez un rayon");
-        loadingMsg.style.display = 'none';
-        return;
-      }
-
-      if (rayonValue === "Tout mon département") {
-        dansZone = communes.filter(c => c.nom !== nomCentrale);
-        dansZone.forEach(c => {
-          const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-          L.marker(pt).addTo(map).bindPopup(c.nom);
-        });
-
-        L.marker(centre).addTo(map)
-          .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
-
-        const lats = communes.map(c => c.centre.coordinates[1]);
-        const lngs = communes.map(c => c.centre.coordinates[0]);
-        const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
-        map.fitBounds(bounds, { padding: [50, 50] });
-
-        const total = dansZone.length + 1;
-        listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
-          `✅ ${dansZone.length} commune(s) couvertes (tout le département)\n\n` +
-          dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
-          `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
-
-      } else {
-        const rayonKm = parseFloat(rayonValue);
-        const circle = L.circle(centre, { radius: rayonKm * 1000, color: "#0ea5a4", fillColor: "#0ea5a4", fillOpacity: 0.15 }).addTo(map);
-        L.marker(centre).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
-        map.fitBounds(circle.getBounds(), { padding: [50, 50] });
-
-        communes.forEach(c => {
-          if (c.nom === nomCentrale) return;
-          const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-          const distance = map.distance(centre, pt);
-          if (distance <= rayonKm * 1000) {
-            dansZone.push(c);
-            L.marker(pt).addTo(map).bindPopup(c.nom);
-          }
-        });
-
-        const total = dansZone.length + 1;
-        listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
-          `✅ ${dansZone.length} commune(s) dans un rayon de ${rayonKm} km :\n\n` +
-          dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
-          `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
-      }
-    }
+    map.fitBounds(bounds, { padding: [30, 30] });
 
   } catch (err) {
-    console.error(err);
-    errorMsg.style.display = 'block';
-    errorMsg.textContent = "❌ Erreur lors du calcul de la zone. Veuillez réessayer.";
-  } finally {
-    loadingMsg.style.display = 'none';
+    console.error("Erreur chargement communes :", err);
+    communeSelect.innerHTML = "<option value=''>❌ Erreur de chargement</option>";
   }
 });
 
-// ==========================
-//  FONCTION UTILITAIRE : point dans polygone
-// ==========================
+/* ------------------------------
+   CALCUL ISOCHRONE (Métropole)
+--------------------------------*/
+async function calculerIsochrone(lon, lat, minutes) {
+  const url = "https://api.openrouteservice.org/v2/isochrones/driving-car";
+  const body = {
+    locations: [[lon, lat]],
+    range: [minutes * 60],
+    range_type: "time"
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Authorization": ORS_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const txt = await response.text();
+    console.error("Erreur ORS :", txt);
+    throw new Error("Erreur API ORS");
+  }
+
+  const data = await response.json();
+  return data.features[0].geometry.coordinates[0];
+}
+
+/* ------------------------------
+   UTILITAIRE : Point dans polygone
+--------------------------------*/
 function isPointInPolygon(point, vs) {
   const x = point.lat, y = point.lng;
   let inside = false;
@@ -571,89 +397,147 @@ function isPointInPolygon(point, vs) {
   }
   return inside;
 }
-  
-// ==========================
-// AJOUT : Gestion du préremplissage automatique via URL
-// ==========================
-function selectionnerCritere(dep, rayonKm, tempsTrajet) {
-  console.log("🧭 Sélection du critère :", { dep, rayonKm, tempsTrajet });
-  const blockCritere = document.getElementById('critereBlock');
-  const zoneMetropole = document.getElementById('zoneMetropole');
-  const zoneOutreMer = document.getElementById('zoneOutreMer');
-  
-  blockCritere.style.display = 'block';
-  
-  if (DEPS_METRO.includes(dep)) {
-    zoneMetropole.style.display = 'block';
-    zoneOutreMer.style.display = 'none';
-    
-    if (tempsTrajet) {
-      // Décoder et nettoyer la valeur
-      const valeurNettoyee = decodeURIComponent(tempsTrajet).trim();
-      console.log("⏱️ Tentative de sélection du temps:", valeurNettoyee);
-      
-      // Extraire juste le nombre (enlever " min")
-      const nombreMinutes = valeurNettoyee.replace(/\s*min$/i, '').trim();
-      console.log("🔢 Nombre de minutes extrait:", nombreMinutes);
-      
-      // Attendre un peu que le select soit bien affiché
-      setTimeout(() => {
-        tempsSelect.value = nombreMinutes;
-        console.log("✅ Temps sélectionné:", tempsSelect.value);
-      }, 100);
-    }
-    
-  } else if (DEPS_DOMTOM.includes(dep)) {
-    zoneMetropole.style.display = 'none';
-    zoneOutreMer.style.display = 'block';
-    
-    if (rayonKm) {
-      const valeurNettoyee = decodeURIComponent(rayonKm).trim();
-      console.log("📍 Tentative de sélection du rayon:", valeurNettoyee);
-      
-      // Extraire juste le nombre (enlever " km")
-      const nombreKm = valeurNettoyee.replace(/\s*km$/i, '').trim();
-      console.log("🔢 Nombre de km extrait:", nombreKm);
-      
-      setTimeout(() => {
-        rayonSelect.value = nombreKm;
-        console.log("✅ Rayon sélectionné:", rayonSelect.value);
-      }, 100);
-    }
-  }
+
+/* ------------------------------
+   GÉNÉRER 5 POINTS AUTOUR D’UNE COMMUNE
+--------------------------------*/
+function genererPointsTest(commune) {
+  const lat = commune.centre.coordinates[1];
+  const lon = commune.centre.coordinates[0];
+  const delta = 0.005; // ≈ 500m
+  return [
+    L.latLng(lat, lon),
+    L.latLng(lat + delta, lon),
+    L.latLng(lat - delta, lon),
+    L.latLng(lat, lon + delta),
+    L.latLng(lat, lon - delta)
+  ];
 }
 
-async function preRemplirDepuisURL() {
-  const params = new URLSearchParams(window.location.search);
-  const dep = params.get("dep");
-  const commune = params.get("commune");
-  const rayonKm = params.get("rayonKm");
-  const tempsTrajet = params.get("tempsTrajet");
-  
-  if (!dep) return;
-  
-  console.log("📦 Paramètres URL reçus :", { dep, commune, rayonKm, tempsTrajet });
-  
-  await chargerDepartements();
-  departSelect.value = dep;
-  departSelect.dispatchEvent(new Event("change"));
-  
-  const waitForCommunes = () => new Promise(resolve => {
-    const interval = setInterval(() => {
-      if (communes.length > 0) { clearInterval(interval); resolve(); }
-    }, 300);
+/* ------------------------------
+   AFFICHER LA ZONE D’INTERVENTION
+--------------------------------*/
+afficherBtn.addEventListener("click", async () => {
+  const nomCentrale = communeSelect.value;
+  if (!nomCentrale) return alert("⚠️ Sélectionnez une commune centrale");
+
+  const centrale = communes.find(c => c.nom === nomCentrale);
+  if (!centrale) return alert("❌ Commune introuvable");
+
+  const lat = centrale.centre.coordinates[1];
+  const lon = centrale.centre.coordinates[0];
+  const centre = L.latLng(lat, lon);
+
+  // Réinitialiser la carte
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker || layer instanceof L.Circle || layer instanceof L.Polygon)
+      map.removeLayer(layer);
   });
-  
-  await waitForCommunes();
-  
-  if (commune) communeSelect.value = commune;
-  selectionnerCritere(dep, rayonKm, tempsTrajet);
-  
-  setTimeout(() => { afficherBtn.click(); }, 1000);
-}
-window.addEventListener("load", preRemplirDepuisURL);
-  
+
+  loadingMsg.style.display = "block";
+  errorMsg.style.display = "none";
+  listeBox.value = "";
+
+  try {
+    let dansZone = [];
+
+    if (DEPS_METRO.includes(currentDeptCode)) {
+      const minutes = parseInt(tempsSelect.value);
+      if (!minutes) {
+        loadingMsg.style.display = "none";
+        return alert("⚠️ Sélectionnez un temps de trajet");
+      }
+
+      const isoCoords = await calculerIsochrone(lon, lat, minutes);
+      const polygonCoords = isoCoords.map(c => [c[1], c[0]]);
+      const polygon = L.polygon(polygonCoords, {
+        color: "#0ea5a4",
+        fillColor: "#0ea5a4",
+        fillOpacity: 0.15,
+        weight: 2
+      }).addTo(map);
+
+      L.marker(centre).addTo(map)
+        .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+
+      map.fitBounds(polygon.getBounds(), { padding: [40, 40] });
+
+      communes.forEach(c => {
+        if (c.nom === nomCentrale) return;
+        const points = genererPointsTest(c);
+        for (const pt of points) {
+          if (polygon.getBounds().contains(pt) && isPointInPolygon(pt, polygonCoords)) {
+            dansZone.push(c);
+            L.marker(L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]))
+              .addTo(map)
+              .bindPopup(c.nom);
+            break;
+          }
+        }
+      });
+
+      const total = dansZone.length + 1;
+      listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n✅ ${dansZone.length} commune(s) accessible(s) en ${minutes} min :\n\n` +
+        dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+        `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+
+    } else if (DEPS_DOMTOM.includes(currentDeptCode)) {
+      const rayonValue = rayonSelect.value;
+      if (!rayonValue) {
+        loadingMsg.style.display = "none";
+        return alert("⚠️ Sélectionnez un rayon");
+      }
+
+      if (rayonValue === "Tout mon département") {
+        dansZone = communes.filter(c => c.nom !== nomCentrale);
+        dansZone.forEach(c => {
+          L.marker(L.latLng(c.centre.coordinates[1], c.centre.coordinates[0])).addTo(map).bindPopup(c.nom);
+        });
+
+        L.marker(centre).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+
+        const lats = communes.map(c => c.centre.coordinates[1]);
+        const lngs = communes.map(c => c.centre.coordinates[0]);
+        map.fitBounds([[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]], { padding: [40,40] });
+
+        const total = dansZone.length + 1;
+        listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n✅ ${dansZone.length} commune(s) (tout le département)\n\n` +
+          dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+          `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+
+      } else {
+        const rayonKm = parseFloat(rayonValue);
+        const circle = L.circle(centre, { radius: rayonKm * 1000, color: "#0ea5a4", fillColor: "#0ea5a4", fillOpacity: 0.15 }).addTo(map);
+        L.marker(centre).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+        map.fitBounds(circle.getBounds(), { padding: [40, 40] });
+
+        communes.forEach(c => {
+          if (c.nom === nomCentrale) return;
+          const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+          const distance = map.distance(centre, pt);
+          if (distance <= rayonKm * 1000) {
+            dansZone.push(c);
+            L.marker(pt).addTo(map).bindPopup(c.nom);
+          }
+        });
+
+        const total = dansZone.length + 1;
+        listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n✅ ${dansZone.length} commune(s) dans un rayon de ${rayonKm} km :\n\n` +
+          dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+          `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+      }
+    }
+
+  } catch (err) {
+    console.error("Erreur affichage zone :", err);
+    errorMsg.style.display = "block";
+    errorMsg.textContent = "❌ Erreur lors du calcul de la zone.";
+  } finally {
+    loadingMsg.style.display = "none";
+  }
+});
 </script>
+
 
 </body>
 </html>
