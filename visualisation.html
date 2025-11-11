@@ -192,8 +192,8 @@
 
     <div id="critereBlock" style="display:none;">
       <div id="zoneMetropole" style="display:none;">
-        <label for="temps">Temps de trajet maximal (minutes)</label>
-        <select id="temps">
+        <label for="tempsTrajet">Temps de trajet maximal (minutes)</label>
+        <select id="tempsTrajet">
           <option value="">-- Sélectionnez --</option>
           <option value="15">15 min</option>
           <option value="20">20 min</option>
@@ -209,8 +209,8 @@
       </div>
 
       <div id="zoneOutreMer" style="display:none;">
-        <label for="rayon">Rayon d'intervention (km)</label>
-        <select id="rayon">
+        <label for="rayonKm">Rayon d'intervention (km)</label>
+        <select id="rayonKm">
           <option value="">-- Sélectionnez --</option>
           <option value="10">10 km</option>
           <option value="15">15 km</option>
@@ -253,8 +253,8 @@ const DEPS_DOMTOM = ['971','972','973','974','976'];
 
 const departSelect = document.getElementById('departement');
 const communeSelect = document.getElementById('commune');
-const tempsSelect = document.getElementById('temps');
-const rayonSelect = document.getElementById('rayon');
+const tempsSelect = document.getElementById('tempsTrajet');
+const rayonSelect = document.getElementById('rayonKm');
 const afficherBtn = document.getElementById('afficher');
 const listeBox = document.getElementById('liste');
 const loadingMsg = document.getElementById('loadingMsg');
@@ -532,8 +532,8 @@ function isPointInPolygon(point, vs) {
 // ==========================
 // AJOUT : Gestion du préremplissage automatique via URL
 // ==========================
-function selectionnerCritere(dep, rayon, temps) {
-  console.log("🧭 Sélection du critère :", { dep, rayon, temps });
+function selectionnerCritere(dep, rayonKm, tempsTrajet) {
+  console.log("🧭 Sélection du critère :", { dep, rayonKm, tempsTrajet });
   const blockCritere = document.getElementById('critereBlock');
   const zoneMetropole = document.getElementById('zoneMetropole');
   const zoneOutreMer = document.getElementById('zoneOutreMer');
@@ -541,11 +541,11 @@ function selectionnerCritere(dep, rayon, temps) {
   if (DEPS_METRO.includes(dep)) {
     zoneMetropole.style.display = 'block';
     zoneOutreMer.style.display = 'none';
-    if (temps) tempsSelect.value = temps;
+    if (tempsTrajet) tempsSelect.value = tempsTrajet;
   } else if (DEPS_DOMTOM.includes(dep)) {
     zoneMetropole.style.display = 'none';
     zoneOutreMer.style.display = 'block';
-    if (rayon) rayonSelect.value = decodeURIComponent(rayon);
+    if (rayonKm) rayonSelect.value = decodeURIComponent(rayonKm);
   }
 }
 
@@ -553,10 +553,10 @@ async function preRemplirDepuisURL() {
   const params = new URLSearchParams(window.location.search);
   const dep = params.get("dep");
   const commune = params.get("commune");
-  const rayon = params.get("rayon");
-  const temps = params.get("temps");
+  const rayon = params.get("rayonKm");
+  const temps = params.get("tempsTrajet");
   if (!dep) return;
-  console.log("📦 Paramètres URL :", { dep, commune, rayon, temps });
+  console.log("📦 Paramètres URL :", { dep, commune, rayonKm, tempsTrajet });
   await chargerDepartements();
   departSelect.value = dep;
   departSelect.dispatchEvent(new Event("change"));
@@ -567,7 +567,7 @@ async function preRemplirDepuisURL() {
   });
   await waitForCommunes();
   if (commune) communeSelect.value = commune;
-  selectionnerCritere(dep, rayon, temps);
+  selectionnerCritere(dep, rayonKm, temps);
   setTimeout(() => { afficherBtn.click(); }, 1000);
 }
 window.addEventListener("load", preRemplirDepuisURL);
@@ -576,6 +576,9 @@ window.addEventListener("load", preRemplirDepuisURL);
 
 </body>
 </html>
+
+
+
 
 
 
