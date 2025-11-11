@@ -241,62 +241,70 @@
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
         
+<div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
 
-        <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
-        
-        <div id="champsDeBase">
-          <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
-          <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
-          <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
-          <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
-        </div>
-        
-        <div id="blocCabinetSeul" class="hidden">
-          <div class="info-box">
-            <strong>🏢 Cabinet uniquement</strong><br>
-            Vous recevez uniquement dans votre cabinet à <strong id="communeCabinet"></strong>.<br>
-            Les particuliers devront se déplacer jusqu'à votre commune.
-          </div>
-        </div>
-        
-        <div id="blocMetropole" class="hidden">
-          <label for="tempsTrajet" class="required">Temps de trajet maximum (en voiture)</label>
-          <select id="tempsTrajet" name="tempsTrajet">
-            <option value="">-- Sélectionnez --</option>
-            <option value="15">15 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="45">45 minutes</option>
-            <option value="60">60 minutes</option>
-            <option value="departement">Tout mon département</option>
-          </select>
-          
-          <label for="precisions">Précisions géographiques (optionnel)</label>
-          <textarea id="precisions" name="precisions" rows="2" maxlength="200" placeholder="Ex: N'intervient pas en zone rurale isolée"></textarea>
-          <div class="small" style="margin-top:4px">Indiquez ici d'éventuelles contraintes géographiques.</div>
-        </div>
-        
-        <div id="blocDomTom" class="hidden">
-          <label for="rayonDomTom" class="required">Rayon d'intervention (km)</label>
-          <select id="rayonDomTom" name="rayonDomTom">
-            <option value="">-- Sélectionnez --</option>
-            <option value="10">10 km</option>
-            <option value="15">15 km</option>
-            <option value="20">20 km</option>
-            <option value="25">25 km</option>
-            <option value="30">30 km</option>
-            <option value="40">40 km</option>
-            <option value="departement">Tout mon département</option>
-          </select>
-          
-          <div class="info-box" style="background:#fff3e0;border-color:#ff9800;margin-top:12px">
-            <strong>ℹ️ Calcul à vol d'oiseau</strong><br>
-            Pour votre territoire, la distance est calculée à vol d'oiseau (les calculs GPS ne sont pas disponibles).
-          </div>
-          
-          <label for="precisions">Précisions géographiques (optionnel)</label>
-          <textarea id="precisions" name="precisions" rows="2" maxlength="200" placeholder="Ex: Uniquement Grande-Terre"></textarea>
-          <div class="small" style="margin-top:4px">Indiquez ici d'éventuelles contraintes géographiques.</div>
-        </div>
+<div id="champsDeBase">
+  <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
+  <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
+
+  <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
+  <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
+</div>
+
+<div id="blocCabinetSeul" class="hidden">
+  <div class="info-box">
+    <strong>🏢 Cabinet uniquement</strong><br>
+    Vous recevez uniquement dans votre cabinet à <strong id="communeCabinet"></strong>.<br>
+    Les particuliers devront se déplacer jusqu'à votre commune.
+  </div>
+</div>
+
+<div id="blocMetropole" class="hidden">
+  <label for="tempsTrajet" class="required">Temps de trajet maximum (en voiture)</label>
+  <select id="tempsTrajet" name="tempsTrajet">
+    <option value="">-- Sélectionnez --</option>
+    <option value="15">15 minutes</option>
+    <option value="30">30 minutes</option>
+    <option value="45">45 minutes</option>
+    <option value="60">60 minutes</option>
+    <option value="departement">Tout mon département</option>
+  </select>
+</div>
+
+<div id="blocDomTom" class="hidden">
+  <label for="rayonDomTom" class="required">Rayon d'intervention (km)</label>
+  <select id="rayonDomTom" name="rayonDomTom">
+    <option value="">-- Sélectionnez --</option>
+    <option value="10">10 km</option>
+    <option value="15">15 km</option>
+    <option value="20">20 km</option>
+    <option value="25">25 km</option>
+    <option value="30">30 km</option>
+    <option value="40">40 km</option>
+    <option value="departement">Tout mon département</option>
+  </select>
+
+  <div class="info-box" style="background:#fff3e0;border-color:#ff9800;margin-top:12px">
+    <strong>ℹ️ Calcul à vol d'oiseau</strong><br>
+    Pour votre territoire, la distance est calculée à vol d'oiseau (les calculs GPS ne sont pas disponibles).
+  </div>
+</div>
+
+<!-- textarea de précisions : UNE SEULE fois, partagée par les deux blocs -->
+<label for="precisions">Précisions géographiques (optionnel)</label>
+<textarea id="precisions" name="precisions" rows="2" maxlength="200" placeholder="Ex: N'intervient pas en zone rurale isolée"></textarea>
+<div class="small" style="margin-top:4px">Indiquez ici d'éventuelles contraintes géographiques.</div>
+
+<!-- Lien pour visualiser la zone (existant côté script) -->
+<div style="margin-top:12px">
+  <a href="#" id="visualiserLink" class="btn-secondary" style="display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;">
+    🔍 Visualiser ma zone
+  </a>
+</div>
+
+<!-- Champ caché pour fournir un rayon unique si le script l'exige (évite les null dans la lecture) -->
+<input type="hidden" id="rayon" name="rayon" value="">
+
 
        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
@@ -1093,38 +1101,46 @@ const communeCabinet = document.getElementById('communeCabinet');
 function mettreAJourAffichageZoneGeo() {
   const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
   const cabinetCoche = document.querySelector('input[name="mode"][value="cabinet"]')?.checked || false;
-  const dept = departSelect.value;
-  const commune = communeSelect.value;
-  const isDomTom = DOM_TOM.includes(dept);
-  
-  blocCabinetSeul.classList.add('hidden');
-  blocMetropole.classList.add('hidden');
-  blocDomTom.classList.add('hidden');
-  
+  const dept = document.getElementById("departement")?.value || "";
+  const isDomTom = ['971','972','973','974','975','976','977','978'].includes(dept);
+
+  // Récupération des éléments du DOM
+  const blocCabinet = document.getElementById("blocCabinetSeul");
+  const blocMetropole = document.getElementById("blocMetropole");
+  const blocDomTom = document.getElementById("blocDomTom");
+  const visualiserLink = document.getElementById("visualiserLink");
+
+  // Réinitialisation
+  blocCabinet.classList.add("hidden");
+  blocMetropole.classList.add("hidden");
+  blocDomTom.classList.add("hidden");
+  visualiserLink.style.display = "none";
+
+  // 🔹 Cas 1 — Cabinet uniquement
   if (cabinetCoche && !domicileCoche) {
-    blocCabinetSeul.classList.remove('hidden');
-    if (commune) {
-      communeCabinet.textContent = commune;
-    }
+    blocCabinet.classList.remove("hidden");
+    visualiserLink.style.display = "none";
     return;
   }
-  
-  if (domicileCoche) {
-    if (isDomTom) {
-      blocDomTom.classList.remove('hidden');
-    } else {
-      blocMetropole.classList.remove('hidden');
-    }
+
+  // 🔹 Cas 2 — Se déplace (France métropolitaine)
+  if (domicileCoche && !isDomTom) {
+    blocMetropole.classList.remove("hidden");
+    visualiserLink.style.display = "inline-block";
+    visualiserLink.href = "visualiser_metropole.html"; // lien pour cette zone
+    return;
   }
+
+  // 🔹 Cas 3 — Se déplace (DOM-TOM)
+  if (domicileCoche && isDomTom) {
+    blocDomTom.classList.remove("hidden");
+    visualiserLink.style.display = "inline-block";
+    visualiserLink.href = "visualiser_domtom.html"; // lien pour cette zone
+    return;
+  }
+
+  // Par défaut : tout caché
 }
-
-document.querySelectorAll('input[name="mode"]').forEach(checkbox => {
-  checkbox.addEventListener('change', mettreAJourAffichageZoneGeo);
-});
-
-departSelect.addEventListener('change', mettreAJourAffichageZoneGeo);
-communeSelect.addEventListener('change', mettreAJourAffichageZoneGeo);
-});
 
 </script>
 </body>
