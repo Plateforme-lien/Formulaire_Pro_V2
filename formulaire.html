@@ -241,11 +241,15 @@
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
         
+
         <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
-        <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
-        <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
-        <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
-        <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
+        
+        <div id="champsDeBase">
+          <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
+          <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
+          <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
+          <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
+        </div>
         
         <div id="blocCabinetSeul" class="hidden">
           <div class="info-box">
@@ -767,16 +771,34 @@ async function showFormAndPrefill(data) {
       let deptCode = String(data.departement).trim();
       if (deptCode.length === 1) deptCode = "0" + deptCode;
       
-      setTimeout(() => {
+setTimeout(() => {
         departSelect.value = deptCode;
         
         if (data.commune) {
           loadCommunes(deptCode, data.commune);
         }
+        
+        // Restaurer le rayon/temps de trajet
+        if (data.rayon && data.rayon !== "cabinet-uniquement") {
+          const isDomTom = DOM_TOM.includes(deptCode);
+          if (isDomTom) {
+            const rayonDomTom = document.getElementById("rayonDomTom");
+            if (rayonDomTom) rayonDomTom.value = data.rayon;
+          } else {
+            const tempsTrajet = document.getElementById("tempsTrajet");
+            if (tempsTrajet) tempsTrajet.value = data.rayon;
+          }
+        }
+        
+        // Déclencher la mise à jour de l'affichage
+        setTimeout(mettreAJourAffichageZoneGeo, 200);
       }, 100);
     }
     
-    document.getElementById("rayon").value = data.rayon || "";
+    const precisions = document.getElementById("precisions");
+    if (precisions && data.precisions) {
+      precisions.value = data.precisions;
+    }
     
 if (data.disponibilite) {
   const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
@@ -938,7 +960,16 @@ submitBtn.addEventListener('click', async () => {
   if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
   if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
   if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
-  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; return; }
+  // Validation rayon uniquement si "se déplace à domicile" est coché
+  const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
+  if (domicileCoche) {
+    const isDomTom = DOM_TOM.includes(departSelect.value);
+    const rayonField = isDomTom ? document.getElementById("rayonDomTom") : document.getElementById("tempsTrajet");
+    if (!rayonField || !rayonField.value) { 
+      submitMsg.textContent = isDomTom ? "Rayon d'intervention requis." : "Temps de trajet requis."; 
+      return; 
+    }
+  }
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
   if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
   if (dispoChecked.value === "oui") {
@@ -973,11 +1004,24 @@ submitBtn.addEventListener('click', async () => {
   fd.append("profession", document.getElementById("profession").value);
   fd.append("publics", Array.from(document.querySelectorAll('input[name="public"]:checked')).map(i=>i.value).join(","));
   fd.append("modes", Array.from(document.querySelectorAll('input[name="mode"]:checked')).map(i=>i.value).join(","));
-  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
+fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   fd.append("departement", departSelect.value);
   fd.append("commune", communeSelect.value);
-  fd.append("rayon", document.getElementById("rayon").value);
- fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
+  
+  // Envoyer le rayon approprié selon le mode et le département
+  const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
+  if (domicileCoche) {
+    const isDomTom = DOM_TOM.includes(departSelect.value);
+    const rayonValue = isDomTom 
+      ? document.getElementById("rayonDomTom")?.value 
+      : document.getElementById("tempsTrajet")?.value;
+    fd.append("rayon", rayonValue || "");
+  } else {
+    fd.append("rayon", "cabinet-uniquement");
+  }
+  
+  fd.append("precisions", document.getElementById("precisions")?.value || "");
+  fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
   fd.append("dateDispo", dateInput.value);
   fd.append("placesDisponibles", placesInput.value || "");
   fd.append("modeContact", document.querySelector('input[name="modeContact"]:checked')?.value || "direct");
