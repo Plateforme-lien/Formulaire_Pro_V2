@@ -432,7 +432,7 @@ afficherBtn.addEventListener('click', async () => {
         if (c.nom === nomCentrale) return;
         const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
         if (polygon.getBounds().contains(pt)) {
-          if (isPointInPolygon(pt, polygonCoords)) {
+          if x(isPointInPolygon(pt, polygonCoords)) {
             dansZone.push(c);
             L.marker(pt).addTo(map).bindPopup(c.nom);
           }
@@ -522,6 +522,49 @@ function isPointInPolygon(point, vs) {
   }
   return inside;
 }
+// ==========================
+// AJOUT : Gestion du préremplissage automatique via URL
+// ==========================
+function selectionnerCritere(dep, rayon, temps) {
+  console.log("🧭 Sélection du critère :", { dep, rayon, temps });
+  const blockCritere = document.getElementById('critereBlock');
+  const zoneMetropole = document.getElementById('zoneMetropole');
+  const zoneOutreMer = document.getElementById('zoneOutreMer');
+  blockCritere.style.display = 'block';
+  if (DEPS_METRO.includes(dep)) {
+    zoneMetropole.style.display = 'block';
+    zoneOutreMer.style.display = 'none';
+    if (temps) tempsSelect.value = temps;
+  } else if (DEPS_DOMTOM.includes(dep)) {
+    zoneMetropole.style.display = 'none';
+    zoneOutreMer.style.display = 'block';
+    if (rayon) rayonSelect.value = decodeURIComponent(rayon);
+  }
+}
+
+async function preRemplirDepuisURL() {
+  const params = new URLSearchParams(window.location.search);
+  const dep = params.get("dep");
+  const commune = params.get("commune");
+  const rayon = params.get("rayon");
+  const temps = params.get("temps");
+  if (!dep) return;
+  console.log("📦 Paramètres URL :", { dep, commune, rayon, temps });
+  await chargerDepartements();
+  departSelect.value = dep;
+  departSelect.dispatchEvent(new Event("change"));
+  const waitForCommunes = () => new Promise(resolve => {
+    const interval = setInterval(() => {
+      if (communes.length > 0) { clearInterval(interval); resolve(); }
+    }, 300);
+  });
+  await waitForCommunes();
+  if (commune) communeSelect.value = commune;
+  selectionnerCritere(dep, rayon, temps);
+  setTimeout(() => { afficherBtn.click(); }, 1000);
+}
+window.addEventListener("load", preRemplirDepuisURL);
+  
 </script>
 
 </body>
