@@ -240,70 +240,33 @@
           <label><input type="radio" name="visio" value="oui"> Oui</label>
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
+
+        <div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
+
+        <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
+        <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
+
+        <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
+        <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
         
-<div class="section-title"><span class="section-number">3</span> Zone géographique d'intervention</div>
-
-<div id="champsDeBase">
-  <label for="departement" class="required">Dans quel département intervenez-vous principalement ?</label>
-  <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
-
-  <label for="commune" class="required">Quelle est votre commune principale d'intervention ?</label>
-  <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
-</div>
-
-<div id="blocCabinetSeul" class="hidden">
-  <div class="info-box">
-    <strong>🏢 Cabinet uniquement</strong><br>
-    Vous recevez uniquement dans votre cabinet à <strong id="communeCabinet"></strong>.<br>
-    Les particuliers devront se déplacer jusqu'à votre commune.
-  </div>
-</div>
-
-<div id="blocMetropole" class="hidden">
-  <label for="tempsTrajet" class="required">Temps de trajet maximum (en voiture)</label>
-  <select id="tempsTrajet" name="tempsTrajet">
-    <option value="">-- Sélectionnez --</option>
-    <option value="15">15 minutes</option>
-    <option value="30">30 minutes</option>
-    <option value="45">45 minutes</option>
-    <option value="60">60 minutes</option>
-    <option value="departement">Tout mon département</option>
-  </select>
-</div>
-
-<div id="blocDomTom" class="hidden">
-  <label for="rayonDomTom" class="required">Rayon d'intervention (km)</label>
-  <select id="rayonDomTom" name="rayonDomTom">
-    <option value="">-- Sélectionnez --</option>
-    <option value="10">10 km</option>
-    <option value="15">15 km</option>
-    <option value="20">20 km</option>
-    <option value="25">25 km</option>
-    <option value="30">30 km</option>
-    <option value="40">40 km</option>
-    <option value="departement">Tout mon département</option>
-  </select>
-
-  <div class="info-box" style="background:#fff3e0;border-color:#ff9800;margin-top:12px">
-    <strong>ℹ️ Calcul à vol d'oiseau</strong><br>
-    Pour votre territoire, la distance est calculée à vol d'oiseau (les calculs GPS ne sont pas disponibles).
-  </div>
-</div>
-
-<!-- textarea de précisions : UNE SEULE fois, partagée par les deux blocs -->
-<label for="precisions">Précisions géographiques (optionnel)</label>
-<textarea id="precisions" name="precisions" rows="2" maxlength="200" placeholder="Ex: N'intervient pas en zone rurale isolée"></textarea>
-<div class="small" style="margin-top:4px">Indiquez ici d'éventuelles contraintes géographiques.</div>
-
-<!-- Lien pour visualiser la zone (existant côté script) -->
-<div style="margin-top:12px">
-  <a href="#" id="visualiserLink" class="btn-secondary" style="display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;">
-    🔍 Visualiser ma zone
-  </a>
-</div>
-
-<!-- Champ caché pour fournir un rayon unique si le script l'exige (évite les null dans la lecture) -->
-<input type="hidden" id="rayon" name="rayon" value="">
+        <label for="rayon" class="required">Quel est votre rayon d'intervention ?</label>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+          <select id="rayon" name="rayon" style="flex:1;">
+            <option value="">-- Sélectionnez --</option>
+            <option>Aucun - en cabinet</option>
+            <option>10 km</option>
+            <option>15 km</option>
+            <option>20 km</option>
+            <option>25 km</option>
+            <option>30 km</option>
+            <option>40 km</option>
+            <option>Tout mon département</option>
+          </select>
+          <a href="#" id="visualiserLink" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+            Visualiser les communes couvertes par mon rayon
+          </a>
+        </div>
+        <div class="small" style="margin-top:4px;">Si vous intervenez uniquement en cabinet, sélectionnez "Aucun - en cabinet".</div>
 
 
        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
@@ -399,14 +362,11 @@
   
 </div>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-
 
 /* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
 const DEPT_API = "https://geo.api.gouv.fr/departements";
 const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes`;
-const DOM_TOM = ['971','972','973','974','975','976','977','978'];
 
 /* ========== HELPERS VALIDATION ========== */
 const isDigits = s => /^\d+$/.test(s||"");
@@ -462,37 +422,57 @@ let FORM_LOCKED = false;
 /* ========== FONCTIONS DE VERROUILLAGE ========== */
 function lockForm() {
   FORM_LOCKED = true;
+  
+  // Masquer TOUT sauf la bannière
   rest.style.display = 'none';
   document.querySelector('.prereq-section').style.display = 'none';
   newUserMessage.classList.add('hidden');
-  document.getElementById('section-email').style.display = 'none';
-  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });
+
+  
+  // Masquer le titre, sous-titre et section email (avant le form)
+  document.getElementById('section-email').style.display = 'none';  // Masquer "Vérification de votre identité"
+  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });  // Masquer les astérisques/questions obligatoires
   document.querySelector('h1').style.display = 'none';
   document.querySelector('h2').style.display = 'none';
   document.querySelector('.info-box').style.display = 'none';
   emailEl.parentElement.parentElement.querySelector('label').style.display = 'none';
   emailEl.parentElement.style.display = 'none';
+  
+  // Masquer tous les boutons d'action
   submitBtn.classList.add('hidden');
   resetBtn.classList.add('hidden');
   editBtn.classList.add('hidden');
+  
+  // Afficher la bannière de succès
   successBanner.classList.remove('hidden');
+  
+  // Faire défiler vers la bannière
   successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
   
 function unlockForm() {
   FORM_LOCKED = false;
+  
+  // Réactiver tous les inputs
   document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
     el.disabled = false;
   });
+  
+  // Afficher le bouton submit, masquer le bouton edit
   submitBtn.classList.remove('hidden');
   editBtn.classList.add('hidden');
   resetBtn.classList.remove('hidden');
+  
+  // Masquer la bannière de succès
   successBanner.classList.add('hidden');
+  
   submitMsg.textContent = "";
 }
 
 /* ========== BOUTON MODIFIER ========== */
-editBtn.addEventListener('click', () => { unlockForm(); });
+editBtn.addEventListener('click', () => {
+  unlockForm();
+});
 
 /* ========== SEND CODE ========== */
 sendCodeBtn.addEventListener("click", async () => {
@@ -762,34 +742,16 @@ async function showFormAndPrefill(data) {
       let deptCode = String(data.departement).trim();
       if (deptCode.length === 1) deptCode = "0" + deptCode;
       
-setTimeout(() => {
+      setTimeout(() => {
         departSelect.value = deptCode;
         
         if (data.commune) {
           loadCommunes(deptCode, data.commune);
         }
-        
-        // Restaurer le rayon/temps de trajet
-        if (data.rayon && data.rayon !== "cabinet-uniquement") {
-          const isDomTom = DOM_TOM.includes(deptCode);
-          if (isDomTom) {
-            const rayonDomTom = document.getElementById("rayonDomTom");
-            if (rayonDomTom) rayonDomTom.value = data.rayon;
-          } else {
-            const tempsTrajet = document.getElementById("tempsTrajet");
-            if (tempsTrajet) tempsTrajet.value = data.rayon;
-          }
-        }
-        
-        // Déclencher la mise à jour de l'affichage
-        setTimeout(mettreAJourAffichageZoneGeo, 200);
       }, 100);
     }
     
-    const precisions = document.getElementById("precisions");
-    if (precisions && data.precisions) {
-      precisions.value = data.precisions;
-    }
+    document.getElementById("rayon").value = data.rayon || "";
     
 if (data.disponibilite) {
   const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
@@ -951,20 +913,7 @@ submitBtn.addEventListener('click', async () => {
   if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
   if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
   if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
-  
-  // Validation rayon uniquement si "se déplace à domicile" est coché
-  const domicileCheckbox = document.querySelector('input[name="mode"][value="domicile"]');
-  const domicileCoche = domicileCheckbox ? domicileCheckbox.checked : false;
-  
-  if (domicileCoche) {
-    const isDomTom = DOM_TOM.includes(departSelect.value);
-    const rayonField = isDomTom ? document.getElementById("rayonDomTom") : document.getElementById("tempsTrajet");
-    if (!rayonField || !rayonField.value) { 
-      submitMsg.textContent = isDomTom ? "Rayon d'intervention requis." : "Temps de trajet requis."; 
-      return; 
-    }
-  }
-  
+  if (!document.getElementById("rayon").value) { submitMsg.textContent = "Indiquez un rayon d'intervention."; return; }
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
   if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
   if (dispoChecked.value === "oui") {
@@ -999,24 +948,11 @@ submitBtn.addEventListener('click', async () => {
   fd.append("profession", document.getElementById("profession").value);
   fd.append("publics", Array.from(document.querySelectorAll('input[name="public"]:checked')).map(i=>i.value).join(","));
   fd.append("modes", Array.from(document.querySelectorAll('input[name="mode"]:checked')).map(i=>i.value).join(","));
-fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
+  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   fd.append("departement", departSelect.value);
   fd.append("commune", communeSelect.value);
-  
-  // Envoyer le rayon approprié selon le mode et le département
-const domicileCocheSubmit = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
-if (domicileCocheSubmit) {
-    const isDomTom = DOM_TOM.includes(departSelect.value);
-    const rayonValue = isDomTom 
-      ? document.getElementById("rayonDomTom")?.value 
-      : document.getElementById("tempsTrajet")?.value;
-    fd.append("rayon", rayonValue || "");
-  } else {
-    fd.append("rayon", "cabinet-uniquement");
-  }
-  
-  fd.append("precisions", document.getElementById("precisions")?.value || "");
-  fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
+  fd.append("rayon", document.getElementById("rayon").value);
+ fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
   fd.append("dateDispo", dateInput.value);
   fd.append("placesDisponibles", placesInput.value || "");
   fd.append("modeContact", document.querySelector('input[name="modeContact"]:checked')?.value || "direct");
@@ -1090,57 +1026,6 @@ visualiserLink.addEventListener("click", function (e) {
 
     const url = `visualisation.html?dep=${dep}&commune=${commune}&rayon=${rayon}`;
     window.open(url, "_blank");
-});
-
-/* ========== GESTION ZONE GÉOGRAPHIQUE (3 CAS) ========== */
-const blocCabinetSeul = document.getElementById('blocCabinetSeul');
-const blocMetropole = document.getElementById('blocMetropole');
-const blocDomTom = document.getElementById('blocDomTom');
-const communeCabinet = document.getElementById('communeCabinet');
-
-function mettreAJourAffichageZoneGeo() {
-  const domicileCoche = document.querySelector('input[name="mode"][value="domicile"]')?.checked || false;
-  const cabinetCoche = document.querySelector('input[name="mode"][value="cabinet"]')?.checked || false;
-  const dept = document.getElementById("departement")?.value || "";
-  const isDomTom = ['971','972','973','974','975','976','977','978'].includes(dept);
-
-  // Récupération des éléments du DOM
-  const blocCabinet = document.getElementById("blocCabinetSeul");
-  const blocMetropole = document.getElementById("blocMetropole");
-  const blocDomTom = document.getElementById("blocDomTom");
-  const visualiserLink = document.getElementById("visualiserLink");
-
-  // Réinitialisation
-  blocCabinet.classList.add("hidden");
-  blocMetropole.classList.add("hidden");
-  blocDomTom.classList.add("hidden");
-  visualiserLink.style.display = "none";
-
-  // 🔹 Cas 1 — Cabinet uniquement
-  if (cabinetCoche && !domicileCoche) {
-    blocCabinet.classList.remove("hidden");
-    visualiserLink.style.display = "none";
-    return;
-  }
-
-  // 🔹 Cas 2 — Se déplace (France métropolitaine)
-  if (domicileCoche && !isDomTom) {
-    blocMetropole.classList.remove("hidden");
-    visualiserLink.style.display = "inline-block";
-    visualiserLink.href = "visualiser_metropole.html"; // lien pour cette zone
-    return;
-  }
-
-  // 🔹 Cas 3 — Se déplace (DOM-TOM)
-  if (domicileCoche && isDomTom) {
-    blocDomTom.classList.remove("hidden");
-    visualiserLink.style.display = "inline-block";
-    visualiserLink.href = "visualiser_domtom.html"; // lien pour cette zone
-    return;
-  }
-
-  // Par défaut : tout caché
-}
 });
 </script>
 </body>
