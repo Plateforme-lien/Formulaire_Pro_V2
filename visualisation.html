@@ -242,11 +242,12 @@
     <button class="btn-secondary" onclick="window.close()">← Retour au questionnaire</button>
   </div>
 </div>
+
 <script>
 /* ------------------------------
    CONFIGURATION
 --------------------------------*/
-const ORS_API_KEY = "TON_CLE_API_ICI"; // ⚠️ À remplacer par ta vraie clé (ou proxy sécurisé)
+const ORS_API_KEY = "TeyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImYyNjcyNmMzZTU3YTQyNzk4Y2UxYzMxZmQ2YTZhYzZjIiwiaCI6Im11cm11cjY0In0="; // ⚠️ À remplacer par ta vraie clé (ou proxy sécurisé)
 const DEPT_API = "https://geo.api.gouv.fr/departements";
 const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre`;
 
@@ -541,6 +542,16 @@ afficherBtn.addEventListener("click", async () => {
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
 
 
 
