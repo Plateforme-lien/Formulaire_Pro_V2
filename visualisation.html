@@ -191,7 +191,6 @@
     </select>
 
     <div id="critereBlock" style="display:none;">
-      <!-- Zone Métropole : Temps de trajet -->
       <div id="zoneMetropole" style="display:none;">
         <label for="temps">Temps de trajet maximal (minutes)</label>
         <select id="temps">
@@ -204,20 +203,19 @@
         </select>
       </div>
 
-      <!-- Zone Outre-mer : Rayon en km -->
       <div id="zoneOutreMer" style="display:none;">
         <label for="rayon">Rayon d'intervention (km)</label>
-<select id="rayon">
-  <option value="">-- Sélectionnez --</option>
-  <option value="10">10 km</option>
-  <option value="15">15 km</option>
-  <option value="20">20 km</option>
-  <option value="25">25 km</option>
-  <option value="30">30 km</option>
-  <option value="40">40 km</option>
-  <option value="50">50 km</option>
-  <option value="Tout mon département">Tout mon département</option>
-</select>
+        <select id="rayon">
+          <option value="">-- Sélectionnez --</option>
+          <option value="10">10 km</option>
+          <option value="15">15 km</option>
+          <option value="20">20 km</option>
+          <option value="25">25 km</option>
+          <option value="30">30 km</option>
+          <option value="40">40 km</option>
+          <option value="50">50 km</option>
+          <option value="Tout mon département">Tout mon département</option>
+        </select>
       </div>
     </div>
 
@@ -239,9 +237,6 @@
 </div>
 
 <script>
-// ==========================
-//  CONFIGURATION
-// ==========================
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImYyNjcyNmMzZTU3YTQyNzk4Y2UxYzMxZmQ2YTZhYzZjIiwiaCI6Im11cm11cjY0In0=';
 const DEPT_API = "https://geo.api.gouv.fr/departements";
 const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre`;
@@ -397,7 +392,6 @@ afficherBtn.addEventListener('click', async () => {
   const lon = centrale.centre.coordinates[0];
   const lat = centrale.centre.coordinates[1];
 
-  // Nettoyage ancien affichage
   map.eachLayer(layer => {
     if (layer instanceof L.Marker || layer instanceof L.Circle || layer instanceof L.Polygon) {
       map.removeLayer(layer);
@@ -412,22 +406,16 @@ afficherBtn.addEventListener('click', async () => {
     let dansZone = [];
 
     if (DEPS_METRO.includes(currentDeptCode)) {
-      // ===== MÉTROPOLE : ISOCHRONE =====
       const minutes = parseInt(tempsSelect.value);
-      
       if (!minutes) {
         alert("⚠️ Sélectionnez un temps de trajet");
         loadingMsg.style.display = 'none';
         return;
       }
 
-      // Calculer l'isochrone
       const isochroneCoords = await calculerIsochrone(lon, lat, minutes);
-      
-      // Convertir les coordonnées [lon, lat] en [lat, lon] pour Leaflet
       const polygonCoords = isochroneCoords.map(coord => [coord[1], coord[0]]);
       
-      // Afficher le polygone
       const polygon = L.polygon(polygonCoords, {
         color: "#0ea5a4",
         fillColor: "#0ea5a4",
@@ -435,22 +423,15 @@ afficherBtn.addEventListener('click', async () => {
         weight: 2
       }).addTo(map);
 
-      // Marker central
       L.marker(centre).addTo(map)
         .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
 
-      // Ajuster la vue
       map.fitBounds(polygon.getBounds(), { padding: [50, 50] });
 
-      // Trouver les communes dans la zone
       communes.forEach(c => {
-        if (c.nom === nomCentrale) return; // Skip commune centrale
-        
+        if (c.nom === nomCentrale) return;
         const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-        
-        // Vérifier si le point est dans le polygone
         if (polygon.getBounds().contains(pt)) {
-          // Vérification plus précise avec ray casting
           if (isPointInPolygon(pt, polygonCoords)) {
             dansZone.push(c);
             L.marker(pt).addTo(map).bindPopup(c.nom);
@@ -458,173 +439,93 @@ afficherBtn.addEventListener('click', async () => {
         }
       });
 
-      // Liste
       const total = dansZone.length + 1;
       listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
         `✅ ${dansZone.length} commune(s) accessible(s) en ${minutes} minutes :\n\n` +
         dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
         `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
 
+    } else if (DEPS_DOMTOM.includes(currentDeptCode)) {
+      const rayonValue = rayonSelect.value;
+      if (!rayonValue) {
+        alert("⚠️ Sélectionnez un rayon");
+        loadingMsg.style.display = 'none';
+        return;
+      }
 
-      } else if (DEPS_DOMTOM.includes(currentDeptCode)) {
-  // ===== OUTRE-MER : RAYON EN KM =====
-  const rayonValue = rayonSelect.value;
-  
-  if (!rayonValue) {
-    alert("⚠️ Sélectionnez un rayon");
-    loadingMsg.style.display = 'none';
-    return;
-  }
+      if (rayonValue === "Tout mon département") {
+        dansZone = communes.filter(c => c.nom !== nomCentrale);
+        dansZone.forEach(c => {
+          const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+          L.marker(pt).addTo(map).bindPopup(c.nom);
+        });
 
-  if (rayonValue === "Tout mon département") {
-    // Afficher toutes les communes du département
-    dansZone = communes.filter(c => c.nom !== nomCentrale);
+        L.marker(centre).addTo(map)
+          .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
 
-    dansZone.forEach(c => {
-      const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-      L.marker(pt).addTo(map).bindPopup(c.nom);
-    });
+        const lats = communes.map(c => c.centre.coordinates[1]);
+        const lngs = communes.map(c => c.centre.coordinates[0]);
+        const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+        map.fitBounds(bounds, { padding: [50, 50] });
 
-    // Marker central
-    L.marker(centre).addTo(map)
-      .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+        const total = dansZone.length + 1;
+        listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
+          `✅ ${dansZone.length} commune(s) couvertes (tout le département)\n\n` +
+          dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+          `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
 
-    // Ajuster la vue sur tout le département
-    const lats = communes.map(c => c.centre.coordinates[1]);
-    const lngs = communes.map(c => c.centre.coordinates[0]);
-    const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
-    map.fitBounds(bounds, { padding: [50, 50] });
+      } else {
+        const rayonKm = parseFloat(rayonValue);
+        const circle = L.circle(centre, { radius: rayonKm * 1000, color: "#0ea5a4", fillColor: "#0ea5a4", fillOpacity: 0.15 }).addTo(map);
+        L.marker(centre).addTo(map).bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
+        map.fitBounds(circle.getBounds(), { padding: [50, 50] });
 
-    // Liste
-    const total = dansZone.length + 1;
-    listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
-      `✅ ${dansZone.length} commune(s) dans tout le département :\n\n` +
-      dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
-      `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+        communes.forEach(c => {
+          if (c.nom === nomCentrale) return;
+          const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
+          const distance = map.distance(centre, pt);
+          if (distance <= rayonKm * 1000) {
+            dansZone.push(c);
+            L.marker(pt).addTo(map).bindPopup(c.nom);
+          }
+        });
 
-  } else {
-    // Rayon en km normal
-    const rayonKm = parseFloat(rayonValue);
-
-      // Cercle
-      const cercle = L.circle(centre, {
-        radius: rayonKm * 1000,
-        color: "#0ea5a4",
-        fillColor: "#0ea5a4",
-        fillOpacity: 0.15,
-        weight: 2
-      }).addTo(map);
-
-      // Marker central
-      L.marker(centre).addTo(map)
-        .bindPopup(`<strong>${nomCentrale}</strong><br><em>Commune centrale</em>`).openPopup();
-
-      // Ajuster la vue
-      map.fitBounds(cercle.getBounds(), { padding: [50, 50] });
-
-      // Communes dans le rayon
-      dansZone = communes.filter(c => {
-        const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-        return map.distance(centre, pt) <= rayonKm * 1000 && c.nom !== nomCentrale;
-      });
-
-      dansZone.forEach(c => {
-        const pt = L.latLng(c.centre.coordinates[1], c.centre.coordinates[0]);
-        L.marker(pt).addTo(map).bindPopup(c.nom);
-      });
-
-      // Liste
-      const total = dansZone.length + 1;
-      listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
-        `✅ ${dansZone.length} commune(s) dans un rayon de ${rayonKm} km :\n\n` +
-        dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
-        `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+        const total = dansZone.length + 1;
+        listeBox.value = `📍 Commune centrale : ${nomCentrale}\n\n` +
+          `✅ ${dansZone.length} commune(s) dans un rayon de ${rayonKm} km :\n\n` +
+          dansZone.map((c,i)=>`${i+1}. ${c.nom}`).join("\n") +
+          `\n\n━━━━━━━━━━━━━━━━━━━━━━\n📊 TOTAL : ${total} commune(s)`;
+      }
     }
 
-    loadingMsg.style.display = 'none';
-
-  } catch (error) {
-    console.error('Erreur:', error);
-    loadingMsg.style.display = 'none';
+  } catch (err) {
+    console.error(err);
     errorMsg.style.display = 'block';
-    errorMsg.textContent = `❌ Erreur lors du calcul de la zone : ${error.message}. Vérifiez votre connexion et réessayez.`;
+    errorMsg.textContent = "❌ Erreur lors du calcul de la zone. Veuillez réessayer.";
+  } finally {
+    loadingMsg.style.display = 'none';
   }
 });
 
 // ==========================
-//  HELPER : Point dans polygone (Ray Casting)
+//  FONCTION UTILITAIRE : point dans polygone
 // ==========================
-function isPointInPolygon(point, polygon) {
-  const x = point.lat;
-  const y = point.lng;
+function isPointInPolygon(point, vs) {
+  const x = point.lat, y = point.lng;
   let inside = false;
-
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i][0], yi = polygon[i][1];
-    const xj = polygon[j][0], yj = polygon[j][1];
-
+  for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+    const xi = vs[i][0], yi = vs[i][1];
+    const xj = vs[j][0], yj = vs[j][1];
     const intersect = ((yi > y) !== (yj > y)) &&
       (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-    
     if (intersect) inside = !inside;
   }
-
   return inside;
 }
-
-// ==========================
-//  PARAMÈTRES D'URL (pré-remplissage)
-// ==========================
-function getParams(){
-  return Object.fromEntries(new URLSearchParams(location.search));
-}
-
-(async function initFromParams(){
-  const p = getParams();
-  if(!p.dep) return;
-
-  // attendre départements
-  await new Promise(r => {
-    const i = setInterval(()=>{
-      if(departSelect.options.length>1){ clearInterval(i); r(); }
-    },100);
-  });
-
-  departSelect.value = p.dep;
-  departSelect.dispatchEvent(new Event('change'));
-
-  // attendre communes
-  await new Promise(r => {
-    const i = setInterval(()=>{
-      if(communes.length>0){ clearInterval(i); r(); }
-    },150);
-  });
-
-  if(p.commune) communeSelect.value = p.commune;
-
-  // Pré-remplir le critère
- if(p.rayonOuTemps) {
-    const valeur = p.rayonOuTemps;
-    
-    if (DEPS_METRO.includes(p.dep)) {
-      // Extraire les minutes (ex: "30 min" → 30)
-      const match = valeur.match(/\d+/);
-      if(match) tempsSelect.value = match[0];
-    } else if (DEPS_DOMTOM.includes(p.dep)) {
-      // Extraire les km (ex: "15 km" → 15) ou garder "Tout mon département"
-      if (valeur.includes('département')) {
-        rayonSelect.value = 'Tout mon département';
-      } else {
-        const match = valeur.match(/\d+/);
-        if(match) rayonSelect.value = match[0];
-      }
-    }
-  }
-
-  if(p.commune) setTimeout(()=>afficherBtn.click(),500);
-})();
 </script>
+
 </body>
 </html>
+
 
 
