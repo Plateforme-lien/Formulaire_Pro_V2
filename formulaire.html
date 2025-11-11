@@ -1229,6 +1229,15 @@ function ouvrirVisualisation(e) {
   window.open(url, "_blank");
 }
 
+// 🔗 Relier les liens de visualisation à la fonction
+if (visualiserLinkMetro) {
+  visualiserLinkMetro.addEventListener("click", ouvrirVisualisation);
+}
+if (visualiserLinkOM) {
+  visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
+}
+
+
 </script>
 </body>
 </html>
