@@ -1222,9 +1222,18 @@ function ouvrirVisualisation(e) {
     }
   }
 
-  const url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}&rayonOuTemps=${encodeURIComponent(rayonOuTemps)}`;
-  window.open(url, "_blank");
+let url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}`;
+
+if (DEPS_METRO.includes(codeDept)) {
+  const tempsValue = document.getElementById("tempsTrajet").value;
+  url += `&temps=${encodeURIComponent(tempsValue)}`;
+} else if (DEPS_DOMTOM.includes(codeDept)) {
+  const rayonValue = document.getElementById("rayonKm").value;
+  url += `&rayon=${encodeURIComponent(rayonValue)}`;
 }
+
+window.open(url, "_blank");
+
 
 // Attacher l'événement aux deux liens
 if (visualiserLinkMetro) {
