@@ -1202,47 +1202,54 @@ function ouvrirVisualisation(e) {
 
   const dep = departSelect.value;
   const commune = communeSelect.value;
-  
+
   if (!dep || !commune) {
     alert("⚠️ Veuillez d'abord sélectionner le département et la commune.");
     return;
   }
 
-  const codeDept = dep.split(' ')[0]; // Extraire juste le code (ex: "54" de "54 — Meurthe-et-Moselle")
-
-  // Base de l’URL
+  const codeDept = dep.split(' ')[0]; // Ex: "54" de "54 — Meurthe-et-Moselle"
   let url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}`;
 
   if (DEPS_METRO.includes(codeDept)) {
-    // Métropole : récupérer le temps
-    const tempsValue = document.getElementById("tempsTrajet").value;
+    const select = document.getElementById("tempsTrajet");
+    let tempsValue = select.value;
+
+    // Si vide, tenter de récupérer l'option pré-remplie
+    if (!tempsValue && select.options.length > 1) {
+      tempsValue = select.options[1].value; // 1 = première option réelle après "-- Sélectionnez --"
+    }
+
     if (!tempsValue) {
-      alert("⚠️ Veuillez d'abord sélectionner un temps de trajet.");
+      alert("⚠️ Sélectionnez un temps de trajet.");
       return;
     }
+
     url += `&temps=${encodeURIComponent(tempsValue)}`;
 
   } else if (DEPS_DOMTOM.includes(codeDept)) {
-    // Outre-mer : récupérer le rayon
-    const rayonValue = document.getElementById("rayonKm").value;
+    const select = document.getElementById("rayonKm");
+    let rayonValue = select.value;
+
+    // Si vide, tenter de récupérer l'option pré-remplie
+    if (!rayonValue && select.options.length > 1) {
+      rayonValue = select.options[1].value;
+    }
+
     if (!rayonValue) {
-      alert("⚠️ Veuillez d'abord sélectionner un rayon d'intervention.");
+      alert("⚠️ Sélectionnez un rayon d'intervention.");
       return;
     }
+
     url += `&rayon=${encodeURIComponent(rayonValue)}`;
   }
 
-  // ✅ Ouvrir la visualisation dans un nouvel onglet
   window.open(url, "_blank");
 }
 
-// 🔗 Relier les liens de visualisation à la fonction
-if (visualiserLinkMetro) {
-  visualiserLinkMetro.addEventListener("click", ouvrirVisualisation);
-}
-if (visualiserLinkOM) {
-  visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
-}
+// 👇 Événements
+visualiserLinkMetro.addEventListener("click", ouvrirVisualisation);
+visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
 
 
 </script>
