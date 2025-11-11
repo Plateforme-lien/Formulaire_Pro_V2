@@ -271,11 +271,12 @@
       </select>
       <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
       
-      <div style="margin-top:12px;">
-        <a href="#" id="visualiserLinkMetro" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-          📍 Visualiser les communes couvertes
-        </a>
-      </div>
+<div style="margin-top:12px;">
+  <a href="#" id="visualiserLinkMetro" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+    📍 Visualiser les communes couvertes
+  </a>
+</div>
+
     </div>
 
     <!-- OUTRE-MER : Rayon -->
@@ -297,11 +298,11 @@
       <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
       <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
       
-      <div style="margin-top:12px;">
-        <a href="#" id="visualiserLinkOM" target="_blank" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-          📍 Visualiser les communes couvertes
-        </a>
-      </div>
+<div style="margin-top:12px;">
+  <a href="#" id="visualiserLinkOM" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+    📍 Visualiser les communes couvertes
+  </a>
+</div>
     </div>
 
   </div>
@@ -1185,21 +1186,55 @@ document.getElementById('zoneOutreMer').classList.add('hidden');
   unlockForm();
 });
 
-visualiserLink.addEventListener("click", function (e) {
-    e.preventDefault();
+// ========== LIENS VISUALISATION MÉTROPOLE ET OUTRE-MER ==========
+const visualiserLinkMetro = document.getElementById("visualiserLinkMetro");
+const visualiserLinkOM = document.getElementById("visualiserLinkOM");
 
-    const dep = document.getElementById("departement").value;
-    const commune = document.getElementById("commune").value;
-    const rayonOuTemps = document.getElementById("rayonOuTemps").value;
+// Fonction commune pour ouvrir la visualisation
+function ouvrirVisualisation(e) {
+  e.preventDefault();
 
-    if (!dep || !commune || !rayonOuTemps) {
-        alert("⚠️ Veuillez d'abord sélectionner le département, la commune et le rayon/temps de trajet.");
-        return;
+  const dep = departSelect.value;
+  const commune = communeSelect.value;
+  
+  if (!dep || !commune) {
+    alert("⚠️ Veuillez d'abord sélectionner le département et la commune.");
+    return;
+  }
+
+  const codeDept = dep.split(' ')[0]; // Extraire juste le code (ex: "54" de "54 — Meurthe-et-Moselle")
+  
+  let rayonOuTemps = "";
+  
+  if (DEPS_METRO.includes(codeDept)) {
+    // Métropole : récupérer le temps
+    rayonOuTemps = document.getElementById("tempsTrajet").value;
+    if (!rayonOuTemps) {
+      alert("⚠️ Veuillez d'abord sélectionner un temps de trajet.");
+      return;
     }
+  } else if (DEPS_DOMTOM.includes(codeDept)) {
+    // Outre-mer : récupérer le rayon
+    rayonOuTemps = document.getElementById("rayonKm").value;
+    if (!rayonOuTemps) {
+      alert("⚠️ Veuillez d'abord sélectionner un rayon d'intervention.");
+      return;
+    }
+  }
 
-    const url = `visualisation.html?dep=${encodeURIComponent(dep)}&commune=${encodeURIComponent(commune)}&rayonOuTemps=${encodeURIComponent(rayonOuTemps)}`;
-    window.open(url, "_blank");
-});
+  const url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}&rayonOuTemps=${encodeURIComponent(rayonOuTemps)}`;
+  window.open(url, "_blank");
+}
+
+// Attacher l'événement aux deux liens
+if (visualiserLinkMetro) {
+  visualiserLinkMetro.addEventListener("click", ouvrirVisualisation);
+}
+
+if (visualiserLinkOM) {
+  visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
+}
+  
 </script>
 </body>
 </html>
