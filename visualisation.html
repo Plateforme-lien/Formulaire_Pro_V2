@@ -529,6 +529,7 @@ function isPointInPolygon(point, vs) {
   }
   return inside;
 }
+  
 // ==========================
 // AJOUT : Gestion du préremplissage automatique via URL
 // ==========================
@@ -549,9 +550,13 @@ function selectionnerCritere(dep, rayonKm, tempsTrajet) {
       const valeurNettoyee = decodeURIComponent(tempsTrajet).trim();
       console.log("⏱️ Tentative de sélection du temps:", valeurNettoyee);
       
+      // Extraire juste le nombre (enlever " min")
+      const nombreMinutes = valeurNettoyee.replace(/\s*min$/i, '').trim();
+      console.log("🔢 Nombre de minutes extrait:", nombreMinutes);
+      
       // Attendre un peu que le select soit bien affiché
       setTimeout(() => {
-        tempsSelect.value = valeurNettoyee;
+        tempsSelect.value = nombreMinutes;
         console.log("✅ Temps sélectionné:", tempsSelect.value);
       }, 100);
     }
@@ -564,8 +569,12 @@ function selectionnerCritere(dep, rayonKm, tempsTrajet) {
       const valeurNettoyee = decodeURIComponent(rayonKm).trim();
       console.log("📍 Tentative de sélection du rayon:", valeurNettoyee);
       
+      // Extraire juste le nombre (enlever " km")
+      const nombreKm = valeurNettoyee.replace(/\s*km$/i, '').trim();
+      console.log("🔢 Nombre de km extrait:", nombreKm);
+      
       setTimeout(() => {
-        rayonSelect.value = valeurNettoyee;
+        rayonSelect.value = nombreKm;
         console.log("✅ Rayon sélectionné:", rayonSelect.value);
       }, 100);
     }
