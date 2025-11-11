@@ -227,12 +227,13 @@
           <label><input type="checkbox" name="public" value="13-18"> Adolescents (13-18 ans)</label>
           <label><input type="checkbox" name="public" value="18+"> Adultes (18+)</label>
         </div>
-
-        <label style="margin-top:24px" class="required">Quel(s) sont vos modes d'intervention ?</label>
-        <div class="small" style="margin-top:4px">Vous pouvez sélectionner plusieurs réponses.</div>
+        
+        <label style="margin-top:24px" class="required">Quel est votre mode d'intervention principal ?</label>
+        <div class="small" style="margin-top:4px">Sélectionnez l'option qui correspond le mieux à votre pratique.</div>
         <div style="margin-top:12px">
-          <label><input type="checkbox" name="mode" value="domicile"> Se déplace à domicile</label>
-          <label><input type="checkbox" name="mode" value="cabinet"> En cabinet</label>
+          <label><input type="radio" name="modeIntervention" value="cabinet"> Uniquement en cabinet</label>
+          <label><input type="radio" name="modeIntervention" value="deplacement"> Je me déplace au domicile</label>
+          <label><input type="radio" name="modeIntervention" value="mixte"> Les deux (cabinet + déplacements)</label>
         </div>
 
         <label style="margin-top:24px" class="required">Proposez-vous des rendez-vous en visio ?</label>
@@ -726,12 +727,11 @@ async function showFormAndPrefill(data) {
       });
     }
     
-    if (data.modes) {
-      const modesArr = data.modes.split(",").map(s => s.trim()).filter(Boolean);
-      document.querySelectorAll('input[name="mode"]').forEach(ch => {
-        ch.checked = modesArr.includes(ch.value);
-      });
+    if (data.modeIntervention) {
+      const modeRadio = document.querySelector(`input[name="modeIntervention"][value="${data.modeIntervention}"]`);
+      if (modeRadio) modeRadio.checked = true;
     }
+  }
     
     if (data.visio) {
       const visioRadio = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
@@ -783,7 +783,7 @@ const consentValue = String(data.consentement || "").toLowerCase();
     document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
     submitBtn.textContent = "✓ Mettre à jour mes informations";
   }
-}
+
 
 /* ========== LISTENERS: numType toggles ========== */
 document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
@@ -909,7 +909,10 @@ submitBtn.addEventListener('click', async () => {
   if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
   if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
   if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; return; }
-  if (!Array.from(document.querySelectorAll('input[name="mode"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un mode d'intervention."; return; }
+  if (!document.querySelector('input[name="modeIntervention"]:checked')) { 
+  submitMsg.textContent = "Sélectionnez votre mode d'intervention."; 
+  return; 
+}
   if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
   if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
   if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
@@ -947,8 +950,8 @@ submitBtn.addEventListener('click', async () => {
   fd.append("phone", document.getElementById("phone").value.trim());
   fd.append("profession", document.getElementById("profession").value);
   fd.append("publics", Array.from(document.querySelectorAll('input[name="public"]:checked')).map(i=>i.value).join(","));
-  fd.append("modes", Array.from(document.querySelectorAll('input[name="mode"]:checked')).map(i=>i.value).join(","));
-  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
+  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
+  fd.append("modeIntervention", modeIntervention ? modeIntervention.value : "");  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   fd.append("departement", departSelect.value);
   fd.append("commune", communeSelect.value);
   fd.append("rayon", document.getElementById("rayon").value);
