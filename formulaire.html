@@ -4,6 +4,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Questionnaire de référencement — Professionnels TSA</title>
+
+<!-- Leaflet pour la carte -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
   :root{
     --bg:#f6f8fb;
@@ -18,7 +23,7 @@
   .wrap{max-width:980px;margin:18px auto}
   .card{background:var(--card);border-radius:16px;padding:32px 36px;box-shadow:0 8px 30px rgba(2,6,23,0.06);margin-bottom:24px}
 
-  /* Navigation Header (nouvelle mise en page) */
+  /* Navigation Header */
   .nav-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;padding-bottom:16px;border-bottom:2px solid #e6eef6}
   .nav-header h1{margin:0;font-size:24px;color:#0f1724}
   .nav-links{display:flex;gap:16px;align-items:center}
@@ -52,8 +57,6 @@
 
   .btn-secondary{background:#eef2f7;color:#0f1724;margin-top:20px}
   .btn-secondary:hover{background:#e1e7ef;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-  .btn-danger{background:#ef4444;color:#fff;margin-top:20px}
-  .btn-danger:hover{background:#dc2626}
 
   .info-box{background:#e6f7f7;padding:16px 20px;border-left:4px solid var(--primary);border-radius:8px;margin-bottom:20px;color:#0f1724}
   .info-box strong{color:var(--primary)}
@@ -65,22 +68,348 @@
 
   textarea{font-family:Arial, sans-serif;line-height:1.4;min-height:100px;resize:vertical}
   .help-text{font-size:13px;color:var(--muted);margin-top:6px;font-style:italic}
-  label.required {
-    color: #0f1724; /* couleur normale du texte de la question */
-  }
+  
   label.required::after {
-    content: " *"; /* ajoute un astérisque après le label */
-    color: #ef4444; /* astérisque rouge */
+    content: " *";
+    color: #ef4444;
     margin-left: 4px;
     font-weight: bold;
   }
 
+  /* CARTE ET COMMUNES */
+  #map{
+    height:450px;
+    margin-top:15px;
+    border-radius:12px;
+    overflow:hidden;
+    border:2px solid #e6eef6;
+    position:relative;
+  }
+  
+  .map-search-container{
+    position:absolute;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:1000;
+    width:90%;
+    max-width:400px;
+  }
 
-  footer{text-align:center;margin-top:48px;padding-top:32px;border-top:2px solid #e6eef6;color:var(--muted);font-size:14px}
-  footer a{color:var(--primary);text-decoration:none;font-weight:600}
-  footer a:hover{text-decoration:underline}
+  .map-search-input{
+    width:100%;
+    padding:12px 16px;
+    border:2px solid #e6eef6;
+    border-radius:8px;
+    background:#fff;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    font-size:14px;
+  }
 
-  /* Styles supplémentaires de la version test (pour compatibilité) */
+  .map-search-results{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    background:#fff;
+    border:2px solid #e6eef6;
+    border-radius:8px;
+    margin-top:4px;
+    max-height:200px;
+    overflow-y:auto;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    display:none;
+  }
+
+  .map-search-results.active{
+    display:block;
+  }
+
+  .map-search-item{
+    padding:10px 16px;
+    cursor:pointer;
+    border-bottom:1px solid #f3f4f6;
+  }
+
+  .map-search-item:hover{
+    background:#f0f9ff;
+  }
+
+  .map-search-item:last-child{
+    border-bottom:none;
+  }
+  
+  .zone-interactive{
+    background:#f9fafb;
+    border:2px solid #e6eef6;
+    border-radius:12px;
+    padding:20px;
+    margin-top:20px;
+  }
+
+  /* 3 COLONNES */
+  .communes-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:16px;
+    margin-top:20px;
+  }
+
+  .commune-column{
+    background:#fff;
+    border:2px solid #e6eef6;
+    border-radius:8px;
+    padding:16px;
+  }
+
+  .commune-column h4{
+    margin:0 0 12px;
+    font-size:15px;
+    font-weight:700;
+    color:#0f1724;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding-bottom:8px;
+    border-bottom:2px solid #e6eef6;
+  }
+
+  .commune-column-list{
+    max-height:350px;
+    overflow-y:auto;
+  }
+
+  .commune-item{
+    display:flex;
+    align-items:center;
+    padding:8px;
+    margin:4px 0;
+    border-radius:6px;
+    cursor:pointer;
+    transition:all 0.2s;
+    font-size:14px;
+  }
+
+  .commune-item:hover{
+    background:#f0f9ff;
+  }
+
+  .commune-item.selected{
+    background:#d1fae5;
+    border-left:3px solid #10b981;
+    font-weight:500;
+  }
+
+  .commune-item.unselected{
+    background:#fff;
+    color:#6b7280;
+  }
+
+  .commune-item input[type="checkbox"]{
+    width:auto;
+    margin:0 8px 0 0;
+    cursor:pointer;
+  }
+
+  .commune-item-remove{
+    margin-left:auto;
+    background:#fee;
+    color:#dc2626;
+    border:none;
+    padding:4px 8px;
+    border-radius:4px;
+    cursor:pointer;
+    font-size:12px;
+  }
+
+  .commune-item-remove:hover{
+    background:#fca5a5;
+  }
+
+  .search-input-wrapper{
+    position:relative;
+    margin-bottom:12px;
+  }
+
+  .search-input{
+    width:100%;
+    padding:10px 12px;
+    border:2px solid #e6eef6;
+    border-radius:6px;
+    font-size:14px;
+  }
+
+  .search-results{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    background:#fff;
+    border:2px solid #e6eef6;
+    border-radius:6px;
+    margin-top:4px;
+    max-height:200px;
+    overflow-y:auto;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    z-index:100;
+    display:none;
+  }
+
+  .search-results.active{
+    display:block;
+  }
+
+  .search-result-item{
+    padding:10px 12px;
+    cursor:pointer;
+    border-bottom:1px solid #f3f4f6;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .search-result-item:hover{
+    background:#f0f9ff;
+  }
+
+  .search-result-item:last-child{
+    border-bottom:none;
+  }
+
+  .search-result-dept{
+    font-size:12px;
+    color:#6b7280;
+  }
+
+  .search-result-add{
+    background:#10b981;
+    color:#fff;
+    border:none;
+    padding:4px 12px;
+    border-radius:4px;
+    font-size:12px;
+    cursor:pointer;
+  }
+
+  .search-result-add:hover{
+    background:#059669;
+  }
+
+  .validate-zone-btn{
+    width:100%;
+    margin-top:24px;
+    padding:16px;
+    background:#10b981;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+
+  .validate-zone-btn:hover{
+    background:#059669;
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(16,185,129,0.3);
+  }
+
+  .validate-zone-btn:disabled{
+    background:#d1d5db;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  .legend-map{
+    background:#fff;
+    padding:12px;
+    border-radius:8px;
+    margin-top:12px;
+    border:2px solid #e6eef6;
+  }
+
+  .legend-map h4{
+    margin:0 0 8px;
+    font-size:14px;
+    font-weight:700;
+  }
+
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:6px 0;
+    font-size:13px;
+  }
+
+  .legend-dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+  }
+
+  .legend-dot.blue{
+    background:#3b82f6;
+  }
+
+  .legend-dot.green{
+    background:#10b981;
+  }
+
+  .legend-dot.red{
+    background:#dc2626;
+  }
+
+  @media(max-width:968px){
+    .communes-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  .stats-zone{
+    display:flex;
+    gap:16px;
+    margin-top:12px;
+    flex-wrap:wrap;
+  }
+
+  .stat-card{
+    flex:1;
+    min-width:150px;
+    background:#fff;
+    border:2px solid #e6eef6;
+    border-radius:8px;
+    padding:12px;
+    text-align:center;
+  }
+
+  .stat-number{
+    font-size:28px;
+    font-weight:700;
+    color:var(--primary);
+  }
+
+  .stat-label{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  .loading-overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:rgba(255,255,255,0.9);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    z-index:1000;
+  }
+
   .prereq-section{background:var(--prereq-bg);padding:18px;border-radius:12px;margin-top:24px;border-left:4px solid var(--primary);margin-bottom: 48px;}
   .error{color:#dc2626;margin-top:8px;font-weight:500}
   .small{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
@@ -93,36 +422,38 @@
     .card{padding:24px 20px}
     .nav-header{flex-direction:column;align-items:flex-start;gap:12px}
     .nav-links{flex-wrap:wrap}
+    #map{height:300px}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
   <!-- NAV HEADER -->
-    <div class="nav-header">
-      <h1> Questionnaire de référencement</h1>
-      <nav class="nav-links">
-        <a href="index.html"> Accueil</a>
-        <a href="mentions.html"> Mentions légales</a>
-      </nav>
-    </div>
+  <div class="nav-header">
+    <h1>📋 Questionnaire de référencement</h1>
+    <nav class="nav-links">
+      <a href="index.html">🏠 Accueil</a>
+      <a href="mentions.html">📄 Mentions légales</a>
+    </nav>
+  </div>
   
-  <div class="card">
+<div class="card">
+  <div id="intro-section">
     <h2>Complétez vos informations professionnelles pour être référencé sur la plateforme</h2>
 
     <div class="info-box">
-      <strong>⏱️ Temps estimé :</strong> 5 minutes maximum
+      <strong>⏱️ Temps estimé :</strong> 5-10 minutes maximum
     </div>
+  </div>
 
-    <!-- === Section EMAIL (visuelle nouvelle page mais IDs = script d'origine) === -->
+    <!-- === SECTION EMAIL === -->
     <div id="section-email">
       <h3 class="section-title">1️⃣ Vérification de votre identité</h3>
 
-          <p class="small" style="margin-top:8px">
-      Les questions avec un <span style="color:#ef4444;font-weight:bold">*</span> sont obligatoires.
-    </p>
+      <p class="small" style="margin-top:8px">
+        Les questions avec un <span style="color:#ef4444;font-weight:bold">*</span> sont obligatoires.
+      </p>
 
-      <!-- Email field with original IDs -->
       <label for="email" class="required">Adresse e-mail professionnelle</label>
       <div style="display:flex;gap:8px;align-items:center">
         <input id="email" type="email" placeholder="exemple@professionnel.fr" autocomplete="email"/>
@@ -130,7 +461,6 @@
       </div>
       <div id="emailMsg" class="small"></div>
 
-      <!-- Code area (hidden until send) -->
       <div id="codeArea" class="hidden" style="margin-top:12px">
         <label for="code" class="required">Code de vérification (envoyé par e-mail)</label>
         <div style="display:flex;gap:8px;align-items:center">
@@ -141,7 +471,6 @@
         <div id="codeMsg" class="small"></div>
       </div>
 
-      <!-- new user / existing user messages (from original) -->
       <div id="newUserMessage" class="hidden" style="background:#e6f7f7;border:2px solid #0ea5a4;padding:18px;border-radius:12px;margin-top:16px;text-align:center">
         <div style="font-size:36px;margin-bottom:8px">👋</div>
         <h3 style="margin:0 0 8px;color:#0f1724;font-size:18px">Bienvenue !</h3>
@@ -173,9 +502,7 @@
       </div>
     </div>
 
-    <!-- === FORM (kept hidden until verification) ===
-         This block uses the exact structure and ids expected by your original script.
-    -->
+    <!-- === FORMULAIRE === -->
     <form id="form" class="hidden" onsubmit="return false;">
       <div class="prereq-section">
         <div style="font-weight:700;margin-bottom:8px">Prérequis</div>
@@ -242,75 +569,179 @@
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
 
- <div id="section-geo" class="hidden">
-  <div class="section-title" style="margin-top:32px"><span class="section-number">3</span> Zone géographique d'intervention</div>
+        <!-- === SECTION 3 : ZONE GÉOGRAPHIQUE === -->
+        <div id="section-geo" class="hidden">
+          <div class="section-title" style="margin-top:32px"><span class="section-number">3</span> Zone géographique d'intervention</div>
 
-  <!-- DÉPARTEMENT -->
-  <label for="departement" class="required">Dans quel département intervenez-vous ?</label>
-  <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
+          <!-- DÉPARTEMENT -->
+          <label for="departement" class="required">Dans quel département intervenez-vous ?</label>
+          <select id="departement" name="departement"><option value="">-- Chargement --</option></select>
 
-  <!-- COMMUNE -->
-  <div id="blocCommune" class="hidden">
-    <label for="commune" class="required" id="labelCommune">Quelle est votre commune d'intervention ?</label>
-    <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
-  </div>
+          <!-- COMMUNE -->
+          <div id="blocCommune" class="hidden">
+            <label for="commune" class="required" id="labelCommune">Quelle est votre commune principale ?</label>
+            <select id="commune" name="commune"><option value="">-- Choisissez le département --</option></select>
+          </div>
 
-  <!-- QUESTIONS DÉPLACEMENTS -->
-  <div id="questionsDeplacements" class="hidden">
+          <!-- CRITÈRES DÉPLACEMENTS -->
+          <div id="questionsDeplacements" class="hidden">
+            
+            <!-- MÉTROPOLE : Temps -->
+            <div id="zoneMetropole" class="hidden">
+              <label for="tempsTrajet" class="required">Quel est votre temps de trajet maximal ?</label>
+              <select id="tempsTrajet" name="tempsTrajet" style="margin-top:8px;">
+                <option value="">-- Sélectionnez --</option>
+                <option>15 min</option>
+                <option>20 min</option>
+                <option>30 min</option>
+                <option>45 min</option>
+                <option>60 min</option>
+              </select>
+              <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
+            </div>
+
+            <!-- OUTRE-MER : Rayon -->
+            <div id="zoneOutreMer" class="hidden">
+              <label for="rayonKm" class="required">Quel est votre rayon d'intervention (en km) ?</label>
+              <select id="rayonKm" name="rayonKm" style="margin-top:8px;">
+                <option value="">-- Sélectionnez --</option>
+                <option>10 km</option>
+                <option>15 km</option>
+                <option>20 km</option>
+                <option>25 km</option>
+                <option>30 km</option>
+                <option>40 km</option>
+                <option>Tout mon département</option>
+              </select>
+              <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
+            </div>
+
+            <!-- ZONE INTERACTIVE (CARTE + COMMUNES) -->
+            <div id="zoneInteractive" class="zone-interactive hidden">
+              <label class="required" style="font-size:16px;margin-bottom:12px;display:block">Visualisez et ajustez vos communes d'intervention</label>
+              
+              <div class="info-box" style="margin-bottom:16px">
+                <strong>💡 Mode d'emploi :</strong> La zone ci-dessous est calculée automatiquement selon vos critères. 
+                Cochez au moins une commune pour valider votre zone d'intervention. Vous pouvez aussi ajouter des communes d'autres départements via la recherche.
+              </div>
+
+              <!-- STATS -->
+               <div class="stats-zone">
+                <div class="stat-card">
+                  <div class="stat-number" id="statSelectionnees">0</div>
+                  <div class="stat-label">Communes sélectionnées</div>
+                </div>
+              </div>
+
+              <!-- CARTE -->
+              <div style="position:relative;">
+                <div id="map"></div>
+                
+                <!-- RECHERCHE SUR LA CARTE -->
+                <div class="map-search-container">
+                  <input 
+                    type="text" 
+                    id="mapSearchInput" 
+                    class="map-search-input" 
+                    placeholder="🔍 Rechercher une commune sur la carte..."
+                  />
+                  <div id="mapSearchResults" class="map-search-results"></div>
+                </div>
+              </div>
+
+              <!-- LÉGENDE -->
+              <div class="legend-map">
+                <h4>📌 Légende</h4>
+                <div class="legend-item">
+                  <span class="legend-dot red"></span>
+                  <span>Commune centrale (point de départ)</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot blue"></span>
+                  <span>Communes calculées automatiquement (rayon km/temps de trajet)</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot green"></span>
+                  <span>Communes ajoutées manuellement</span>
+                </div>
+              </div>
+
+
+<!-- 2 COLONNES DE COMMUNES -->
+<div class="communes-grid" style="grid-template-columns: 1fr 1fr;">
+  
+  <!-- COLONNE 1 : DÉPARTEMENT PRINCIPAL -->
+  <div class="commune-column">
+    <h4>
+      <span style="font-size:20px">📍</span>
+      Mon département
+    </h4>
+    <div class="small" style="margin-bottom:8px;color:#0ea5a4">
+      Cochez les communes que vous couvrez
+    </div>
     
-    <!-- MÉTROPOLE : Temps -->
-    <div id="zoneMetropole" class="hidden">
-      <label for="tempsTrajet" class="required">Quel est votre temps de trajet maximal ?</label>
-      <select id="tempsTrajet" name="tempsTrajet" style="margin-top:8px;">
-        <option value="">-- Sélectionnez --</option>
-        <option>15 min</option>
-        <option>20 min</option>
-        <option>30 min</option>
-        <option>45 min</option>
-        <option>60 min</option>
-      </select>
-      <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
-      
-<div style="margin-top:12px;">
-  <a href="#" id="visualiserLinkMetro" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-    📍 Visualiser les communes couvertes
-  </a>
-</div>
+    <!-- BARRE DE RECHERCHE -->
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        id="departementSearchInput" 
+        class="search-input" 
+        placeholder="🔍 Rechercher..."
+      />
+    </div>
+    
+    <div id="communesDepartement" class="commune-column-list"></div>
+  </div>
 
+  <!-- COLONNE 2 : AUTRES DÉPARTEMENTS -->
+  <div class="commune-column">
+    <h4>
+      <span style="font-size:20px">➕</span>
+      Autres départements
+    </h4>
+    <div class="small" style="margin-bottom:8px;color:#0ea5a4">
+      Ajoutez des communes hors département
+    </div>
+    
+    <!-- RECHERCHE -->
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        id="communeSearchInput" 
+        class="search-input" 
+        placeholder="🔍 Rechercher..."
+      />
+      <div id="communeSearchResults" class="search-results"></div>
     </div>
 
-    <!-- OUTRE-MER : Rayon -->
-    <div id="zoneOutreMer" class="hidden">
-      <label for="rayonKm" class="required">Quel est votre rayon d'intervention (en km) ?</label>
-      <select id="rayonKm" name="rayonKm" style="margin-top:8px;">
-        <option value="">-- Sélectionnez --</option>
-        <option>10 km</option>
-        <option>15 km</option>
-        <option>20 km</option>
-        <option>25 km</option>
-        <option>30 km</option>
-        <option>40 km</option>
-        <option>Tout mon département</option>
-      </select>
-      <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune.</div>
-
-      <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
-      <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
-      <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
-      
-<div style="margin-top:12px;">
-  <a href="#" id="visualiserLinkOM" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-    📍 Visualiser les communes couvertes
-  </a>
-</div>
-    </div>
-
+    <!-- COMMUNES AJOUTÉES -->
+    <div id="communesAjoutees" class="commune-column-list"></div>
   </div>
 </div>
-        
-       
+              
+                            <!-- 📋 LISTE RÉCAPITULATIVE -->
+              <div style="margin-top:32px;padding:20px;background:#fff;border:2px solid #0ea5a4;border-radius:12px">
+                <h4 style="margin:0 0 16px;color:#0f1724;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px">
+                  <span style="font-size:24px">📋</span>
+                  Liste récapitulative de vos communes
+                </h4>
+                <div class="small" style="margin-bottom:12px;color:#6b7280">
+                  Voici toutes les communes que vous avez sélectionnées (département principal + autres départements)
+                </div>
+                <div id="listeRecapitulative" style="max-height:200px;overflow-y:auto;padding:12px;background:#f9fafb;border-radius:8px"></div>
+              </div>
 
-       <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
+              <!-- PRÉCISIONS GÉOGRAPHIQUES -->
+              <label for="precisionsGeo" style="margin-top:24px">Précisions géographiques (optionnel)</label>
+              <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je ne couvre que certains quartiers, je privilégie telle zone..."></textarea>
+              <div class="small" style="margin-top:4px;">Ajoutez ici toute précision utile sur votre zone d'intervention.</div>
+            </div>
+
+          </div>
+        </div>
+        
+        <!-- === SECTION 4 : DISPONIBILITÉS === -->
+        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
         <div style="margin-top:12px">
           <label><input type="radio" name="dispo" value="oui"> Oui</label>
@@ -332,13 +763,13 @@
             max="10" 
             placeholder="Ex: 1"
             style="width: 150px;margin-top:8px"
-            />
+          />
           <div class="small" style="margin-top:6px;color:#6b7280">
             Indiquez le nombre de places disponibles (entre 1 et 10)
           </div>
         </div>
 
-<!-- SECTION 5 : MODE DE CONTACT (apparaît seulement si dispo = oui) -->
+        <!-- === SECTION 5 : MODE DE CONTACT === -->
         <div id="modeContactBlock" class="hidden">
           <div class="section-title" style="margin-top:32px"><span class="section-number">5</span> Préférences de contact</div>
           
@@ -367,7 +798,7 @@
           </div>
         </div>
         
-        <!-- SECTION 6 : CONSENTEMENT -->
+        <!-- === SECTION 6 : CONSENTEMENT === -->
         <div class="section-title" style="margin-top:32px"><span class="section-number" id="consentNumber">5</span> Consentement</div>
         <label style="margin-top:0;display:flex;align-items:start;gap:8px" class="required">
           <input id="consent" name="consent" type="checkbox" style="margin-top:4px"/>
@@ -391,22 +822,43 @@
     </form>
   </div>
 
-    <footer>
-      <p>
-        <a href="index.html">Accueil</a> • 
-        <a href="mentions.html">Mentions légales</a> • 
-        <a href="mentions.html#confidentialite">Politique de confidentialité</a> • 
-        <a href="mentions.html#contact">Contact</a>
-      </p>
-      <p style="margin-top:12px;font-size:13px">© 2025 - Référencement Professionnels TSA</p>
-    </footer>
+  <footer style="text-align:center;margin-top:48px;padding-top:32px;border-top:2px solid #e6eef6;color:var(--muted);font-size:14px">
+    <p>
+      <a href="index.html" style="color:var(--primary);text-decoration:none;font-weight:600">Accueil</a> • 
+      <a href="mentions.html" style="color:var(--primary);text-decoration:none;font-weight:600">Mentions légales</a>
+    </p>
+    <p style="margin-top:12px;font-size:13px">© 2025 - Référencement Professionnels TSA</p>
+  </footer>
   
 </div>
+
 <script>
 /* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
+const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImYyNjcyNmMzZTU3YTQyNzk4Y2UxYzMxZmQ2YTZhYzZjIiwiaCI6Im11cm11cjY0In0=';
 const DEPT_API = "https://geo.api.gouv.fr/departements";
-const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes`;
+const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes?fields=nom,centre`;
+
+const DEPS_METRO = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','2A','2B','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95'];
+const DEPS_DOMTOM = ['971','972','973','974','976'];
+
+/* ========== VARIABLES GLOBALES ========== */
+let map = null;
+let communesData = [];
+let communesCalculees = new Set();
+let communesSelectionnees = new Set();
+let communesAjouteesManuel = new Map();
+let communesAjouteesDepartement = new Set();
+let polygonLayer = null;
+let circleLayer = null;
+let markersBleus = new Map();
+let markersVerts = new Map();
+let markerCentral = null;
+
+let CURRENT_EMAIL = null;
+let EXISTING = false;
+let EXISTING_DATA = null;
+let FORM_LOCKED = false;
 
 /* ========== HELPERS VALIDATION ========== */
 const isDigits = s => /^\d+$/.test(s||"");
@@ -417,7 +869,14 @@ const validPhone = v => {
   return /^(0[1-9]\d{8}|\+33[1-9]\d{8})$/.test(c) || /^[0-9]{10,15}$/.test(c);
 };
 
-/* ========== DOM ========= */
+// FONCTION NORMALISER 
+function normaliser(str) {
+  if (!str) return "";
+  return str.toString().trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+}
+
+/* ========== DOM ELEMENTS ========== */
 const emailEl = document.getElementById("email");
 const sendCodeBtn = document.getElementById("sendCodeBtn");
 const emailMsg = document.getElementById("emailMsg");
@@ -449,21 +908,720 @@ const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const deleteMsg = document.getElementById("deleteMsg");
 const successBanner = document.getElementById("successBanner");
-const visualiserLink = document.getElementById("visualiserLink");
 const placesInput = document.getElementById("placesDisponibles");
 const modeContactBlock = document.getElementById("modeContactBlock");
 const consentNumber = document.getElementById("consentNumber");
 
-let CURRENT_EMAIL = null;
-let EXISTING = false;
-let EXISTING_DATA = null;
-let FORM_LOCKED = false;
+/* ========== INITIALISATION CARTE ========== */
+function initMap() {
+  if (!map) {
+    map = L.map('map').setView([46.8, 2.5], 6);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap © CARTO'
+    }).addTo(map);
+    
+    // Forcer le rafraîchissement de la carte après initialisation
+    setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, 100);
+  }
+}
 
-/* ========== AFFICHAGE DYNAMIQUE SECTION 3 (MODE + DÉPARTEMENT) ========== */
-const DEPS_METRO = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','2A','2B','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95'];
-const DEPS_DOMTOM = ['971','972','973','974','976'];
+/* ========== GESTION MARKERS ========== */
+function clearMarkers() {
+  markersBleus.forEach(marker => map.removeLayer(marker));
+  markersBleus.clear();
+  markersVerts.forEach(marker => map.removeLayer(marker));
+  markersVerts.clear();
+  if (markerCentral) {
+    map.removeLayer(markerCentral);
+    markerCentral = null;
+  }
+}
 
-// Fonction pour mettre à jour l'affichage de la section 3
+function updateMarkers() {
+  clearMarkers();
+
+  const communeCentrale = communeSelect.value;
+  const allPoints = []; // Pour calculer le zoom global
+
+  // ✅ MARKER ROUGE pour la commune centrale
+  const communeCentraleData = communesData.find(c => c.nom === communeCentrale);
+  if (communeCentraleData && communesSelectionnees.has(communeCentrale)) {
+    markerCentral = L.marker([communeCentraleData.lat, communeCentraleData.lon], {
+      icon: L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
+    }).addTo(map).bindPopup(`<strong>${communeCentrale}</strong><br><em>Commune centrale</em>`);
+    allPoints.push([communeCentraleData.lat, communeCentraleData.lon]);
+  }
+
+  // ✅ Markers BLEUS pour communes calculées automatiquement (sauf centrale)
+  communesData.forEach(c => {
+    if (communesSelectionnees.has(c.nom) && 
+        c.nom !== communeCentrale && 
+        communesCalculees.has(c.nom) &&
+        !communesAjouteesDepartement.has(c.nom) &&
+        !communesAjouteesManuel.has(c.nom)) {
+      const marker = L.marker([c.lat, c.lon], {
+        icon: L.icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        })
+      }).addTo(map).bindPopup(c.nom);
+      markersBleus.set(c.nom, marker);
+      allPoints.push([c.lat, c.lon]);
+    }
+  });
+
+  // ✅ Markers VERTS pour communes ajoutées manuellement du département principal
+  communesData.forEach(c => {
+    if (communesSelectionnees.has(c.nom) && 
+        c.nom !== communeCentrale && 
+        communesAjouteesDepartement.has(c.nom)) {
+      const marker = L.marker([c.lat, c.lon], {
+        icon: L.icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        })
+      }).addTo(map).bindPopup(`${c.nom} (ajoutée manuellement)`);
+      markersVerts.set(c.nom, marker);
+      allPoints.push([c.lat, c.lon]);
+    }
+  });
+
+  // ✅ Markers VERTS pour communes ajoutées d'autres départements
+  communesAjouteesManuel.forEach((data, nom) => {
+    if (communesSelectionnees.has(nom)) {
+      const marker = L.marker([data.lat, data.lon], {
+        icon: L.icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        })
+      }).addTo(map).bindPopup(`${nom} (${data.dept})`);
+      markersVerts.set(nom, marker);
+      allPoints.push([data.lat, data.lon]);
+    }
+  });
+
+  // ✅ ZOOM ADAPTATIF INTELLIGENT
+  if (markersVerts.size > 0 && allPoints.length > 0) {
+    const bounds = L.latLngBounds(allPoints);
+    map.fitBounds(bounds, { padding: [80, 80], maxZoom: 9 });
+    console.log(`🔍 Zoom étendu pour inclure ${markersVerts.size} communes ajoutées manuellement`);
+  }
+  
+  updateStats();
+  updateListeRecapitulative();
+}
+
+function updateStats() {
+  const statSelectionnees = document.getElementById('statSelectionnees');
+  if (statSelectionnees) {
+    statSelectionnees.textContent = communesSelectionnees.size;
+  }
+  
+  // Ne plus afficher statAjoutees car cet élément n'existe plus
+  // (on a changé l'affichage des stats)
+}
+
+/* ========== LISTE RÉCAPITULATIVE ========== */
+function updateListeRecapitulative() {
+  const container = document.getElementById('listeRecapitulative');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  if (communesSelectionnees.size === 0) {
+    container.innerHTML = '<div style="color:#6b7280;text-align:center;padding:20px">Aucune commune sélectionnée</div>';
+    return;
+  }
+  
+  // Créer un tableau avec toutes les communes + leur département
+  const communesAvecDept = [];
+  
+  communesSelectionnees.forEach(nom => {
+    let dept = departSelect.value.split(' ')[0]; // Département par défaut
+    
+    // Si c'est une commune ajoutée manuellement, récupérer son vrai département
+    if (communesAjouteesManuel.has(nom)) {
+      dept = communesAjouteesManuel.get(nom).dept;
+    }
+    
+    communesAvecDept.push({ nom, dept });
+  });
+  
+  // Trier par département puis par nom
+  communesAvecDept.sort((a, b) => {
+    if (a.dept !== b.dept) return a.dept.localeCompare(b.dept);
+    return a.nom.localeCompare(b.nom);
+  });
+  
+  // Afficher
+  let currentDept = '';
+  communesAvecDept.forEach(({ nom, dept }) => {
+    // Afficher le département si changement
+    if (dept !== currentDept) {
+      currentDept = dept;
+      const deptHeader = document.createElement('div');
+      deptHeader.style.cssText = 'font-weight:700;color:#0ea5a4;margin-top:12px;margin-bottom:4px;font-size:14px';
+      deptHeader.textContent = `📍 Département ${dept}`;
+      container.appendChild(deptHeader);
+    }
+    
+    // Afficher la commune
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:6px 12px;margin:2px 0;background:#fff;border-radius:4px;display:flex;align-items:center;gap:8px;font-size:14px';
+    item.innerHTML = `<span style="color:#10b981;font-weight:700">✓</span> ${nom}`;
+    container.appendChild(item);
+  });
+}
+
+/* ========== AFFICHA2 COLONNES ========== */
+function afficher2Colonnes() {
+  const colDepartement = document.getElementById('communesDepartement');
+  
+  if (!colDepartement) return;
+  
+  colDepartement.innerHTML = '';
+  
+  // COLONNE 1 : Toutes les communes du département
+  const toutesCommunes = [];
+  
+  communesData.forEach(c => {
+    toutesCommunes.push({
+      nom: c.nom,
+      selected: communesSelectionnees.has(c.nom)
+    });
+  });
+  
+  // Trier : cochées d'abord, puis alphabétique
+  toutesCommunes.sort((a, b) => {
+    if (a.selected && !b.selected) return -1;
+    if (!a.selected && b.selected) return 1;
+    return a.nom.localeCompare(b.nom);
+  });
+
+  if (toutesCommunes.length === 0) {
+    colDepartement.innerHTML = '<div class="small" style="color:#6b7280;text-align:center;padding:20px">Aucune commune disponible</div>';
+  } else {
+    toutesCommunes.forEach(({nom, selected}) => {
+      const item = createCommuneItem(nom, selected);
+      colDepartement.appendChild(item);
+    });
+  }
+
+  updateCommunesAjoutees();
+  updateStats();
+  updateListeRecapitulative();
+}
+
+function createCommuneItem(nom, isSelected) {
+  const item = document.createElement('div');
+  item.className = `commune-item ${isSelected ? 'selected' : 'unselected'}`;
+  
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = isSelected;
+  checkbox.id = `commune-${nom}`;
+  
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      communesSelectionnees.add(nom);
+      // Si c'est une commune du département qui n'était pas calculée automatiquement
+      if (!communesCalculees.has(nom)) {
+        communesAjouteesDepartement.add(nom);
+      }
+    } else {
+      communesSelectionnees.delete(nom);
+      // Si c'était ajoutée manuellement, on la retire aussi de ce set
+      communesAjouteesDepartement.delete(nom);
+    }
+    afficher2Colonnes();
+    updateMarkers();
+  });
+
+  const label = document.createElement('label');
+  label.htmlFor = `commune-${nom}`;
+  label.textContent = nom;
+  label.style.cursor = 'pointer';
+  label.style.flex = '1';
+
+  item.appendChild(checkbox);
+  item.appendChild(label);
+  
+  return item;
+}
+
+function updateCommunesAjoutees() {
+  const container = document.getElementById('communesAjoutees');
+  container.innerHTML = '';
+  
+
+  if (communesAjouteesManuel.size === 0) {
+    container.innerHTML = '<div class="small" style="color:#6b7280;text-align:center;padding:20px">Recherchez des communes à ajouter</div>';
+    return;
+  }
+
+  Array.from(communesAjouteesManuel.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([nom, data]) => {
+    const item = document.createElement('div');
+    item.className = `commune-item ${communesSelectionnees.has(nom) ? 'selected' : 'unselected'}`;
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = communesSelectionnees.has(nom);
+    checkbox.id = `commune-ajoutee-${nom}`;
+    
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) {
+        communesSelectionnees.add(nom);
+      } else {
+        communesSelectionnees.delete(nom);
+      }
+      updateCommunesAjoutees();
+      updateMarkers();
+    });
+
+    const label = document.createElement('label');
+    label.htmlFor = `commune-ajoutee-${nom}`;
+    label.textContent = `${nom} (${data.dept})`;
+    label.style.cursor = 'pointer';
+    label.style.flex = '1';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'commune-item-remove';
+    removeBtn.textContent = '🗑️';
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      communesAjouteesManuel.delete(nom);
+      communesSelectionnees.delete(nom);
+      updateCommunesAjoutees();
+      updateMarkers();
+      updateStats();
+    };
+
+    item.appendChild(checkbox);
+    item.appendChild(label);
+    item.appendChild(removeBtn);
+    container.appendChild(item);
+  });
+  updateListeRecapitulative();
+}
+
+/* ========== RECHERCHE SUR LA CARTE ========== */
+const mapSearchInput = document.getElementById('mapSearchInput');
+const mapSearchResults = document.getElementById('mapSearchResults');
+let mapSearchTimeout = null;
+
+mapSearchInput.addEventListener('input', (e) => {
+  const query = e.target.value.trim();
+  
+  clearTimeout(mapSearchTimeout);
+  
+  if (query.length < 2) {
+    mapSearchResults.classList.remove('active');
+    return;
+  }
+
+  mapSearchTimeout = setTimeout(async () => {
+    try {
+      const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,code,codeDepartement,centre&boost=population&limit=8`;
+      const response = await fetch(url);
+      const communes = await response.json();
+
+      if (communes.length === 0) {
+        mapSearchResults.innerHTML = '<div class="map-search-item">Aucune commune trouvée</div>';
+        mapSearchResults.classList.add('active');
+        return;
+      }
+
+      mapSearchResults.innerHTML = '';
+      communes.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'map-search-item';
+        item.innerHTML = `<strong>${c.nom}</strong> <span style="color:#6b7280;font-size:12px">(${c.codeDepartement})</span>`;
+        
+        item.onclick = () => {
+          const lat = c.centre.coordinates[1];
+          const lon = c.centre.coordinates[0];
+          map.setView([lat, lon], 10); // Zoom 10 au lieu de 13 pour voir plus large
+          
+          mapSearchResults.classList.remove('active');
+          mapSearchInput.value = '';
+        };
+        
+        mapSearchResults.appendChild(item);
+      });
+
+      mapSearchResults.classList.add('active');
+    } catch (error) {
+      console.error('Erreur recherche carte:', error);
+    }
+  }, 300);
+});
+
+document.addEventListener('click', (e) => {
+  if (!mapSearchInput.contains(e.target) && !mapSearchResults.contains(e.target)) {
+    mapSearchResults.classList.remove('active');
+  }
+});
+
+/* ========== RECHERCHE COLONNE 3 ========== */
+const communeSearchInput = document.getElementById('communeSearchInput');
+const communeSearchResults = document.getElementById('communeSearchResults');
+let communeSearchTimeout = null;
+
+communeSearchInput.addEventListener('input', (e) => {
+  const query = e.target.value.trim();
+  
+  clearTimeout(communeSearchTimeout);
+  
+  if (query.length < 2) {
+    communeSearchResults.classList.remove('active');
+    return;
+  }
+
+  communeSearchTimeout = setTimeout(async () => {
+    try {
+      const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,code,codeDepartement,centre&boost=population&limit=10`;
+      const response = await fetch(url);
+      const communes = await response.json();
+
+      if (communes.length === 0) {
+        communeSearchResults.innerHTML = '<div class="search-result-item">Aucune commune trouvée</div>';
+        communeSearchResults.classList.add('active');
+        return;
+      }
+
+      communeSearchResults.innerHTML = '';
+      communes.forEach(c => {
+        if (communesAjouteesManuel.has(c.nom)) return;
+
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        
+        const info = document.createElement('div');
+        info.innerHTML = `<strong>${c.nom}</strong><br><span class="search-result-dept">${c.codeDepartement}</span>`;
+        
+        const addBtn = document.createElement('button');
+        addBtn.className = 'search-result-add';
+        addBtn.textContent = '+ Ajouter';
+        addBtn.onclick = () => {
+          communesAjouteesManuel.set(c.nom, {
+            nom: c.nom,
+            dept: c.codeDepartement,
+            lat: c.centre.coordinates[1],
+            lon: c.centre.coordinates[0]
+          });
+          communesSelectionnees.add(c.nom);
+          
+          updateCommunesAjoutees();
+          updateMarkers();
+          updateStats();
+          
+          communeSearchResults.classList.remove('active');
+          communeSearchInput.value = '';
+        };
+        
+        item.appendChild(info);
+        item.appendChild(addBtn);
+        communeSearchResults.appendChild(item);
+      });
+
+      communeSearchResults.classList.add('active');
+    } catch (error) {
+      console.error('Erreur recherche commune:', error);
+    }
+  }, 300);
+});
+
+document.addEventListener('click', (e) => {
+  if (!communeSearchInput.contains(e.target) && !communeSearchResults.contains(e.target)) {
+    communeSearchResults.classList.remove('active');
+  }
+});
+
+/* ========== RECHERCHE COLONNE DÉPARTEMENT ========== */
+const departementSearchInput = document.getElementById('departementSearchInput');
+
+if (departementSearchInput) {
+  departementSearchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    const items = document.querySelectorAll('#communesDepartement .commune-item');
+    
+    items.forEach(item => {
+      const label = item.querySelector('label');
+      if (label) {
+        const text = label.textContent.toLowerCase();
+        if (text.includes(query)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      }
+    });
+  });
+}
+
+/* ========== CALCUL ZONE MÉTROPOLE ========== */
+async function calculerZoneMetropole(coords, communeCentrale) {
+  const tempsValue = document.getElementById('tempsTrajet').value;
+  if (!tempsValue) {
+    alert('⚠️ Sélectionnez un temps de trajet');
+    throw new Error('Temps manquant');
+  }
+
+  const minutes = parseInt(tempsValue.match(/\d+/)?.[0] || 0);
+  
+  const isochrone = await calculerIsochrone(coords.lon, coords.lat, minutes);
+  if (!isochrone) throw new Error('Échec calcul isochrone');
+
+  const polygonCoords = isochrone.map(coord => [coord[1], coord[0]]);
+  polygonLayer = L.polygon(polygonCoords, {
+    color: "#0ea5a4",
+    fillColor: "#0ea5a4",
+    fillOpacity: 0.15,
+    weight: 2
+  }).addTo(map);
+
+ 
+  communesCalculees.clear();
+  communesSelectionnees.clear();
+  communesAjouteesDepartement.clear();
+  communesAjouteesDepartement.clear();
+  clearMarkers();
+
+  communesCalculees.add(communeCentrale);
+  communesSelectionnees.add(communeCentrale);
+
+  communesData.forEach(c => {
+    if (c.nom === communeCentrale) return;
+    
+    const pt = L.latLng(c.lat, c.lon);
+    if (polygonLayer.getBounds().contains(pt) && isPointInPolygon(pt, polygonCoords)) {
+      communesCalculees.add(c.nom);
+      communesSelectionnees.add(c.nom);
+    }
+  });
+  
+  // Zoom initial sur la zone calculée uniquement
+  const boundsInitial = polygonLayer.getBounds();
+  map.fitBounds(boundsInitial, { padding: [80, 80], maxZoom: 9 });
+
+  afficher2Colonnes();
+  updateMarkers(); // updateMarkers s'occupe du zoom étendu si besoin
+}
+
+/* ========== CALCUL ZONE OUTRE-MER ========== */
+async function calculerZoneOutreMer(coords, communeCentrale) {
+  const rayonValue = document.getElementById('rayonKm').value;
+  if (!rayonValue) {
+    alert('⚠️ Sélectionnez un rayon');
+    throw new Error('Rayon manquant');
+  }
+
+  communesCalculees.clear();
+  communesSelectionnees.clear();
+  communesAjouteesDepartement.clear();
+  clearMarkers();
+
+  communesCalculees.add(communeCentrale);
+  communesSelectionnees.add(communeCentrale);
+
+  if (rayonValue === "Tout mon département") {
+    communesData.forEach(c => {
+      communesCalculees.add(c.nom);
+      communesSelectionnees.add(c.nom);
+    });
+    const lats = communesData.map(c => c.lat);
+    const lngs = communesData.map(c => c.lon);
+    const bounds = [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+    map.fitBounds(bounds, { padding: [80, 80], maxZoom: 9 });
+
+  } else {
+    const rayonKm = parseFloat(rayonValue.match(/\d+/)?.[0] || 0);
+    
+    circleLayer = L.circle([coords.lat, coords.lon], {
+      radius: rayonKm * 1000,
+      color: "#0ea5a4",
+      fillColor: "#0ea5a4",
+      fillOpacity: 0.15
+    }).addTo(map);
+
+    communesData.forEach(c => {
+      if (c.nom === communeCentrale) return;
+      
+      const distance = calculerDistance(coords.lat, coords.lon, c.lat, c.lon);
+      if (distance <= rayonKm) {
+        communesCalculees.add(c.nom);
+        communesSelectionnees.add(c.nom);
+      }
+    });
+    // Zoom initial sur le cercle
+    const boundsInitial = circleLayer.getBounds();
+    map.fitBounds(boundsInitial, { padding: [80, 80], maxZoom: 9 });
+  }
+
+  afficher2Colonnes();
+  updateMarkers(); // updateMarkers s'occupe du zoom étendu si besoin
+}
+
+/* ========== CALCUL AUTOMATIQUE DE LA ZONE ========== */
+async function calculerZoneAutomatique() {
+  const commune = communeSelect.value;
+  const codeDept = departSelect.value;
+  
+  if (!commune || !codeDept) return;
+
+  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
+  if (!modeIntervention || modeIntervention.value === 'cabinet') return;
+
+  let critereRempli = false;
+  
+  if (DEPS_METRO.includes(codeDept)) {
+    const tempsValue = document.getElementById('tempsTrajet').value;
+    critereRempli = tempsValue && tempsValue !== "-- Sélectionnez --";
+  } else if (DEPS_DOMTOM.includes(codeDept)) {
+    const rayonValue = document.getElementById('rayonKm').value;
+    critereRempli = rayonValue && rayonValue !== "-- Sélectionnez --";
+  }
+
+  if (!critereRempli) return;
+
+  try {
+    initMap();
+    const coordsCentrale = await getCommuneCoordinates(codeDept, commune);
+    if (!coordsCentrale) throw new Error('Impossible de trouver la commune');
+
+    communesData = await getCommunesDepartement(codeDept);
+    clearMap();
+
+    if (DEPS_METRO.includes(codeDept)) {
+      await calculerZoneMetropole(coordsCentrale, commune);
+    } else if (DEPS_DOMTOM.includes(codeDept)) {
+      await calculerZoneOutreMer(coordsCentrale, commune);
+    }
+
+document.getElementById('zoneInteractive').classList.remove('hidden');
+
+// Forcer le rafraîchissement de la carte après affichage
+setTimeout(() => {
+  if (map) map.invalidateSize();
+}, 300);
+  } catch (error) {
+    console.error('Erreur calcul zone:', error);
+  }
+}
+
+/* ========== ÉCOUTEURS POUR CALCUL AUTOMATIQUE ========== */
+document.getElementById('tempsTrajet').addEventListener('change', calculerZoneAutomatique);
+document.getElementById('rayonKm').addEventListener('change', calculerZoneAutomatique);
+
+/* ========== FONCTIONS UTILITAIRES ========== */
+function clearMap() {
+  if (polygonLayer) {
+    map.removeLayer(polygonLayer);
+    polygonLayer = null;
+  }
+  if (circleLayer) {
+    map.removeLayer(circleLayer);
+    circleLayer = null;
+  }
+  clearMarkers();
+}
+
+async function getCommuneCoordinates(codeDept, nomCommune) {
+  const response = await fetch(COMMUNE_API(codeDept));
+  const communes = await response.json();
+  const commune = communes.find(c => c.nom.toLowerCase() === nomCommune.toLowerCase());
+  return commune ? {
+    lon: commune.centre.coordinates[0],
+    lat: commune.centre.coordinates[1]
+  } : null;
+}
+
+async function getCommunesDepartement(codeDept) {
+  const response = await fetch(COMMUNE_API(codeDept));
+  const communes = await response.json();
+  return communes.map(c => ({
+    nom: c.nom,
+    lon: c.centre.coordinates[0],
+    lat: c.centre.coordinates[1]
+  }));
+}
+
+async function calculerIsochrone(lon, lat, minutes) {
+  const url = 'https://api.openrouteservice.org/v2/isochrones/driving-car';
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': ORS_API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      locations: [[lon, lat]],
+      range: [minutes * 60],
+      range_type: 'time'
+    })
+  });
+
+  if (!response.ok) throw new Error('API Error');
+  
+  const data = await response.json();
+  return data.features[0].geometry.coordinates[0];
+}
+
+function isPointInPolygon(point, polygon) {
+  const x = point.lat;
+  const y = point.lng;
+  let inside = false;
+
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i][0], yi = polygon[i][1];
+    const xj = polygon[j][0], yj = polygon[j][1];
+    const intersect = ((yi > y) !== (yj > y)) &&
+      (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function calculerDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+/* ========== GESTION MODE INTERVENTION ========== */
+document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
+  radio.addEventListener('change', updateSectionGeo);
+});
+
 function updateSectionGeo() {
   const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
   const codeDept = departSelect.value;
@@ -474,117 +1632,94 @@ function updateSectionGeo() {
   const zoneMetropole = document.getElementById('zoneMetropole');
   const zoneOutreMer = document.getElementById('zoneOutreMer');
   const labelCommune = document.getElementById('labelCommune');
+  const zoneInteractive = document.getElementById('zoneInteractive');
   
-  // Réinitialiser tout
   sectionGeo.classList.add('hidden');
   blocCommune.classList.add('hidden');
   questionsDeplacements.classList.add('hidden');
   zoneMetropole.classList.add('hidden');
   zoneOutreMer.classList.add('hidden');
+  zoneInteractive.classList.add('hidden');
   
-  // Si aucun mode sélectionné, on arrête là
   if (!modeIntervention) return;
   
   const valeur = modeIntervention.value;
   
   if (valeur === 'cabinet') {
-    // CAS 1 : Cabinet uniquement
-    // Afficher section 3 avec juste département + commune
     sectionGeo.classList.remove('hidden');
     labelCommune.textContent = 'Quelle est votre commune d\'intervention ?';
-    questionsDeplacements.classList.add('hidden');
     
-    // Afficher commune uniquement si département déjà sélectionné
-    if (departSelect.value) {
+    if (codeDept) {
       blocCommune.classList.remove('hidden');
     }
     
   } else if (valeur === 'deplacement' || valeur === 'mixte') {
-    // CAS 2 : Se déplace (seul ou mixte)
-    // Afficher section 3 complète
     sectionGeo.classList.remove('hidden');
     labelCommune.textContent = 'Quelle est votre commune principale d\'intervention ?';
     
-    // Charger départements si pas encore fait
-    if (departSelect.options.length <= 1) {
-      loadDepartements();
-    }
-    
-    // Afficher commune uniquement si département déjà sélectionné
     if (codeDept) {
       blocCommune.classList.remove('hidden');
-      
-      // Afficher les questions de déplacement
       questionsDeplacements.classList.remove('hidden');
       
-      // Différencier Métropole / Outre-mer
       if (DEPS_METRO.includes(codeDept)) {
-        // France métropolitaine : temps de trajet
         zoneMetropole.classList.remove('hidden');
-        zoneOutreMer.classList.add('hidden');
-        
-        // Vider le champ précisions géo
-        document.getElementById('precisionsGeo').value = '';
-        
       } else if (DEPS_DOMTOM.includes(codeDept)) {
-        // Outre-mer : rayon en km + précisions
-        zoneMetropole.classList.add('hidden');
         zoneOutreMer.classList.remove('hidden');
       }
     }
   }
 }
 
-// Listener sur le mode d'intervention
-document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
-  radio.addEventListener('change', updateSectionGeo);
-});
-
-/* ========== FONCTIONS DE VERROUILLAGE ========== */
-function lockForm() {
-  FORM_LOCKED = true;
+/* ========== CHARGEMENT DÉPARTEMENTS ========== */
+async function loadDepartements() {
+  departSelect.innerHTML = '<option value="">-- chargement --</option>';
   
-  rest.style.display = 'none';
-  document.querySelector('.prereq-section').style.display = 'none';
-  newUserMessage.classList.add('hidden');
-  
-  document.getElementById('section-email').style.display = 'none';
-  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });
-  document.querySelector('h1').style.display = 'none';
-  document.querySelector('h2').style.display = 'none';
-  document.querySelector('.info-box').style.display = 'none';
-  emailEl.parentElement.parentElement.querySelector('label').style.display = 'none';
-  emailEl.parentElement.style.display = 'none';
-  
-  submitBtn.classList.add('hidden');
-  resetBtn.classList.add('hidden');
-  editBtn.classList.add('hidden');
-  
-  successBanner.classList.remove('hidden');
-  successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-  
-function unlockForm() {
-  FORM_LOCKED = false;
-  
-  document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
-    el.disabled = false;
-  });
-  
-  submitBtn.classList.remove('hidden');
-  editBtn.classList.add('hidden');
-  resetBtn.classList.remove('hidden');
-  
-  successBanner.classList.add('hidden');
-  submitMsg.textContent = "";
+  try {
+    const response = await fetch(DEPT_API);
+    const data = await response.json();
+    departSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+    
+    data.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.code;
+      opt.textContent = `${d.code} — ${d.nom}`;
+      departSelect.appendChild(opt);
+    });
+  } catch (err) {
+    departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+  }
 }
 
-/* ========== BOUTON MODIFIER ========== */
-editBtn.addEventListener('click', () => {
-  unlockForm();
+departSelect.addEventListener('change', async e => {
+  const code = e.target.value;
+  
+  if (!code) {
+    communeSelect.innerHTML = '<option value="">-- choisissez le département --</option>';
+    return;
+  }
+  
+  communeSelect.innerHTML = '<option>⏳ Chargement des communes...</option>';
+  
+  try {
+    const response = await fetch(COMMUNE_API(code));
+    const data = await response.json();
+    communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+    
+    data.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.nom;
+      opt.textContent = c.nom;
+      communeSelect.appendChild(opt);
+    });
+  } catch {
+    communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
+  }
+  
+  updateSectionGeo();
 });
+communeSelect.addEventListener('change', calculerZoneAutomatique);
 
-/* ========== SEND CODE ========== */
+/* ========== EMAIL ET CODES ========== */
 sendCodeBtn.addEventListener("click", async () => {
   const mail = (emailEl.value || "").trim().toLowerCase();
   if (!mail) { 
@@ -599,13 +1734,6 @@ sendCodeBtn.addEventListener("click", async () => {
     const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`);
     const j = await r.json();
     
-    console.log("Réponse serveur sendCode:", j);
-    if (j.alreadySent) {
-      console.log("🔍 Code déjà envoyé récemment - pas de nouvel email");
-    } else if (j.ok) {
-      console.log("✅ Nouveau code envoyé par email");
-    }
-
     if (j.error === "DAILY_LIMIT_REACHED") {
       if (j.minutesRestantes && j.minutesRestantes > 0) {
         const heures = Math.floor(j.minutesRestantes / 60);
@@ -643,15 +1771,13 @@ sendCodeBtn.addEventListener("click", async () => {
     }
     
     if (j.ok) {
-        if (j.alreadySent) {
-          emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé</span><br>
-          <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
-          codeMsg.textContent = "";
-        } else {
-          emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
-          <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
-          codeMsg.textContent = ""; 
-        }
+      if (j.alreadySent) {
+        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé</span><br>
+        <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
+      } else {
+        emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
+        <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
+      }
       
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
@@ -675,7 +1801,6 @@ emailEl.addEventListener("keypress", (e) => {
   }
 });
 
-/* ========== RESEND ========== */
 resendBtn.addEventListener("click", async () => {
   emailMsg.textContent = "Renvoi du code en cours...";
   codeMsg.textContent = ""; 
@@ -694,19 +1819,8 @@ resendBtn.addEventListener("click", async () => {
       emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code renvoyé avec succès</span><br>
       <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
     } else if (j.error === "DAILY_LIMIT_REACHED") {
-      if (j.minutesRestantes && j.minutesRestantes > 0) {
-        const heures = Math.floor(j.minutesRestantes / 60);
-        const minutes = j.minutesRestantes % 60;
-        const tempsRestant = heures > 0
-          ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}`
-          : `${minutes} minutes`;
-        
-        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Vous avez déjà demandé trois codes aujourd'hui</span><br>
-          <span style="color:#6b7280">Le dernier vous a été envoyé il y a moins de 15 minutes. Il est encore valable pendant environ ${tempsRestant}.</span>`;
-      } else {
-        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
-        <span style="color:#6b7280">Maximum 3 codes par jour. Réessayez demain.</span>`;
-      }
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
+      <span style="color:#6b7280">Maximum 3 codes par jour. Réessayez demain.</span>`;
     } else {
       emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible de renvoyer"}</span>`;
     }
@@ -717,7 +1831,6 @@ resendBtn.addEventListener("click", async () => {
   }
 });
 
-/* ========== TOUCHE ENTRÉE POUR VALIDER LE CODE ========== */
 codeEl.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -725,16 +1838,25 @@ codeEl.addEventListener("keypress", (e) => {
   }
 });
 
-/* ========== VERIFY CODE ========== */
 verifyBtn.addEventListener("click", async () => {
   const mail = (emailEl.value || "").trim().toLowerCase();
   const code = (codeEl.value || "").trim();
-  if (!mail || !code) { codeMsg.textContent = "Merci d'indiquer l'adresse e-mail et le code."; return; }
+  
+  if (!mail || !code) { 
+    codeMsg.textContent = "Merci d'indiquer l'adresse e-mail et le code."; 
+    return; 
+  }
+  
   codeMsg.textContent = "Vérification...";
+  
   try {
     const r = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(mail)}&code=${encodeURIComponent(code)}&_t=${Date.now()}`);
     const j = await r.json();
-    if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
+    
+    if (!j.ok) { 
+      codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); 
+      return; 
+    }
     
     codeMsg.textContent = "✅ E-mail vérifié avec succès !";
     CURRENT_EMAIL = mail;
@@ -761,26 +1883,22 @@ verifyBtn.addEventListener("click", async () => {
   }
 });
 
-/* ========== BOUTON MODIFIER (utilisateur existant) ========== */
 modifyBtn.addEventListener("click", async () => {
   existingUserChoice.classList.add("hidden");
   await showFormAndPrefill(EXISTING_DATA);
 });
 
-/* ========== BOUTON SUPPRIMER (utilisateur existant) ========== */
 deleteBtn.addEventListener("click", () => {
   existingUserChoice.classList.add("hidden");
   deleteConfirmation.classList.remove("hidden");
 });
 
-/* ========== ANNULER LA SUPPRESSION ========== */
 cancelDeleteBtn.addEventListener("click", () => {
   deleteConfirmation.classList.add("hidden");
   existingUserChoice.classList.remove("hidden");
   deleteMsg.textContent = "";
 });
 
-/* ========== CONFIRMER LA SUPPRESSION ========== */
 confirmDeleteBtn.addEventListener("click", async () => {
   deleteMsg.textContent = "Suppression en cours...";
   confirmDeleteBtn.disabled = true;
@@ -808,10 +1926,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
   }
 });
 
-/* ========== PREFILL FUNCTION ========== */
 async function showFormAndPrefill(data) {
-  console.log("Données reçues pour pré-remplissage:", data);
-
   formEl.classList.remove("hidden");
   rest.classList.remove("hidden");
   
@@ -841,56 +1956,122 @@ async function showFormAndPrefill(data) {
       if (modeRadio) modeRadio.checked = true;
     }
     
-    if (data.visio) {
-      const visioRadio = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
-      if (visioRadio) visioRadio.checked = true;
-    }
+if (data.visio) {
+  const visioValue = normaliser(data.visio);
+  const visioRadio = document.querySelector(`input[name="visio"][value="${visioValue}"]`);
+  if (visioRadio) {
+    visioRadio.checked = true;
+    console.log('✅ Visio restaurée:', visioValue);
+  } else {
+    console.warn('⚠️ Valeur visio inconnue:', data.visio);
+  }
+}
     
-    if (data.departement) {
-      let deptCode = String(data.departement).trim();
-      if (deptCode.length === 1) deptCode = "0" + deptCode;
-      
-      // Charger le département et les communes
-      setTimeout(async () => {
-        departSelect.value = deptCode;
-        
-        if (data.commune) {
-          await loadCommunes(deptCode, data.commune);
-        }
-
-        // 🔧 Pré-remplissage temps ou rayon après que le select soit prêt
-        const codeDept = deptCode.split('-')[0].trim();
-
-        if (DEPS_METRO.includes(codeDept) && data.temps) {
-          document.getElementById("zoneMetropole").classList.remove("hidden");
-          const select = document.getElementById("tempsTrajet");
-          const optionExists = Array.from(select.options).some(opt => opt.value === data.temps);
-          if (!optionExists) {
-            const opt = document.createElement("option");
-            opt.value = data.temps;
-            opt.textContent = data.temps;
-            select.appendChild(opt);
-          }
-          select.value = data.temps;
-
-        } else if (DEPS_DOMTOM.includes(codeDept) && data.rayon) {
-          document.getElementById("zoneOutreMer").classList.remove("hidden");
-          const select = document.getElementById("rayonKm");
-          const optionExists = Array.from(select.options).some(opt => opt.value === data.rayon);
-          if (!optionExists) {
-            const opt = document.createElement("option");
-            opt.value = data.rayon;
-            opt.textContent = data.rayon;
-            select.appendChild(opt);
-          }
-          select.value = data.rayon;
-        }
-
-        document.getElementById("precisionsGeo").value = data.precisionsGeo || "";
-      }, 200);
+if (data.departement) {
+  let deptCode = String(data.departement).trim();
+  if (deptCode.length === 1) deptCode = "0" + deptCode;
+  
+  setTimeout(async () => {
+    departSelect.value = deptCode;
+    
+    if (data.commune) {
+      await loadCommunes(deptCode, data.commune);
     }
 
-    // Disponibilités
+    const codeDept = deptCode.split('-')[0].trim();
+
+    if (DEPS_METRO.includes(codeDept) && data.temps) {
+      document.getElementById("zoneMetropole").classList.remove("hidden");
+      const select = document.getElementById("tempsTrajet");
+      select.value = data.temps;
+    } else if (DEPS_DOMTOM.includes(codeDept) && data.rayon) {
+      document.getElementById("zoneOutreMer").classList.remove("hidden");
+      const select = document.getElementById("rayonKm");
+      select.value = data.rayon;
+    }
+
+    document.getElementById("precisionsGeo").value = data.precisionsGeo || "";
+    
+
+
+
+// ✅ RESTAURER LES COMMUNES SÉLECTIONNÉES
+    if (data.communesCouvertes) {
+      const communesSauvegardees = data.communesCouvertes.split('|').map(c => c.trim()).filter(c => c);
+      console.log('📍 Restauration de', communesSauvegardees.length, 'communes:', communesSauvegardees);
+      
+      // Afficher la section géographique
+      await updateSectionGeo();
+      
+      // Si mode déplacement/mixte : calculer d'abord la zone
+      if (data.modeIntervention === 'deplacement' || data.modeIntervention === 'mixte') {
+        // Calculer la zone automatique
+        await calculerZoneAutomatique();
+        
+        // ATTENDRE que le calcul soit terminé
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Charger les données du département
+        communesData = await getCommunesDepartement(codeDept);
+        
+        // ✅ VIDER communesSelectionnees (IMPORTANT !)
+        communesSelectionnees.clear();
+        
+        // ✅ RESTAURER TOUTES LES COMMUNES
+        for (const nomCommune of communesSauvegardees) {
+          const nomNormalise = normaliser(nomCommune);
+          
+          // Chercher dans le département
+          const communeDept = communesData.find(c => normaliser(c.nom) === nomNormalise);
+          
+          if (communeDept) {
+            // Commune du département : ajouter
+            communesSelectionnees.add(communeDept.nom);
+            console.log('✅ Commune département:', communeDept.nom);
+          } else {
+            // Commune hors département : chercher via API
+            try {
+              const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(nomCommune)}&fields=nom,code,codeDepartement,centre&limit=1`;
+              const response = await fetch(url);
+              const communes = await response.json();
+              
+              if (communes.length > 0) {
+                const c = communes[0];
+                // Ajouter aux communes manuelles
+                communesAjouteesManuel.set(c.nom, {
+                  nom: c.nom,
+                  dept: c.codeDepartement,
+                  lat: c.centre.coordinates[1],
+                  lon: c.centre.coordinates[0]
+                });
+                communesSelectionnees.add(c.nom);
+                console.log('✅ Commune hors département:', c.nom, `(${c.codeDepartement})`);
+              }
+            } catch (error) {
+              console.error('❌ Erreur:', nomCommune, error);
+            }
+          }
+        }
+        
+        // Mettre à jour l'affichage
+        afficher2Colonnes();
+        updateMarkers();
+        updateListeRecapitulative();
+        
+        console.log('✅ Restauration terminée:', communesSelectionnees.size, 'communes');
+      }
+    } else {
+      // Pas de communes sauvegardées : calcul normal
+      await updateSectionGeo();
+      if (data.modeIntervention === 'deplacement' || data.modeIntervention === 'mixte') {
+        setTimeout(async () => {
+          await calculerZoneAutomatique();
+        }, 500);
+      }
+    }
+  }, 200);
+}
+
     if (data.disponibilite) {
       const dispoRadio = document.querySelector(`input[name="dispo"][value="${data.disponibilite}"]`);
       if (dispoRadio) {
@@ -916,25 +2097,43 @@ async function showFormAndPrefill(data) {
     const consentValue = String(data.consentement || "").toLowerCase();
     document.getElementById("consent").checked = (consentValue === "oui" || consentValue === "true");
     submitBtn.textContent = "✓ Mettre à jour mes informations";
-    
-    // Déclencher l'affichage dynamique après pré-remplissage
-    setTimeout(() => updateSectionGeo(), 300);
   }
 }
 
+async function loadCommunes(deptCode, preselect) {
+  communeSelect.innerHTML = '<option>Chargement...</option>';
+  
+  try {
+    const response = await fetch(COMMUNE_API(deptCode));
+    const list = await response.json();
+    communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+    
+    list.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.nom;
+      opt.textContent = c.nom;
+      communeSelect.appendChild(opt);
+    });
+    
+    if (preselect) {
+      communeSelect.value = preselect;
+    }
+  } catch (err) {
+    communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
+  }
+}
 
-/* ========== LISTENERS: numType toggles ========== */
 document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
   const v = e.target.value;
   siretErr.textContent = "";
   siretNum.value = "";
-  siretBlock.classList.add("hidden"); noNum.classList.add("hidden");
+  siretBlock.classList.add("hidden"); 
+  noNum.classList.add("hidden");
   rest.classList.add("hidden");
   if (v === "siret") siretBlock.classList.remove("hidden");
   else noNum.classList.remove("hidden");
 }));
 
-/* ========== VALIDATION on blur for SIRET ========== */
 siretNum.addEventListener('input', () => {
   const v = siretNum.value.trim();
   if (v.length === 14 && validSiret(v)) {
@@ -957,7 +2156,6 @@ siretNum.addEventListener('blur', () => {
   }
 });
 
-/* ========== DISPO date logic ========== */
 document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener('change', e => {
   const show = e.target.value === "oui";
   dateBlock.classList.toggle("hidden", !show);
@@ -974,59 +2172,10 @@ document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener
   }
 }));
 
-/* ========== VALIDATION NOMBRE DE PLACES ========== */
 placesInput.addEventListener('input', function() {
   const value = parseInt(this.value);
   if (value < 1) this.value = 1;
   else if (value > 99) this.value = 99;
-});
-
-/* ========== DEPARTEMENTS / COMMUNES ========== */
-async function loadDepartements(){
-  departSelect.innerHTML = '<option value="">-- chargement --</option>';
-  try {
-    const r = await fetch(DEPT_API);
-    const list = await r.json();
-    departSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
-    list.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d.code;
-      opt.textContent = `${d.code} — ${d.nom}`;
-      departSelect.appendChild(opt);
-    });
-  } catch (err) {
-    departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
-  }
-}
-
-async function loadCommunes(deptCode, preselect){
-  communeSelect.innerHTML = '<option>Chargement...</option>';
-  try {
-    const r = await fetch(COMMUNE_API(deptCode));
-    const list = await r.json();
-    communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
-    list.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.nom;
-      opt.textContent = c.nom;
-      communeSelect.appendChild(opt);
-    });
-    if (preselect) {
-      communeSelect.value = preselect;
-    }
-  } catch (err) {
-    communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
-  }
-}
-
-departSelect.addEventListener('change', e => {
-  const v = e.target.value;
-  if (!v) { 
-    communeSelect.innerHTML = '<option value="">-- choisissez d\'abord le département --</option>'; 
-    return; 
-  }
-  loadCommunes(v);
-  updateSectionGeo();
 });
 
 /* ========== SUBMIT FORM ========== */
@@ -1035,26 +2184,64 @@ submitBtn.addEventListener('click', async () => {
   successBanner.classList.add("hidden");
   
   const numTypeChecked = document.querySelector('input[name="numType"]:checked');
-  if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
-  const numType = numTypeChecked.value;
-  if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
-  if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
-  if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
-  if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
-  if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
-  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; return; }
+  if (!numTypeChecked) { 
+    submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; 
+    return; 
+  }
   
-  if (!document.querySelector('input[name="modeIntervention"]:checked')) { 
+  const numType = numTypeChecked.value;
+  if (numType === "siret" && !validSiret(siretNum.value.trim())) { 
+    submitMsg.textContent = "Numéro SIRET invalide."; 
+    return; 
+  }
+  
+  if (!document.getElementById("nom").value.trim()) { 
+    submitMsg.textContent = "Nom requis."; 
+    return; 
+  }
+  
+  if (!document.getElementById("prenom").value.trim()) { 
+    submitMsg.textContent = "Prénom requis."; 
+    return; 
+  }
+  
+  if (!validPhone(document.getElementById("phone").value.trim())) { 
+    submitMsg.textContent = "Téléphone invalide."; 
+    return; 
+  }
+  
+  if (!document.getElementById("profession").value) { 
+    submitMsg.textContent = "Profession requise."; 
+    return; 
+  }
+  
+  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { 
+    submitMsg.textContent = "Sélectionnez au moins un public."; 
+    return; 
+  }
+  
+  const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
+  if (!modeInterventionChecked) { 
     submitMsg.textContent = "Sélectionnez votre mode d'intervention."; 
     return; 
   }
   
-  if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
-  if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
-  if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
+  if (!document.querySelector('input[name="visio"]:checked')) { 
+    submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; 
+    return; 
+  }
   
-const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
-if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
+  if (!departSelect.value) { 
+    submitMsg.textContent = "Département requis."; 
+    return; 
+  }
+  
+  if (!communeSelect.value) { 
+    submitMsg.textContent = "Commune requise."; 
+    return; 
+  }
+  
+if (modeInterventionChecked.value === 'deplacement' || modeInterventionChecked.value === 'mixte') {
   const codeDept = departSelect.value.split(' ')[0];
   
   if (DEPS_METRO.includes(codeDept)) {
@@ -1070,12 +2257,27 @@ if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
       return; 
     }
   }
+  
+  // VÉRIFICATION : Au moins 1 commune cochée
+  if (communesSelectionnees.size === 0) {
+    submitMsg.textContent = "⚠️ Vous devez sélectionner au moins une commune d'intervention";
+    document.getElementById('zoneInteractive').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
 }
   
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
-  if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
+  if (!dispoChecked) { 
+    submitMsg.textContent = "Répondez à la question disponibilités."; 
+    return; 
+  }
+  
   if (dispoChecked.value === "oui") {
-    if (!dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; return; }
+    if (!dateInput.value) { 
+      submitMsg.textContent = "Indiquez la date de disponibilité."; 
+      return; 
+    }
+    
     const places = parseInt(placesInput.value);
     if (!places || places < 1 || places > 10) {
       submitMsg.textContent = "Indiquez le nombre de places disponibles (entre 1 et 10).";
@@ -1089,7 +2291,10 @@ if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
     }
   }
   
-  if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
+  if (!document.getElementById("consent").checked) { 
+    submitMsg.textContent = "Le consentement est obligatoire."; 
+    return; 
+  }
   
   submitBtn.disabled = true;
   submitMsg.innerHTML = '<span style="color:#6b7280">⏳ Envoi en cours...</span>';
@@ -1105,28 +2310,52 @@ if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
   fd.append("profession", document.getElementById("profession").value);
   fd.append("publics", Array.from(document.querySelectorAll('input[name="public"]:checked')).map(i=>i.value).join(","));
   
-  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
-  fd.append("modeIntervention", modeIntervention ? modeIntervention.value : "");
+  fd.append("modeIntervention", modeInterventionChecked.value);
+  fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   
-fd.append("departement", departSelect.value);
-fd.append("commune", communeSelect.value);
+  fd.append("departement", departSelect.value);
+  fd.append("commune", communeSelect.value);
 
-// Envoyer les deux champs séparés
-const codeDept = departSelect.value.split(' ')[0];
-
-if (DEPS_METRO.includes(codeDept)) {
-  fd.append("rayon", "");
-  fd.append("temps", document.getElementById("tempsTrajet").value);
-} else if (DEPS_DOMTOM.includes(codeDept)) {
-  fd.append("rayon", document.getElementById("rayonKm").value);
-  fd.append("temps", "");
-}
+  const codeDept = departSelect.value.split(' ')[0];
+  if (DEPS_METRO.includes(codeDept)) {
+    fd.append("rayon", "");
+    fd.append("temps", document.getElementById("tempsTrajet").value);
+  } else if (DEPS_DOMTOM.includes(codeDept)) {
+    fd.append("rayon", document.getElementById("rayonKm").value);
+    fd.append("temps", "");
+  }
+  
   fd.append("precisionsGeo", document.getElementById("precisionsGeo").value.trim());
-  fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
+  fd.append("dispo", dispoChecked.value);
   fd.append("dateDispo", dateInput.value);
   fd.append("placesDisponibles", placesInput.value || "");
   fd.append("modeContact", document.querySelector('input[name="modeContact"]:checked')?.value || "direct");
   fd.append("consent", document.getElementById("consent").checked ? "oui" : "non");
+  
+if (modeInterventionChecked.value === 'deplacement' || modeInterventionChecked.value === 'mixte') {
+    // Séparer les communes du département et les autres
+    const communesDept = [];
+    const communesAutres = [];
+    
+    communesSelectionnees.forEach(nom => {
+      if (communesAjouteesManuel.has(nom)) {
+        communesAutres.push(nom);
+      } else {
+        communesDept.push(nom);
+      }
+    });
+    
+    fd.append("communesDepartement", communesDept.join('|'));
+    fd.append("communesAutres", communesAutres.join('|'));
+    fd.append("communesCouvertes", Array.from(communesSelectionnees).join('|'));
+
+    console.log('📍 Communes département:', communesDept.join('|'));
+    console.log('📍 Communes autres:', communesAutres.join('|'));
+  } else {
+    fd.append("communesDepartement", communeSelect.value);
+    fd.append("communesAutres", "");
+    fd.append("communesCouvertes", communeSelect.value);
+  }
   
   const timeoutPromise = new Promise((_, reject) => 
     setTimeout(() => reject(new Error('TIMEOUT')), 30000)
@@ -1138,8 +2367,6 @@ if (DEPS_METRO.includes(codeDept)) {
     const res = await Promise.race([fetchPromise, timeoutPromise]);
     const j = await res.json();
     
-    console.log("Réponse serveur submitForm:", j);
-    
     if (j.ok) {
       lockForm();
     } else {
@@ -1147,8 +2374,7 @@ if (DEPS_METRO.includes(codeDept)) {
       
       if (j.error === "SIRET_ALREADY_EXISTS") {
         submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ SIRET déjà enregistré</span><br>' +
-          '<span style="color:#6b7280">Ce numéro SIRET est déjà utilisé par un autre professionnel. ' +
-          'Si vous pensez qu\'il s\'agit d\'une erreur, contactez-nous.</span>';
+          '<span style="color:#6b7280">Ce numéro SIRET est déjà utilisé par un autre professionnel.</span>';
       } else {
         submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur lors de l\'envoi</span><br>' +
           '<span style="color:#6b7280">' + (j.error || j.detail || "Erreur inconnue") + '</span>';
@@ -1160,15 +2386,52 @@ if (DEPS_METRO.includes(codeDept)) {
     
     if (err.message === 'TIMEOUT') {
       submitMsg.innerHTML = '<span style="color:#f59e0b;font-weight:600">⏱️ Délai d\'attente dépassé</span><br>' +
-        '<span style="color:#6b7280">Le serveur met trop de temps à répondre. Vos données ont peut-être été enregistrées. Vérifiez vos emails de confirmation.</span>';
+        '<span style="color:#6b7280">Le serveur met trop de temps à répondre.</span>';
     } else {
       submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur réseau</span><br>' +
-        '<span style="color:#6b7280">Impossible de communiquer avec le serveur. Vérifiez votre connexion et réessayez.</span>';
+        '<span style="color:#6b7280">Impossible de communiquer avec le serveur.</span>';
     }
   }
 });
 
-/* ========== RESET ========== */
+function lockForm() {
+  FORM_LOCKED = true;
+  
+  // Masquer toutes les sections du formulaire
+  rest.style.display = 'none';
+  document.querySelector('.prereq-section').style.display = 'none';
+  newUserMessage.classList.add('hidden');
+  document.getElementById('section-email').style.display = 'none';
+  
+  // Masquer l'introduction (titre + temps estimé)
+  const introSection = document.getElementById('intro-section');
+  if (introSection) introSection.style.display = 'none';
+  
+  // Masquer les boutons
+  submitBtn.classList.add('hidden');
+  resetBtn.classList.add('hidden');
+  editBtn.classList.add('hidden');
+  
+  // Afficher le message de succès
+  successBanner.classList.remove('hidden');
+  successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+  
+function unlockForm() {
+  FORM_LOCKED = false;
+  
+  submitBtn.classList.remove('hidden');
+  editBtn.classList.add('hidden');
+  resetBtn.classList.remove('hidden');
+  
+  successBanner.classList.add('hidden');
+  submitMsg.textContent = "";
+}
+
+editBtn.addEventListener('click', () => {
+  unlockForm();
+});
+
 resetBtn.addEventListener('click', () => {
   formEl.reset();
   document.getElementById("consent").checked = false;
@@ -1182,77 +2445,28 @@ resetBtn.addEventListener('click', () => {
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
-document.getElementById('section-geo').classList.add('hidden');
-document.getElementById('blocCommune').classList.add('hidden');
-document.getElementById('questionsDeplacements').classList.add('hidden');
-document.getElementById('zoneMetropole').classList.add('hidden');
-document.getElementById('zoneOutreMer').classList.add('hidden');
+  document.getElementById('section-geo').classList.add('hidden');
+  document.getElementById('blocCommune').classList.add('hidden');
+  document.getElementById('questionsDeplacements').classList.add('hidden');
+  document.getElementById('zoneMetropole').classList.add('hidden');
+  document.getElementById('zoneOutreMer').classList.add('hidden');
+  document.getElementById('zoneInteractive').classList.add('hidden');
   document.getElementById('precisionsGeo').value = '';
+  
+  communesSelectionnees.clear();
+  communesData = [];
+  communesCalculees.clear();
+  communesAjouteesManuel.clear();
+  communesAjouteesDepartement.clear(); 
+  
+  if (map) {
+    clearMap();
+  }
   
   unlockForm();
 });
 
-// ========== LIENS VISUALISATION MÉTROPOLE ET OUTRE-MER ==========
-const visualiserLinkMetro = document.getElementById("visualiserLinkMetro");
-const visualiserLinkOM = document.getElementById("visualiserLinkOM");
-
-// Fonction commune pour ouvrir la visualisation
-// Fonction commune pour ouvrir la visualisation
-function ouvrirVisualisation(e) {
-  e.preventDefault();
-
-  const dep = departSelect.value;
-  const commune = communeSelect.value;
-
-  if (!dep || !commune) {
-    alert("⚠️ Veuillez d'abord sélectionner le département et la commune.");
-    return;
-  }
-
-  const codeDept = dep.split(' ')[0]; // Ex: "54" de "54 — Meurthe-et-Moselle"
-  let url = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}`;
-
-  if (DEPS_METRO.includes(codeDept)) {
-    const select = document.getElementById("tempsTrajet");
-    let tempsValue = select.value;
-
-    // Si vide, tenter de récupérer l'option pré-remplie
-    if (!tempsValue && select.options.length > 1) {
-      tempsValue = select.options[1].value; // 1 = première option réelle après "-- Sélectionnez --"
-    }
-
-    if (!tempsValue) {
-      alert("⚠️ Sélectionnez un temps de trajet.");
-      return;
-    }
-
-    url += `&tempsTrajet=${encodeURIComponent(tempsValue)}`;
-
-  } else if (DEPS_DOMTOM.includes(codeDept)) {
-    const select = document.getElementById("rayonKm");
-    let rayonValue = select.value;
-
-    // Si vide, tenter de récupérer l'option pré-remplie
-    if (!rayonValue && select.options.length > 1) {
-      rayonValue = select.options[1].value;
-    }
-
-    if (!rayonValue) {
-      alert("⚠️ Sélectionnez un rayon d'intervention.");
-      return;
-    }
-
-    url += `&rayonKm=${encodeURIComponent(rayonValue)}`;
-  }
-
-  window.open(url, "_blank");
-}
-
-// 👇 Événements
-visualiserLinkMetro.addEventListener("click", ouvrirVisualisation);
-visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
-
-
+console.log('✅ Formulaire chargé avec succès');
 </script>
 </body>
 </html>
