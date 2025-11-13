@@ -1411,20 +1411,9 @@ function peutCalculerCommunes() {
   return false;
 }
 
-// Fonction de calcul automatique
+ // Fonction de calcul automatique
 async function calculerCommunesAuto() {
   if (calculEnCours || !peutCalculerCommunes()) {
-    return;
-  }
-  
-  // 🆕 VÉRIFIER QUE LES ÉLÉMENTS EXISTENT
-  const resumeZone = document.getElementById('resumeZoneAuto');
-  const listeCommunesAuto = document.getElementById('listeCommunesAuto');
-  const filtresDiv = document.getElementById('filtresDepartementsAuto');
-  const communesContainer = document.getElementById('communesGroupeesAuto');
-  
-  if (!resumeZone || !listeCommunesAuto || !filtresDiv || !communesContainer) {
-    console.error('❌ Éléments non trouvés dans le DOM');
     return;
   }
   
@@ -1433,6 +1422,41 @@ async function calculerCommunesAuto() {
   const dept = departSelect.value;
   const comm = communeSelect.value;
   const codeDept = dept.split(' ')[0];
+  
+  // 🆕 FORCER L'AFFICHAGE DE LA SECTION DÉPLACEMENTS
+  const questionsDeplacements = document.getElementById('questionsDeplacements');
+  if (questionsDeplacements) {
+    questionsDeplacements.classList.remove('hidden');
+  }
+  
+  // 🆕 FORCER L'AFFICHAGE DE LA ZONE APPROPRIÉE
+  const zoneMetropole = document.getElementById('zoneMetropole');
+  const zoneOutreMer = document.getElementById('zoneOutreMer');
+  
+  if (DEPS_METRO.includes(codeDept) && zoneMetropole) {
+    zoneMetropole.classList.remove('hidden');
+  } else if (DEPS_DOMTOM.includes(codeDept) && zoneOutreMer) {
+    zoneOutreMer.classList.remove('hidden');
+  }
+  
+  // Petit délai pour que le DOM se mette à jour
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
+  // 🆕 VÉRIFIER QUE LES ÉLÉMENTS EXISTENT MAINTENANT
+  const resumeZone = document.getElementById('resumeZoneAuto');
+  const listeCommunesAuto = document.getElementById('listeCommunesAuto');
+  const filtresDiv = document.getElementById('filtresDepartementsAuto');
+  const communesContainer = document.getElementById('communesGroupeesAuto');
+  
+  if (!resumeZone || !listeCommunesAuto || !filtresDiv || !communesContainer) {
+    console.error('❌ Éléments toujours non trouvés après affichage forcé');
+    console.log('resumeZone:', resumeZone);
+    console.log('listeCommunesAuto:', listeCommunesAuto);
+    console.log('filtresDiv:', filtresDiv);
+    console.log('communesContainer:', communesContainer);
+    calculEnCours = false;
+    return;
+  }
   
   // Afficher loading
   resumeZone.style.display = 'none';
@@ -1459,19 +1483,17 @@ async function calculerCommunesAuto() {
       
       if (minutes === 0) {
         calculEnCours = false;
+        listeCommunesAuto.style.display = 'none';
         return;
       }
       
       critereTxt = `${minutes} min`;
       
-      // Pour l'instant, on fait un calcul simple basé sur la distance
-      // (l'isochrone nécessite l'API OpenRouteService côté serveur)
       const centre = {
         lat: communeCentrale.centre.coordinates[1],
         lon: communeCentrale.centre.coordinates[0]
       };
       
-      // Approximation : 1 km par minute en moyenne
       const rayonApprox = minutes * 1;
       
       toutesCommunes.forEach(c => {
@@ -1541,21 +1563,21 @@ async function calculerCommunesAuto() {
     // Afficher le résumé
     document.getElementById('autoNbCommunes').textContent = communesResultat.length;
     document.getElementById('autoDepartements').textContent = Object.keys(parDepartement).sort().join(', ');
-    document.getElementById('resumeZoneAuto').style.display = 'block';
+    resumeZone.style.display = 'block';
     
     // Afficher les filtres et la liste
     afficherFiltresAuto(parDepartement);
     afficherCommunesGroupeesAuto(parDepartement);
     
-    document.getElementById('listeCommunesAuto').style.display = 'block';
+    listeCommunesAuto.style.display = 'block';
     
   } catch (error) {
     console.error('Erreur calcul communes:', error);
-    document.getElementById('listeCommunesAuto').innerHTML = '<div class="error-box">❌ Erreur lors du calcul. Vérifiez vos sélections.</div>';
+    listeCommunesAuto.innerHTML = '<div class="error-box">❌ Erreur lors du calcul. Vérifiez vos sélections.</div>';
   } finally {
     calculEnCours = false;
   }
-}
+} 
 
 // Fonction distance simple (Haversine)
 function calculerDistanceSimple(lat1, lon1, lat2, lon2) {
