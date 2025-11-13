@@ -2017,10 +2017,12 @@ if (data.departement) {
         // ✅ VIDER communesSelectionnees (IMPORTANT !)
         communesSelectionnees.clear();
         
-        /// ✅ RESTAURER TOUTES LES COMMUNES
-for (const nomCommune of communesSauvegardees) {
-  // ✅ CORRESPONDANCE EXACTE (pas de normalisation)
-  const communeDept = communesData.find(c => c.nom === nomCommune);
+        // ✅ RESTAURER TOUTES LES COMMUNES
+        for (const nomCommune of communesSauvegardees) {
+          const nomNormalise = normaliser(nomCommune);
+          
+          // Chercher dans le département
+          const communeDept = communesData.find(c => normaliser(c.nom) === nomNormalise);
           
           if (communeDept) {
             // Commune du département : ajouter
@@ -2029,14 +2031,12 @@ for (const nomCommune of communesSauvegardees) {
           } else {
             // Commune hors département : chercher via API
             try {
-              const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(nomCommune)}&fields=nom,code,codeDepartement,centre&limit=10`;
-const response = await fetch(url);
-const communes = await response.json();
-
-// ✅ FILTRE EXACT pour éviter "Parisot" au lieu de "Paris"
-const c = communes.find(c => c.nom === nomCommune);
-
-if (c) {
+              const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(nomCommune)}&fields=nom,code,codeDepartement,centre&limit=1`;
+              const response = await fetch(url);
+              const communes = await response.json();
+              
+              if (communes.length > 0) {
+                const c = communes[0];
                 // Ajouter aux communes manuelles
                 communesAjouteesManuel.set(c.nom, {
                   nom: c.nom,
