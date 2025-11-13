@@ -1417,6 +1417,17 @@ async function calculerCommunesAuto() {
     return;
   }
   
+  // 🆕 VÉRIFIER QUE LES ÉLÉMENTS EXISTENT
+  const resumeZone = document.getElementById('resumeZoneAuto');
+  const listeCommunesAuto = document.getElementById('listeCommunesAuto');
+  const filtresDiv = document.getElementById('filtresDepartementsAuto');
+  const communesContainer = document.getElementById('communesGroupeesAuto');
+  
+  if (!resumeZone || !listeCommunesAuto || !filtresDiv || !communesContainer) {
+    console.error('❌ Éléments non trouvés dans le DOM');
+    return;
+  }
+  
   calculEnCours = true;
   
   const dept = departSelect.value;
@@ -1424,9 +1435,9 @@ async function calculerCommunesAuto() {
   const codeDept = dept.split(' ')[0];
   
   // Afficher loading
-  document.getElementById('resumeZoneAuto').style.display = 'none';
-  document.getElementById('listeCommunesAuto').innerHTML = '<div class="loading-communes">⏳ Calcul des communes en cours...</div>';
-  document.getElementById('listeCommunesAuto').style.display = 'block';
+  resumeZone.style.display = 'none';
+  listeCommunesAuto.innerHTML = '<div class="loading-communes">⏳ Calcul des communes en cours...</div>';
+  listeCommunesAuto.style.display = 'block';
   
   try {
     // Récupérer les communes du département
@@ -1561,6 +1572,13 @@ function calculerDistanceSimple(lat1, lon1, lat2, lon2) {
 // Fonction afficher filtres
 function afficherFiltresAuto(parDepartement) {
   const filtresDiv = document.getElementById('filtresDepartementsAuto');
+  
+  // 🆕 SÉCURITÉ : Vérifier que l'élément existe
+  if (!filtresDiv) {
+    console.error('❌ filtresDepartementsAuto non trouvé');
+    return;
+  }
+  
   filtresDiv.innerHTML = '';
   
   const btnTous = document.createElement('button');
@@ -1593,6 +1611,13 @@ function afficherFiltresAuto(parDepartement) {
 // Fonction afficher communes groupées
 function afficherCommunesGroupeesAuto(parDepartement) {
   const container = document.getElementById('communesGroupeesAuto');
+  
+  // 🆕 SÉCURITÉ : Vérifier que l'élément existe
+  if (!container) {
+    console.error('❌ communesGroupeesAuto non trouvé');
+    return;
+  }
+  
   container.innerHTML = '';
   
   Object.keys(parDepartement).sort().forEach(dept => {
