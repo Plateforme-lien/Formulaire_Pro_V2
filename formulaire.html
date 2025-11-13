@@ -307,27 +307,133 @@
                   </div>
                 </div>
                 
-                <!-- 🆕 BOUTON DE VALIDATION -->
-                <button 
-                  type="button" 
-                  id="btnValiderCommunes" 
-                  onclick="validerCommunes()" 
-                  style="
-                    display: none;
-                    width: 100%;
-                    margin-top: 16px;
-                    padding: 12px;
-                    background: var(--primary);
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                  "
-                >
-                  ✓ Valider cette liste de communes
-                </button>
+<!-- 🆕 BOUTONS VALIDER / MODIFIER -->
+<div id="btnGroupeCommunes" style="display: none; margin-top: 16px;">
+  <button 
+    type="button" 
+    id="btnValiderCommunes" 
+    onclick="validerCommunes()" 
+    style="
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    "
+  >
+    ✓ Valider cette liste de communes
+  </button>
+  
+  <button 
+    type="button" 
+    id="btnModifierCommunes" 
+    onclick="afficherInterfaceModification()" 
+    style="
+      width: 100%;
+      padding: 12px;
+      background: #f59e0b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    "
+  >
+    ✏️ Modifier cette liste manuellement
+  </button>
+</div>
+
+<!-- 🆕 INTERFACE DE MODIFICATION DES COMMUNES -->
+<div id="interfaceModificationCommunes" class="hidden" style="margin-top: 20px;">
+  <div style="background: #fff9e6; border: 2px solid #ffc107; padding: 20px; border-radius: 12px;">
+    <h4 style="margin: 0 0 16px; color: #856404; font-size: 16px; font-weight: 700;">
+      ✏️ Personnaliser la liste des communes
+    </h4>
+    
+    <!-- BARRE DE RECHERCHE -->
+    <div style="margin-bottom: 20px;">
+      <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #0f1724;">
+        🔍 Ajouter une commune manuellement
+      </label>
+      <div style="display: flex; gap: 8px;">
+        <input 
+          type="text" 
+          id="rechercheCommune" 
+          placeholder="Tapez le nom d'une commune (min. 3 lettres)..."
+          style="flex: 1; padding: 10px; border: 2px solid #e6eef6; border-radius: 8px;"
+        />
+        <button 
+          type="button" 
+          onclick="rechercherCommune()" 
+          style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"
+        >
+          🔍 Rechercher
+        </button>
+      </div>
+      <div id="resultatsRecherche" style="margin-top: 8px;"></div>
+    </div>
+    
+    <!-- LISTE DES COMMUNES AVEC CHECKBOXES -->
+    <div style="margin-top: 20px;">
+      <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #0f1724;">
+        📋 Communes sélectionnées (cochez/décochez)
+      </label>
+      <div style="background: white; border: 2px solid #e6eef6; border-radius: 8px; padding: 12px; margin-top: 8px;">
+        <div id="listeCommunesCheckboxes" style="max-height: 300px; overflow-y: auto;">
+          <!-- Les checkboxes seront ajoutées ici dynamiquement -->
+        </div>
+      </div>
+      <div style="margin-top: 8px; font-size: 13px; color: #6b7280;">
+        <span id="compteurCommunes">0 commune(s) sélectionnée(s)</span>
+      </div>
+    </div>
+    
+    <!-- BOUTON VALIDER MODIFICATIONS -->
+    <button 
+      type="button" 
+      onclick="validerModifications()" 
+      style="
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      "
+    >
+      ✓ Enregistrer mes modifications
+    </button>
+    
+    <button 
+      type="button" 
+      onclick="annulerModifications()" 
+      style="
+        width: 100%;
+        margin-top: 8px;
+        padding: 12px;
+        background: #6b7280;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      "
+    >
+      ✕ Annuler
+    </button>
+  </div>
+</div>
                 
                 <div class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
                     💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.
@@ -903,12 +1009,12 @@ if (btnValider) {
         .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">${c}</div>`)
         .join('');
       
-      if (btnValider) {
-        btnValider.disabled = false;
-        btnValider.style.display = 'block';
-        btnValider.innerHTML = '✓ Valider cette liste de communes';
-        btnValider.style.background = 'var(--primary)';
-      }
+// Afficher le groupe de boutons Valider/Modifier
+const btnGroupe = document.getElementById('btnGroupeCommunes');
+if (btnGroupe) {
+  btnGroupe.style.display = 'flex';
+  btnGroupe.style.flexDirection = 'column';
+}
       
       if (ouvrirVisualisation) {
         const urlVisu = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}&${DEPS_METRO.includes(codeDept) ? 'tempsTrajet' : 'rayonKm'}=${encodeURIComponent(rayonOuTemps)}`;
@@ -956,6 +1062,216 @@ function validerCommunes() {
   
   console.log('✅ Communes validées:', communesCalculeesSaved.length);
 }
+
+/* ========== 🆕 GESTION INTERFACE MODIFICATION COMMUNES ========== */
+
+function afficherInterfaceModification() {
+  const interfaceModif = document.getElementById('interfaceModificationCommunes');
+  const btnGroupe = document.getElementById('btnGroupeCommunes');
+  
+  // Masquer les boutons Valider/Modifier
+  btnGroupe.style.display = 'none';
+  
+  // Afficher l'interface de modification
+  interfaceModif.classList.remove('hidden');
+  
+  // Générer les checkboxes à partir de communesCalculeesSaved
+  genererCheckboxesCommunes();
+  
+  // Scroll vers l'interface
+  interfaceModif.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function genererCheckboxesCommunes() {
+  const container = document.getElementById('listeCommunesCheckboxes');
+  
+  if (communesCalculeesSaved.length === 0) {
+    container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Aucune commune à afficher</p>';
+    updateCompteurCommunes();
+    return;
+  }
+  
+  container.innerHTML = communesCalculeesSaved
+    .sort()
+    .map((commune, index) => {
+      // Vérifier si c'est une commune ajoutée manuellement (pas dans le calcul initial)
+      const estAjoutee = false; // Pour l'instant, on gérera ça plus tard
+      const couleurTag = estAjoutee ? '#f59e0b' : '#10b981';
+      
+      return `
+        <div style="
+          padding: 10px; 
+          border-bottom: 1px solid #f3f4f6; 
+          display: flex; 
+          align-items: center;
+          transition: background 0.2s;
+        " 
+        onmouseover="this.style.background='#f9fafb'" 
+        onmouseout="this.style.background='white'">
+          <input 
+            type="checkbox" 
+            id="commune_${index}" 
+            value="${commune}" 
+            checked
+            onchange="updateCompteurCommunes()"
+            style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px;"
+          />
+          <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px;">
+            ${commune}
+          </label>
+        </div>
+      `;
+    })
+    .join('');
+  
+  updateCompteurCommunes();
+}
+
+function updateCompteurCommunes() {
+  const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
+  const nbCochees = Array.from(checkboxes).filter(cb => cb.checked).length;
+  
+  const compteur = document.getElementById('compteurCommunes');
+  if (compteur) {
+    compteur.textContent = `${nbCochees} commune(s) sélectionnée(s)`;
+  }
+}
+
+function rechercherCommune() {
+  const recherche = document.getElementById('rechercheCommune').value.trim();
+  const resultatsDiv = document.getElementById('resultatsRecherche');
+  
+  if (recherche.length < 3) {
+    resultatsDiv.innerHTML = '<p style="color: #6b7280; font-size: 13px; margin-top: 4px;">⚠️ Tapez au moins 3 caractères</p>';
+    return;
+  }
+  
+  resultatsDiv.innerHTML = '<p style="color: #0ea5a4; font-size: 13px; margin-top: 4px;">🔄 Recherche en cours...</p>';
+  
+  // Appel à l'API Geo
+  fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(recherche)}&fields=nom,codesPostaux,departement&limit=10`)
+    .then(r => r.json())
+    .then(communes => {
+      if (communes.length === 0) {
+        resultatsDiv.innerHTML = '<p style="color: #6b7280; font-size: 13px; margin-top: 4px;">❌ Aucune commune trouvée</p>';
+        return;
+      }
+      
+      resultatsDiv.innerHTML = `
+        <div style="
+          background: white; 
+          border: 2px solid #e6eef6; 
+          border-radius: 8px; 
+          margin-top: 8px; 
+          max-height: 200px; 
+          overflow-y: auto;
+        ">
+          ${communes.map(c => {
+            const cp = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
+            const nomComplet = cp ? `${c.nom} (${cp})` : c.nom;
+            
+            return `
+              <div 
+                onclick="ajouterCommuneManuellement('${nomComplet.replace(/'/g, "\\'")}', '${c.departement.nom.replace(/'/g, "\\'")}')" 
+                style="
+                  padding: 10px; 
+                  cursor: pointer; 
+                  border-bottom: 1px solid #f3f4f6;
+                  transition: background 0.2s;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+                onmouseover="this.style.background='#f0f9ff'"
+                onmouseout="this.style.background='white'"
+              >
+                <span style="font-weight: 600; color: #0f1724;">${nomComplet}</span>
+                <span style="color: #6b7280; font-size: 12px;">${c.departement.code} - ${c.departement.nom}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    })
+    .catch(err => {
+      resultatsDiv.innerHTML = '<p style="color: #dc2626; font-size: 13px; margin-top: 4px;">❌ Erreur de recherche</p>';
+      console.error('Erreur recherche:', err);
+    });
+}
+
+function ajouterCommuneManuellement(communeNom, departementNom) {
+  // Vérifier si la commune n'est pas déjà dans la liste
+  if (communesCalculeesSaved.includes(communeNom)) {
+    alert('⚠️ Cette commune est déjà dans votre liste');
+    return;
+  }
+  
+  // Ajouter à la liste
+  communesCalculeesSaved.push(communeNom);
+  
+  // Régénérer les checkboxes
+  genererCheckboxesCommunes();
+  
+  // Vider la recherche
+  document.getElementById('rechercheCommune').value = '';
+  document.getElementById('resultatsRecherche').innerHTML = '<p style="color: #10b981; font-size: 13px; margin-top: 4px;">✅ Commune ajoutée : ' + communeNom + '</p>';
+  
+  console.log('✅ Commune ajoutée:', communeNom);
+}
+
+function validerModifications() {
+  // Récupérer toutes les communes cochées
+  const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
+  const communesSelectionnees = [];
+  
+  checkboxes.forEach(checkbox => {
+    if (checkbox.checked) {
+      communesSelectionnees.push(checkbox.value);
+    }
+  });
+  
+  if (communesSelectionnees.length === 0) {
+    alert('⚠️ Vous devez sélectionner au moins une commune');
+    return;
+  }
+  
+  // Mettre à jour la liste sauvegardée
+  communesCalculeesSaved = communesSelectionnees;
+  
+  // Marquer comme validé
+  communesValidees = true;
+  
+  // Masquer l'interface de modification
+  document.getElementById('interfaceModificationCommunes').classList.add('hidden');
+  
+  // Afficher confirmation
+  const infoDiv = document.getElementById('communesCalculeesInfo');
+  infoDiv.innerHTML = `
+    <strong style="color:#059669;">✅ ${communesSelectionnees.length} communes sélectionnées</strong>
+    <br><strong style="color:#059669;">✅ Liste validée et prête à être enregistrée</strong>
+  `;
+  
+  // Mettre à jour l'affichage de la liste
+  const listeDiv = document.getElementById('communesCalculeesListe');
+  listeDiv.innerHTML = communesSelectionnees
+    .sort()
+    .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">✓ ${c}</div>`)
+    .join('');
+  
+  console.log('✅ Modifications validées:', communesSelectionnees.length, 'communes');
+}
+
+function annulerModifications() {
+  // Masquer l'interface de modification
+  document.getElementById('interfaceModificationCommunes').classList.add('hidden');
+  
+  // Réafficher les boutons
+  const btnGroupe = document.getElementById('btnGroupeCommunes');
+  btnGroupe.style.display = 'flex';
+  btnGroupe.style.flexDirection = 'column';
+  
+  console.log('❌ Modifications annulées');
+} 
 
 /* ========== PREFILL FUNCTION ========== */
 async function showFormAndPrefill(data) {
@@ -1458,6 +1774,9 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
+
+
+
 
 
 
