@@ -1821,7 +1821,7 @@ async function loadCommunes(deptCode, preselect){
     communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
   }
 }
-  
+
 departSelect.addEventListener('change', e => {
   const v = e.target.value;
   
@@ -1842,6 +1842,15 @@ departSelect.addEventListener('change', e => {
       communesCalculeesSaved = [];
       communesValidees = false;
       listeModifieeManuelle = false;
+    }
+    
+    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
+    const messageExplicatif = document.getElementById('messageExplicatif');
+    if (messageExplicatif) {
+      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
+      messageExplicatif.style.color = '#6b7280';
+      messageExplicatif.style.fontWeight = 'normal';
+      messageExplicatif.style.fontStyle = 'italic';
     }
   }
   
@@ -1867,6 +1876,15 @@ communeSelect.addEventListener("change", function() {
     // Réinitialiser l'état
     communesValidees = false;
     listeModifieeManuelle = false;
+    
+    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
+    const messageExplicatif = document.getElementById('messageExplicatif');
+    if (messageExplicatif) {
+      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
+      messageExplicatif.style.color = '#6b7280';
+      messageExplicatif.style.fontWeight = 'normal';
+      messageExplicatif.style.fontStyle = 'italic';
+    }
     
     // Recalculer les communes
     calculerEtAfficherCommunes(false, true);
@@ -1902,6 +1920,15 @@ document.getElementById("tempsTrajet")?.addEventListener("change", function() {
     communesValidees = false;
     listeModifieeManuelle = false;
     
+    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
+    const messageExplicatif = document.getElementById('messageExplicatif');
+    if (messageExplicatif) {
+      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
+      messageExplicatif.style.color = '#6b7280';
+      messageExplicatif.style.fontWeight = 'normal';
+      messageExplicatif.style.fontStyle = 'italic';
+    }
+    
     // Recalculer les communes
     calculerEtAfficherCommunes(false, true);
   }
@@ -1919,6 +1946,15 @@ document.getElementById("rayonKm")?.addEventListener("change", function() {
     // Réinitialiser l'état
     communesValidees = false;
     listeModifieeManuelle = false;
+    
+    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
+    const messageExplicatif = document.getElementById('messageExplicatif');
+    if (messageExplicatif) {
+      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
+      messageExplicatif.style.color = '#6b7280';
+      messageExplicatif.style.fontWeight = 'normal';
+      messageExplicatif.style.fontStyle = 'italic';
+    }
     
     // Recalculer les communes
     calculerEtAfficherCommunes(false, true);
