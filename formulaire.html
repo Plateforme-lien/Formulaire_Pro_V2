@@ -366,41 +366,44 @@
                       </div>
                       
 <div style="display: flex; gap: 8px; align-items: stretch;">
-  <input 
-    type="text" 
-    id="rechercheCommune" 
-    placeholder="Ex: Nancy, Paris, Marseille..."
-    onkeypress="if(event.key==='Enter'){event.preventDefault();rechercherCommune();}"
-    style="
-      flex: 1 !important; 
-      width: auto !important;
-      padding: 10px 12px !important; 
-      border: 2px solid #e6eef6 !important; 
-      border-radius: 8px !important;
-      font-size: 14px !important;
-      margin-top: 0 !important;
-    "
-  />
-  <button 
-    type="button" 
-    onclick="rechercherCommune()" 
-    style="
-      width: auto !important;
-      flex: 0 0 auto !important;
-      padding: 10px 16px !important; 
-      background: var(--primary) !important; 
-      color: white !important; 
-      border: none !important; 
-      border-radius: 8px !important; 
-      cursor: pointer !important; 
-      font-weight: 600 !important;
-      white-space: nowrap !important;
-      font-size: 14px !important;
-      margin-top: 0 !important;
-    "
-  >
-    Rechercher
-  </button>
+<input 
+  type="text" 
+  id="rechercheCommune" 
+  placeholder="Ex: Nancy, Paris, Marseille..."
+  oninput="rechercherCommuneEnTempsReel()"
+  onkeypress="if(event.key==='Enter'){event.preventDefault();}"
+  style="
+    flex: 1 !important; 
+    width: auto !important;
+    padding: 10px 12px !important; 
+    border: 2px solid #e6eef6 !important; 
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    margin-top: 0 !important;
+  "
+/>
+
+<button 
+  type="button" 
+  onclick="rechercherCommune()" 
+  style="
+    width: auto !important;
+    flex: 0 0 auto !important;
+    padding: 10px 16px !important; 
+    background: var(--primary) !important; 
+    color: white !important; 
+    border: none !important; 
+    border-radius: 8px !important; 
+    cursor: pointer !important; 
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    font-size: 14px !important;
+    margin-top: 0 !important;
+    display: none !important;
+  "
+>
+  Rechercher
+</button>
 </div>
                       <div id="resultatsRecherche" style="margin-top: 8px;"></div>
                     </div>
@@ -1284,62 +1287,31 @@ function rechercherCommune() {
       resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Erreur : ${error.message}</div>`;
     });
 }
-
-function ajouterCommuneManuellement(communeNom) {
-  console.log('➕ Tentative ajout:', communeNom);
+// 🆕 RECHERCHE EN TEMPS RÉEL (sans clic sur bouton)
+let rechercheTimeout;
+function rechercherCommuneEnTempsReel() {
+  // Annuler la recherche précédente si l'utilisateur tape encore
+  clearTimeout(rechercheTimeout);
   
-  // Nettoyer le nom de la commune (enlever les espaces inutiles)
-  const communeNettoyee = communeNom.trim();
-  
-  // Vérifier si la commune n'est pas déjà dans la liste
-  const dejaPresente = communesCalculeesSaved.some(c => 
-    c.toLowerCase() === communeNettoyee.toLowerCase()
-  );
-  
-  if (dejaPresente) {
-    document.getElementById('resultatsRecherche').innerHTML = `
-      <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">
-        ⚠️ Cette commune est déjà dans votre liste
-      </div>
-    `;
-    console.log('⚠️ Commune déjà présente:', communeNettoyee);
-    return;
-  }
-  
-  // Ajouter à la liste
-  communesCalculeesSaved.push(communeNettoyee);
-  console.log('✅ Commune ajoutée. Nouvelle taille:', communesCalculeesSaved.length);
-  
-  // Régénérer les checkboxes avec la nouvelle commune
-  genererCheckboxesCommunes();
-  
-  // Afficher confirmation avec timeout pour que l'utilisateur puisse la voir
-  const resultatsDiv = document.getElementById('resultatsRecherche');
-  resultatsDiv.innerHTML = `
-    <div style="background: #d1fae5; border: 1px solid #10b981; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #059669; margin-top: 8px;">
-      ✅ Commune ajoutée : <strong>${communeNettoyee}</strong>
-    </div>
-  `;
-  
-  // Effacer le message de confirmation après 3 secondes
-  setTimeout(() => {
-    resultatsDiv.innerHTML = '';
-  }, 3000);
-  
-  // Vider le champ de recherche
-  const champRecherche = document.getElementById('rechercheCommune');
-  if (champRecherche) {
-    champRecherche.value = '';
-    champRecherche.focus(); // Remettre le focus pour une nouvelle recherche
-  }
-  
-  // Scroll vers la liste pour voir la nouvelle commune
-  const listeDiv = document.getElementById('listeCommunesCheckboxes');
-  if (listeDiv) {
-    setTimeout(() => {
-      listeDiv.scrollTop = listeDiv.scrollHeight;
-    }, 100);
-  }
+  // Attendre 500ms après la dernière frappe avant de chercher
+  rechercheTimeout = setTimeout(() => {
+    const recherche = document.getElementById('rechercheCommune').value.trim();
+    
+    if (recherche.length === 0) {
+      // Vider les résultats si le champ est vide
+      document.getElementById('resultatsRecherche').innerHTML = '';
+      return;
+    }
+    
+    if (recherche.length < 3) {
+      document.getElementById('resultatsRecherche').innerHTML = 
+        '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Tapez au moins 3 caractères</div>';
+      return;
+    }
+    
+    // Lancer la recherche
+    rechercherCommune();
+  }, 500);
 } 
 
 function ajouterCommuneManuellement(communeNom) {
@@ -1397,7 +1369,7 @@ function ajouterCommuneManuellement(communeNom) {
       listeDiv.scrollTop = listeDiv.scrollHeight;
     }, 100);
   }
-}
+} 
 
 function validerModifications() {
   console.log('💾 Validation des modifications...');
@@ -2100,10 +2072,6 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
-
-
-
-
 
 
 
