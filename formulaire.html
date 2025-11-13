@@ -1821,18 +1821,27 @@ async function loadCommunes(deptCode, preselect){
     communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
   }
 }
-
+  
 departSelect.addEventListener('change', e => {
   const v = e.target.value;
   
-  // 🆕 Réinitialiser la zone de communes
+  // 🆕 Réinitialiser la zone de communes ET fermer l'interface de modification
   const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
   if (modeIntervention && modeIntervention.value !== 'cabinet') {
+    // Fermer l'interface de modification si elle est ouverte
+    const interfaceModif = document.getElementById('interfaceModificationCommunes');
+    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
+      interfaceModif.classList.add('hidden');
+      console.log('🔄 Interface de modification fermée (changement département)');
+    }
+    
+    // Réinitialiser les données
     const zoneCommunes = document.getElementById('communesCalculeesZone');
     if (zoneCommunes) {
       zoneCommunes.classList.add('hidden');
       communesCalculeesSaved = [];
       communesValidees = false;
+      listeModifieeManuelle = false;
     }
   }
   
@@ -1844,15 +1853,27 @@ departSelect.addEventListener('change', e => {
   updateSectionGeo();
 });
 
-// 🆕 Sur changement de commune
+//  Sur changement de commune
 communeSelect.addEventListener("change", function() {
   const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
   if (modeIntervention && modeIntervention.value !== 'cabinet' && this.value) {
+    // Fermer l'interface de modification si elle est ouverte
+    const interfaceModif = document.getElementById('interfaceModificationCommunes');
+    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
+      interfaceModif.classList.add('hidden');
+      console.log('🔄 Interface de modification fermée (changement commune)');
+    }
+    
+    // Réinitialiser l'état
+    communesValidees = false;
+    listeModifieeManuelle = false;
+    
+    // Recalculer les communes
     calculerEtAfficherCommunes(false, true);
   }
 });
 
-// 🆕 ÉVÉNEMENTS SUR LIENS VISUALISER
+//  ÉVÉNEMENTS SUR LIENS VISUALISER
 if (visualiserLinkMetro) {
   visualiserLinkMetro.addEventListener("click", function(e) {
     e.preventDefault();
@@ -1867,15 +1888,39 @@ if (visualiserLinkOM) {
   });
 }
 
-// 🆕 Sur changement de temps/rayon
+// Sur changement de temps/rayon
 document.getElementById("tempsTrajet")?.addEventListener("change", function() {
   if (communeSelect.value) {
+    // Fermer l'interface de modification si elle est ouverte
+    const interfaceModif = document.getElementById('interfaceModificationCommunes');
+    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
+      interfaceModif.classList.add('hidden');
+      console.log('🔄 Interface de modification fermée (changement temps)');
+    }
+    
+    // Réinitialiser l'état
+    communesValidees = false;
+    listeModifieeManuelle = false;
+    
+    // Recalculer les communes
     calculerEtAfficherCommunes(false, true);
   }
 });
 
 document.getElementById("rayonKm")?.addEventListener("change", function() {
   if (communeSelect.value) {
+    // Fermer l'interface de modification si elle est ouverte
+    const interfaceModif = document.getElementById('interfaceModificationCommunes');
+    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
+      interfaceModif.classList.add('hidden');
+      console.log('🔄 Interface de modification fermée (changement rayon)');
+    }
+    
+    // Réinitialiser l'état
+    communesValidees = false;
+    listeModifieeManuelle = false;
+    
+    // Recalculer les communes
     calculerEtAfficherCommunes(false, true);
   }
 });
@@ -1885,7 +1930,7 @@ submitBtn.addEventListener('click', async () => {
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
-  // 🆕 VALIDATION DES COMMUNES pour mode déplacement
+  //  VALIDATION DES COMMUNES pour mode déplacement
   const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
   if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
     if (!communesValidees || communesCalculeesSaved.length === 0) {
