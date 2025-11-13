@@ -365,20 +365,20 @@
                         Recherchez n'importe quelle commune en France (minimum 3 lettres)
                       </div>
                       
-<div style="display: flex; gap: 8px; align-items: stretch;">
+<div style="display: flex; gap: 8px; align-items: stretch; margin-top: 8px;">
   <input 
     type="text" 
     id="rechercheCommune" 
     placeholder="Ex: Nancy, Paris, Marseille..."
     onkeypress="if(event.key==='Enter'){event.preventDefault();rechercherCommune();}"
     style="
-      flex: 1 !important; 
-      width: auto !important;
-      padding: 10px 12px !important; 
-      border: 2px solid #e6eef6 !important; 
-      border-radius: 8px !important;
-      font-size: 14px !important;
-      margin-top: 0 !important;
+      flex: 1; 
+      padding: 10px 12px; 
+      border: 2px solid #e6eef6; 
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 0;
+      box-sizing: border-box;
     "
   />
   <button 
