@@ -1650,21 +1650,63 @@ async function showFormAndPrefill(data) {
     setTimeout(() => updateSectionGeo(), 300);
   }
   
-  // 🆕 RECALCUL DES COMMUNES POUR UTILISATEURS EXISTANTS
+// 🆕 CHARGEMENT DES COMMUNES SAUVEGARDÉES
   setTimeout(async () => {
     const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
     if (modeIntervention && modeIntervention.value !== 'cabinet') {
-      const dep = departSelect.value;
-      const commune = communeSelect.value;
       
-      if (dep && commune) {
-        console.log('🔄 Recalcul des communes pour utilisateur existant...');
-        await calculerEtAfficherCommunes(false, true);
+      // 📦 CHARGER LES COMMUNES DEPUIS LES DONNÉES EXISTANTES
+      if (data.communesCouvertes && data.communesCouvertes.trim() !== '') {
+        console.log('📦 Chargement des communes sauvegardées...');
         
-        if (communesCalculeesSaved.length > 0) {
-          setTimeout(() => {
-            validerCommunes();
-          }, 500);
+        // Convertir la chaîne en tableau
+        communesCalculeesSaved = data.communesCouvertes.split('|').filter(c => c.trim());
+        communesValidees = true;
+        listeModifieeManuelle = true; // Considérer comme modifiées pour éviter le recalcul
+        
+        console.log(`✅ ${communesCalculeesSaved.length} communes chargées depuis la BDD`);
+        
+        // Afficher la zone des communes
+        const zoneCommunes = document.getElementById('communesCalculeesZone');
+        const listeDiv = document.getElementById('communesCalculeesListe');
+        const infoDiv = document.getElementById('communesCalculeesInfo');
+        
+        if (zoneCommunes && listeDiv && infoDiv) {
+          zoneCommunes.classList.remove('hidden');
+          
+          // Afficher les infos
+          const departements = data.departementsCouvertes || 'N/A';
+          infoDiv.innerHTML = `
+            <strong style="color:#059669;">✅ ${communesCalculeesSaved.length} communes enregistrées</strong> 
+            dans <strong>${departements}</strong>
+          `;
+          
+          // Afficher la liste
+          listeDiv.innerHTML = communesCalculeesSaved
+            .sort()
+            .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">✓ ${c}</div>`)
+            .join('');
+          
+          // Afficher le bouton Modifier
+          const btnGroupe = document.getElementById('btnGroupeCommunes');
+          if (btnGroupe) {
+            btnGroupe.style.display = 'flex';
+            btnGroupe.style.flexDirection = 'column';
+          }
+          
+          // Masquer le bouton Valider (déjà validé)
+          const btnValider = document.getElementById('btnValiderCommunes');
+          if (btnValider) {
+            btnValider.style.display = 'none';
+          }
+          
+          // Message personnalisé
+          const messageExplicatif = document.getElementById('messageExplicatif');
+          if (messageExplicatif) {
+            messageExplicatif.innerHTML = '✅ <strong>Liste sauvegardée</strong> - Ces communes ont été enregistrées lors de votre dernière modification.';
+            messageExplicatif.style.color = '#059669';
+            messageExplicatif.style.fontWeight = '600';
+          }
         }
       }
     }
