@@ -377,7 +377,7 @@
           
           <div style="margin-top:12px">
             <label>
-              <input type="radio" name="modeContact" value="direct" checked>
+              <input type="radio" name="modeContact" value="direct">
               <strong>📧 Contact direct</strong>
               <div class="small" style="margin-left:24px;margin-top:4px">
                 Mon email et mon téléphone seront affichés. Les particuliers peuvent me contacter directement.
@@ -1434,7 +1434,7 @@ resetBtn.addEventListener('click', () => {
   placesInput.value = "";
   modeContactBlock.classList.add("hidden");
   consentNumber.textContent = "5";
-  document.querySelector('input[name="modeContact"][value="direct"]').checked = true;
+  document.querySelectorAll('input[name="modeContact"]').forEach(radio => { radio.checked = false;});
   rest.classList.add("hidden");
   siretBlock.classList.add("hidden");
   noNum.classList.add("hidden");
@@ -1458,7 +1458,6 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
-
 
 
 
