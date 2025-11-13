@@ -327,7 +327,7 @@
           <label><input type="radio" name="visio" value="non"> Non</label>
         </div>
 
- <div id="section-geo" class="hidden">
+        <div id="section-geo" class="hidden">
   <div class="section-title" style="margin-top:32px"><span class="section-number">3</span> Zone géographique d'intervention</div>
 
   <!-- DÉPARTEMENT -->
@@ -389,10 +389,7 @@
       </div>
     </div>
 
-  </div> <!-- ✅ FIN DE questionsDeplacements - APRÈS les nouvelles sections -->
-</div> <!-- Fin de section-geo -->
-
-            <!-- 🆕 RÉSUMÉ AUTOMATIQUE DE LA ZONE -->
+    <!-- 🆕 RÉSUMÉ AUTOMATIQUE DE LA ZONE -->
     <div id="resumeZoneAuto" style="display:none; margin-top:24px;">
       <div style="background:#e6f7f7; border-radius:12px; padding:20px; border-left:4px solid var(--primary);">
         <h4 style="margin:0 0 16px; color:#0f1724; font-size:16px;">🗺️ Votre zone d'intervention</h4>
@@ -431,6 +428,11 @@
       <!-- Liste des communes groupées -->
       <div id="communesGroupeesAuto"></div>
     </div>
+
+  </div> <!-- FIN DE questionsDeplacements -->
+</div> <!-- Fin de section-geo -->
+
+
 
        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
@@ -597,10 +599,9 @@ function updateSectionGeo() {
   const zoneOutreMer = document.getElementById('zoneOutreMer');
   const labelCommune = document.getElementById('labelCommune');
   
-  // Réinitialiser tout
+  // On masque juste les zones métropole/outre-mer selon le besoin
   sectionGeo.classList.add('hidden');
   blocCommune.classList.add('hidden');
-  questionsDeplacements.classList.add('hidden');
   zoneMetropole.classList.add('hidden');
   zoneOutreMer.classList.add('hidden');
   
@@ -1410,7 +1411,7 @@ function peutCalculerCommunes() {
   return false;
 }
 
- // Fonction de calcul automatique
+// Fonction de calcul automatique
 async function calculerCommunesAuto() {
   if (calculEnCours || !peutCalculerCommunes()) {
     return;
@@ -1422,37 +1423,14 @@ async function calculerCommunesAuto() {
   const comm = communeSelect.value;
   const codeDept = dept.split(' ')[0];
   
-  // 🆕 FORCER L'AFFICHAGE DE LA SECTION DÉPLACEMENTS
-  const questionsDeplacements = document.getElementById('questionsDeplacements');
-  if (questionsDeplacements) {
-    questionsDeplacements.classList.remove('hidden');
-  }
-  
-  // 🆕 FORCER L'AFFICHAGE DE LA ZONE APPROPRIÉE
-  const zoneMetropole = document.getElementById('zoneMetropole');
-  const zoneOutreMer = document.getElementById('zoneOutreMer');
-  
-  if (DEPS_METRO.includes(codeDept) && zoneMetropole) {
-    zoneMetropole.classList.remove('hidden');
-  } else if (DEPS_DOMTOM.includes(codeDept) && zoneOutreMer) {
-    zoneOutreMer.classList.remove('hidden');
-  }
-  
-  // Petit délai pour que le DOM se mette à jour
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  // 🆕 VÉRIFIER QUE LES ÉLÉMENTS EXISTENT MAINTENANT
+  // Les éléments sont maintenant TOUJOURS dans le DOM
   const resumeZone = document.getElementById('resumeZoneAuto');
   const listeCommunesAuto = document.getElementById('listeCommunesAuto');
   const filtresDiv = document.getElementById('filtresDepartementsAuto');
   const communesContainer = document.getElementById('communesGroupeesAuto');
   
   if (!resumeZone || !listeCommunesAuto || !filtresDiv || !communesContainer) {
-    console.error('❌ Éléments toujours non trouvés après affichage forcé');
-    console.log('resumeZone:', resumeZone);
-    console.log('listeCommunesAuto:', listeCommunesAuto);
-    console.log('filtresDiv:', filtresDiv);
-    console.log('communesContainer:', communesContainer);
+    console.error('❌ Éléments non trouvés');
     calculEnCours = false;
     return;
   }
