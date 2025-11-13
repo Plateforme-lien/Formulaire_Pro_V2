@@ -283,203 +283,195 @@
               </div>
             </div>
 
-
-<!-- 🆕 ZONE D'AFFICHAGE DES COMMUNES CALCULÉES -->
-<div id="communesCalculeesZone" class="hidden" style="margin-top: 20px;">
-  <div style="background: #f0f9ff; border: 2px solid #3b82f6; padding: 20px; border-radius: 12px;">
-    <h4 style="margin: 0 0 12px; color: #1e40af; font-size: 16px;">
-        📍 Communes couvertes par votre intervention <span style="color: #ef4444; font-weight: bold;">*</span>
-    </h4>
-    
-    <div id="communesCalculeesInfo" style="margin-bottom: 12px; color: #666; font-size: 14px;">
-      <!-- Stats affichées ici -->
-    </div>
-    
-    <div id="communesCalculeesListe" style="
-      max-height: 300px; 
-      overflow-y: auto; 
-      background: white; 
-      border: 1px solid #e5e7eb; 
-      border-radius: 8px; 
-      padding: 12px;
-    ">
-      <div style="text-align: center; color: #999; padding: 20px;">
-        Cliquez sur "Visualiser" pour calculer les communes
-      </div>
-    </div>
-    
-    <!-- 🆕 BOUTONS VALIDER / MODIFIER -->
-    <div id="btnGroupeCommunes" style="display: none; margin-top: 16px; gap: 8px;">
-      <button 
-        type="button" 
-        id="btnValiderCommunes" 
-        onclick="validerCommunes()" 
-        style="
-          width: 100%;
-          padding: 12px;
-          background: var(--primary);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        "
-      >
-        ✓ Valider cette liste de communes
-      </button>
-      
-      <button 
-        type="button" 
-        id="btnModifierCommunes" 
-        onclick="afficherInterfaceModification()" 
-        style="
-          width: 100%;
-          padding: 12px;
-          background: #f59e0b;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-          margin-top: 8px;
-        "
-      >
-        ✏️ Modifier cette liste manuellement
-      </button>
-    </div>
-
-    <!-- 🆕 INTERFACE DE MODIFICATION DES COMMUNES -->
-    <div id="interfaceModificationCommunes" class="hidden" style="margin-top: 20px;">
-      <div style="background: #fff9e6; border: 2px solid #ffc107; padding: 20px; border-radius: 12px;">
-        <h4 style="margin: 0 0 16px; color: #856404; font-size: 16px; font-weight: 700;">
-          ✏️ Personnaliser la liste des communes
-        </h4>
-        
-        <!-- BARRE DE RECHERCHE -->
-        <div style="margin-bottom: 20px;">
-          <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #0f1724; font-size: 14px;">
-            🔍 Ajouter une commune manuellement
-          </label>
-          <div class="small" style="margin-bottom: 8px; color: #6b7280;">
-            Recherchez n'importe quelle commune en France (minimum 3 lettres)
-          </div>
-          <div style="display: flex; gap: 8px; align-items: stretch;">
-            <input 
-              type="text" 
-              id="rechercheCommune" 
-              placeholder="Ex: Nancy, Paris, Marseille..."
-              onkeypress="if(event.key==='Enter'){event.preventDefault();rechercherCommune();}"
-              style="
-                flex: 1; 
-                padding: 10px 12px; 
-                border: 2px solid #e6eef6; 
-                border-radius: 8px;
-                font-size: 14px;
-              "
-            />
-            <button 
-              type="button" 
-              onclick="rechercherCommune()" 
-              style="
-                padding: 10px 16px; 
-                background: var(--primary); 
-                color: white; 
-                border: none; 
-                border-radius: 8px; 
-                cursor: pointer; 
-                font-weight: 600;
-                white-space: nowrap;
-                font-size: 14px;
-              "
-            >
-              Rechercher
-            </button>
-          </div>
-          <div id="resultatsRecherche" style="margin-top: 8px;"></div>
-        </div>
-        
-        <!-- LISTE DES COMMUNES AVEC CHECKBOXES -->
-        <div style="margin-top: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-weight: 600; display: block; color: #0f1724; margin: 0; font-size: 14px;">
-              📋 Communes sélectionnées
-            </label>
-            <span id="compteurCommunes" style="font-size: 13px; color: #6b7280; font-weight: 600;">
-              0 commune(s)
-            </span>
-          </div>
-          <div class="small" style="margin-bottom: 8px; color: #6b7280;">
-            Cochez/décochez les communes à inclure dans votre zone d'intervention
-          </div>
-          <div style="background: white; border: 2px solid #e6eef6; border-radius: 8px; padding: 8px; margin-top: 8px;">
-            <div id="listeCommunesCheckboxes" style="max-height: 300px; overflow-y: auto;">
-              <p style="color: #999; text-align: center; padding: 20px; margin: 0;">
-                Chargement...
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <!-- BOUTONS ACTIONS -->
-        <div style="display: flex; gap: 8px; margin-top: 20px;">
-          <button 
-            type="button" 
-            onclick="validerModifications()" 
-            style="
-              flex: 1;
-              padding: 12px;
-              background: #10b981;
-              color: white;
-              border: none;
-              border-radius: 8px;
-              font-weight: 600;
-              cursor: pointer;
-              transition: all 0.2s;
-            "
-          >
-            ✓ Enregistrer mes modifications
-          </button>
-          
-          <button 
-            type="button" 
-            onclick="annulerModifications()" 
-            style="
-              flex: 1;
-              padding: 12px;
-              background: #6b7280;
-              color: white;
-              border: none;
-              border-radius: 8px;
-              font-weight: 600;
-              cursor: pointer;
-              transition: all 0.2s;
-            "
-          >
-            ✕ Annuler
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Message explicatif (change selon le mode) -->
-    <div id="messageExplicatif" class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
-        💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.
-    </div>
-  </div>
-</div>
-   
+            <!-- 🆕 ZONE D'AFFICHAGE DES COMMUNES CALCULÉES -->
+            <div id="communesCalculeesZone" class="hidden" style="margin-top: 20px;">
+              <div style="background: #f0f9ff; border: 2px solid #3b82f6; padding: 20px; border-radius: 12px;">
+                <h4 style="margin: 0 0 12px; color: #1e40af; font-size: 16px;">
+                    📍 Communes couvertes par votre intervention <span style="color: #ef4444; font-weight: bold;">*</span>
+                </h4>
                 
-                <div class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
+                <div id="communesCalculeesInfo" style="margin-bottom: 12px; color: #666; font-size: 14px;">
+                  <!-- Stats affichées ici -->
+                </div>
+                
+                <div id="communesCalculeesListe" style="
+                  max-height: 300px; 
+                  overflow-y: auto; 
+                  background: white; 
+                  border: 1px solid #e5e7eb; 
+                  border-radius: 8px; 
+                  padding: 12px;
+                ">
+                  <div style="text-align: center; color: #999; padding: 20px;">
+                    Cliquez sur "Visualiser" pour calculer les communes
+                  </div>
+                </div>
+                
+                <!-- 🆕 BOUTONS VALIDER / MODIFIER -->
+                <div id="btnGroupeCommunes" style="display: none; margin-top: 16px; gap: 8px;">
+                  <button 
+                    type="button" 
+                    id="btnValiderCommunes" 
+                    onclick="validerCommunes()" 
+                    style="
+                      width: 100%;
+                      padding: 12px;
+                      background: var(--primary);
+                      color: white;
+                      border: none;
+                      border-radius: 8px;
+                      font-weight: 600;
+                      cursor: pointer;
+                      transition: all 0.2s;
+                    "
+                  >
+                    ✓ Valider cette liste de communes
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    id="btnModifierCommunes" 
+                    onclick="afficherInterfaceModification()" 
+                    style="
+                      width: 100%;
+                      padding: 12px;
+                      background: #f59e0b;
+                      color: white;
+                      border: none;
+                      border-radius: 8px;
+                      font-weight: 600;
+                      cursor: pointer;
+                      transition: all 0.2s;
+                      margin-top: 8px;
+                    "
+                  >
+                    ✏️ Modifier cette liste manuellement
+                  </button>
+                </div>
+
+                <!-- 🆕 INTERFACE DE MODIFICATION DES COMMUNES -->
+                <div id="interfaceModificationCommunes" class="hidden" style="margin-top: 20px;">
+                  <div style="background: #fff9e6; border: 2px solid #ffc107; padding: 20px; border-radius: 12px;">
+                    <h4 style="margin: 0 0 16px; color: #856404; font-size: 16px; font-weight: 700;">
+                      ✏️ Personnaliser la liste des communes
+                    </h4>
+                    
+                    <!-- BARRE DE RECHERCHE -->
+                    <div style="margin-bottom: 20px;">
+                      <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #0f1724; font-size: 14px;">
+                        🔍 Ajouter une commune manuellement
+                      </label>
+                      <div class="small" style="margin-bottom: 8px; color: #6b7280;">
+                        Recherchez n'importe quelle commune en France (minimum 3 lettres)
+                      </div>
+                      <div style="display: flex; gap: 8px; align-items: stretch;">
+                        <input 
+                          type="text" 
+                          id="rechercheCommune" 
+                          placeholder="Ex: Nancy, Paris, Marseille..."
+                          onkeypress="if(event.key==='Enter'){event.preventDefault();rechercherCommune();}"
+                          style="
+                            flex: 1; 
+                            padding: 10px 12px; 
+                            border: 2px solid #e6eef6; 
+                            border-radius: 8px;
+                            font-size: 14px;
+                          "
+                        />
+                        <button 
+                          type="button" 
+                          onclick="rechercherCommune()" 
+                          style="
+                            padding: 10px 16px; 
+                            background: var(--primary); 
+                            color: white; 
+                            border: none; 
+                            border-radius: 8px; 
+                            cursor: pointer; 
+                            font-weight: 600;
+                            white-space: nowrap;
+                            font-size: 14px;
+                          "
+                        >
+                          Rechercher
+                        </button>
+                      </div>
+                      <div id="resultatsRecherche" style="margin-top: 8px;"></div>
+                    </div>
+                    
+                    <!-- LISTE DES COMMUNES AVEC CHECKBOXES -->
+                    <div style="margin-top: 20px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-weight: 600; display: block; color: #0f1724; margin: 0; font-size: 14px;">
+                          📋 Communes sélectionnées
+                        </label>
+                        <span id="compteurCommunes" style="font-size: 13px; color: #6b7280; font-weight: 600;">
+                          0 commune(s)
+                        </span>
+                      </div>
+                      <div class="small" style="margin-bottom: 8px; color: #6b7280;">
+                        Cochez/décochez les communes à inclure dans votre zone d'intervention
+                      </div>
+                      <div style="background: white; border: 2px solid #e6eef6; border-radius: 8px; padding: 8px; margin-top: 8px;">
+                        <div id="listeCommunesCheckboxes" style="max-height: 300px; overflow-y: auto;">
+                          <p style="color: #999; text-align: center; padding: 20px; margin: 0;">
+                            Chargement...
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- BOUTONS ACTIONS -->
+                    <div style="display: flex; gap: 8px; margin-top: 20px;">
+                      <button 
+                        type="button" 
+                        onclick="validerModifications()" 
+                        style="
+                          flex: 1;
+                          padding: 12px;
+                          background: #10b981;
+                          color: white;
+                          border: none;
+                          border-radius: 8px;
+                          font-weight: 600;
+                          cursor: pointer;
+                          transition: all 0.2s;
+                        "
+                      >
+                        ✓ Enregistrer mes modifications
+                      </button>
+                      
+                      <button 
+                        type="button" 
+                        onclick="annulerModifications()" 
+                        style="
+                          flex: 1;
+                          padding: 12px;
+                          background: #6b7280;
+                          color: white;
+                          border: none;
+                          border-radius: 8px;
+                          font-weight: 600;
+                          cursor: pointer;
+                          transition: all 0.2s;
+                        "
+                      >
+                        ✕ Annuler
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Message explicatif (change selon le mode) -->
+                <div id="messageExplicatif" class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
                     💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.
                 </div>
               </div>
             </div>
 
-          </div>
-        </div>
-        
+          </div> <!-- FIN questionsDeplacements -->
+        </div> <!-- FIN section-geo -->
+                
         <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
         <div style="margin-top:12px">
