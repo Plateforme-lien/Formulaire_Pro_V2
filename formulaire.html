@@ -285,7 +285,7 @@
             <div id="communesCalculeesZone" class="hidden" style="margin-top: 20px;">
               <div style="background: #f0f9ff; border: 2px solid #3b82f6; padding: 20px; border-radius: 12px;">
                 <h4 style="margin: 0 0 12px; color: #1e40af; font-size: 16px;">
-                  📍 Communes couvertes par votre intervention
+                    📍 Communes couvertes par votre intervention <span style="color: #ef4444; font-weight: bold;">*</span>
                 </h4>
                 
                 <div id="communesCalculeesInfo" style="margin-bottom: 12px; color: #666; font-size: 14px;">
@@ -328,8 +328,7 @@
                 </button>
                 
                 <div class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
-                  💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.<br>
-                  <strong style="color: #dc2626;">⚠️ Vous devez valider cette liste avant de pouvoir enregistrer le formulaire.</strong>
+                    💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.
                 </div>
               </div>
             </div>
@@ -862,11 +861,19 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
   }
   
   zoneCommunes.classList.remove('hidden');
-  listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">⏳ Calcul en cours...</div>';
-  if (btnValider) {
+listeDiv.innerHTML = `
+  <div style="text-align:center; padding:40px; color:#0ea5a4;">
+    <div style="font-size:48px; margin-bottom:16px;">⏳</div>
+    <div style="font-size:18px; font-weight:600; margin-bottom:8px;">Calcul en cours...</div>
+    <div style="font-size:14px; color:#6b7280;">Analyse des communes accessibles selon votre zone d'intervention</div>
+  </div> 
+`;  
+infoDiv.innerHTML = '<span style="color:#0ea5a4; font-weight:600;">🔄 Calcul en cours, veuillez patienter...</span>';
+if (btnValider) {
     btnValider.disabled = true;
     btnValider.style.display = 'none';
   }
+
   
   communesValidees = false;
   
@@ -981,10 +988,15 @@ async function showFormAndPrefill(data) {
       if (modeRadio) modeRadio.checked = true;
     }
     
-    if (data.visio) {
-      const visioRadio = document.querySelector(`input[name="visio"][value="${data.visio}"]`);
-      if (visioRadio) visioRadio.checked = true;
-    }
+    if (data.visio !== undefined && data.visio !== null) {
+  const visioValue = String(data.visio).toLowerCase().trim();
+  const visioRadio = document.querySelector(`input[name="visio"][value="${visioValue}"]`);
+  if (visioRadio) {
+    visioRadio.checked = true;
+  } else {
+    console.warn("⚠️ Aucun bouton radio trouvé pour visio =", visioValue);
+  }
+}
     
     if (data.departement) {
       let deptCode = String(data.departement).trim();
@@ -1419,4 +1431,6 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
+
+
 
