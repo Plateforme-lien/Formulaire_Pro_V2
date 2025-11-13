@@ -365,20 +365,20 @@
                         Recherchez n'importe quelle commune en France (minimum 3 lettres)
                       </div>
                       
-<div style="display: flex; gap: 8px; align-items: stretch; margin-top: 8px;">
+<div style="display: flex; gap: 8px; align-items: stretch;">
   <input 
     type="text" 
     id="rechercheCommune" 
     placeholder="Ex: Nancy, Paris, Marseille..."
     onkeypress="if(event.key==='Enter'){event.preventDefault();rechercherCommune();}"
     style="
-      flex: 1; 
-      padding: 10px 12px; 
-      border: 2px solid #e6eef6; 
-      border-radius: 8px;
-      font-size: 14px;
-      margin-top: 0;
-      box-sizing: border-box;
+      flex: 1 !important; 
+      width: auto !important;
+      padding: 10px 12px !important; 
+      border: 2px solid #e6eef6 !important; 
+      border-radius: 8px !important;
+      font-size: 14px !important;
+      margin-top: 0 !important;
     "
   />
   <button 
@@ -1129,43 +1129,64 @@ function afficherInterfaceModification() {
 function genererCheckboxesCommunes() {
   const container = document.getElementById('listeCommunesCheckboxes');
   
+  if (!container) {
+    console.error('❌ Conteneur listeCommunesCheckboxes introuvable');
+    return;
+  }
+  
+  console.log('📋 Génération checkboxes pour', communesCalculeesSaved.length, 'commune(s)');
+  
   if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
     container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px; margin: 0;">Aucune commune à afficher</p>';
     updateCompteurCommunes();
     return;
   }
   
-  container.innerHTML = communesCalculeesSaved
-    .sort()
-    .map((commune, index) => {
-      return `
-        <div style="
-          padding: 10px 8px; 
-          border-bottom: 1px solid #f3f4f6; 
-          display: flex; 
-          align-items: center;
-          transition: background 0.2s;
-        " 
-        onmouseover="this.style.background='#f9fafb'" 
-        onmouseout="this.style.background='white'">
-          <input 
-            type="checkbox" 
-            id="commune_${index}" 
-            value="${commune}" 
-            checked
-            onchange="updateCompteurCommunes()"
-            style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px; flex-shrink: 0;"
-          />
-          <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px; line-height: 1.4;">
-            ${commune}
-          </label>
-        </div>
-      `;
-    })
-    .join('');
+  // Trier les communes par ordre alphabétique
+  const communesTriees = [...communesCalculeesSaved].sort((a, b) => {
+    return a.localeCompare(b, 'fr', { sensitivity: 'base' });
+  });
+  
+  // Générer le HTML
+  const html = communesTriees.map((commune, index) => {
+    // Échapper les caractères spéciaux pour éviter les problèmes HTML/JS
+    const communeEchapee = commune
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    
+    return `
+      <div style="
+        padding: 10px 8px; 
+        border-bottom: 1px solid #f3f4f6; 
+        display: flex; 
+        align-items: center;
+        transition: background 0.2s;
+      " 
+      onmouseover="this.style.background='#f9fafb'" 
+      onmouseout="this.style.background='white'">
+        <input 
+          type="checkbox" 
+          id="commune_${index}" 
+          value="${communeEchapee}" 
+          checked
+          onchange="updateCompteurCommunes()"
+          style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px; flex-shrink: 0;"
+        />
+        <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px; line-height: 1.4;">
+          ${communeEchapee}
+        </label>
+      </div>
+    `;
+  }).join('');
+  
+  container.innerHTML = html;
+  console.log('✅ Checkboxes générées');
   
   updateCompteurCommunes();
-}
+} 
 
 function updateCompteurCommunes() {
   const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
@@ -1184,28 +1205,66 @@ function rechercherCommune() {
   console.log('🔍 Recherche lancée pour:', recherche);
   
   if (recherche.length < 3) {
-    resultatsDiv.innerHTML = '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Tapez au moins 3 caractères pour lancer la recherche</div>';
+    resultatsDiv.innerHTML = '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Tapez au moins 3 caractères</div>';
     return;
   }
   
   resultatsDiv.innerHTML = '<div style="background: #e6f7f7; border: 1px solid #0ea5a4; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #0d8887; margin-top: 8px;">🔄 Recherche en cours...</div>';
   
-  // Appel à l'API Geo avec gestion d'erreur renforcée
-  fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(recherche)}&fields=nom,codesPostaux,departement&limit=10`)
+  const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(recherche)}&fields=nom,codesPostaux,departement&limit=10`;
+  console.log('🌐 URL appelée:', url);
+  
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  })
     .then(response => {
-      console.log('📡 Réponse API reçue, status:', response.status);
+      console.log('📡 Status HTTP:', response.status);
       if (!response.ok) {
-        throw new Error('Erreur HTTP: ' + response.status);
+        throw new Error(`Erreur API (${response.status})`);
       }
       return response.json();
     })
     .then(communes => {
-      console.log('📦 Communes reçues:', communes.length);
+      console.log('📦 Résultats:', communes.length, 'commune(s)');
       
-      if (communes.length === 0) {
-        resultatsDiv.innerHTML = '<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Aucune commune trouvée pour "' + recherche + '"</div>';
+      if (!communes || communes.length === 0) {
+        resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Aucune commune trouvée pour "${recherche}"</div>`;
         return;
       }
+      
+      const html = communes.map(c => {
+        const cp = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
+        const nomComplet = cp ? `${c.nom} (${cp})` : c.nom;
+        const deptNom = c.departement.nom || '';
+        const deptCode = c.departement.code || '';
+        
+        // Échapper les guillemets pour éviter les erreurs JavaScript
+        const nomEchape = nomComplet.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const deptNomEchape = deptNom.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        
+        return `
+          <div 
+            onclick="ajouterCommuneManuellement('${nomEchape}')" 
+            style="
+              padding: 12px; 
+              cursor: pointer; 
+              border-bottom: 1px solid #f3f4f6;
+              transition: background 0.2s;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+            onmouseover="this.style.background='#f0f9ff'"
+            onmouseout="this.style.background='white'"
+          >
+            <span style="font-weight: 600; color: #0f1724; font-size: 14px;">${nomComplet}</span>
+            <span style="color: #6b7280; font-size: 12px; white-space: nowrap; margin-left: 12px;">${deptCode} - ${deptNomEchape}</span>
+          </div>
+        `;
+      }).join('');
       
       resultatsDiv.innerHTML = `
         <div style="
@@ -1216,62 +1275,133 @@ function rechercherCommune() {
           max-height: 250px; 
           overflow-y: auto;
         ">
-          ${communes.map(c => {
-            const cp = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
-            const nomComplet = cp ? `${c.nom} (${cp})` : c.nom;
-            
-            return `
-              <div 
-                onclick="ajouterCommuneManuellement('${nomComplet.replace(/'/g, "\\'")}', '${c.departement.code}')" 
-                style="
-                  padding: 12px; 
-                  cursor: pointer; 
-                  border-bottom: 1px solid #f3f4f6;
-                  transition: background 0.2s;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                "
-                onmouseover="this.style.background='#f0f9ff'"
-                onmouseout="this.style.background='white'"
-              >
-                <span style="font-weight: 600; color: #0f1724; font-size: 14px;">${nomComplet}</span>
-                <span style="color: #6b7280; font-size: 12px; white-space: nowrap; margin-left: 12px;">${c.departement.code} - ${c.departement.nom.replace(/'/g, "\\'")}</span>
-              </div>
-            `;
-          }).join('')}
+          ${html}
         </div>
       `;
     })
     .catch(error => {
-      console.error('❌ Erreur recherche:', error);
-      resultatsDiv.innerHTML = '<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Erreur de connexion : ' + error.message + '</div>';
+      console.error('❌ Erreur:', error);
+      resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Erreur : ${error.message}</div>`;
     });
 }
 
 function ajouterCommuneManuellement(communeNom) {
+  console.log('➕ Tentative ajout:', communeNom);
+  
+  // Nettoyer le nom de la commune (enlever les espaces inutiles)
+  const communeNettoyee = communeNom.trim();
+  
   // Vérifier si la commune n'est pas déjà dans la liste
-  if (communesCalculeesSaved.includes(communeNom)) {
-    document.getElementById('resultatsRecherche').innerHTML = '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Cette commune est déjà dans votre liste</div>';
+  const dejaPresente = communesCalculeesSaved.some(c => 
+    c.toLowerCase() === communeNettoyee.toLowerCase()
+  );
+  
+  if (dejaPresente) {
+    document.getElementById('resultatsRecherche').innerHTML = `
+      <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">
+        ⚠️ Cette commune est déjà dans votre liste
+      </div>
+    `;
+    console.log('⚠️ Commune déjà présente:', communeNettoyee);
     return;
   }
   
   // Ajouter à la liste
-  communesCalculeesSaved.push(communeNom);
+  communesCalculeesSaved.push(communeNettoyee);
+  console.log('✅ Commune ajoutée. Nouvelle taille:', communesCalculeesSaved.length);
   
-  // Régénérer les checkboxes
+  // Régénérer les checkboxes avec la nouvelle commune
   genererCheckboxesCommunes();
   
-  // Afficher confirmation
-  document.getElementById('resultatsRecherche').innerHTML = '<div style="background: #d1fae5; border: 1px solid #10b981; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #059669; margin-top: 8px;">✅ Commune ajoutée : <strong>' + communeNom + '</strong></div>';
+  // Afficher confirmation avec timeout pour que l'utilisateur puisse la voir
+  const resultatsDiv = document.getElementById('resultatsRecherche');
+  resultatsDiv.innerHTML = `
+    <div style="background: #d1fae5; border: 1px solid #10b981; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #059669; margin-top: 8px;">
+      ✅ Commune ajoutée : <strong>${communeNettoyee}</strong>
+    </div>
+  `;
+  
+  // Effacer le message de confirmation après 3 secondes
+  setTimeout(() => {
+    resultatsDiv.innerHTML = '';
+  }, 3000);
   
   // Vider le champ de recherche
-  document.getElementById('rechercheCommune').value = '';
+  const champRecherche = document.getElementById('rechercheCommune');
+  if (champRecherche) {
+    champRecherche.value = '';
+    champRecherche.focus(); // Remettre le focus pour une nouvelle recherche
+  }
   
-  console.log('✅ Commune ajoutée manuellement:', communeNom);
+  // Scroll vers la liste pour voir la nouvelle commune
+  const listeDiv = document.getElementById('listeCommunesCheckboxes');
+  if (listeDiv) {
+    setTimeout(() => {
+      listeDiv.scrollTop = listeDiv.scrollHeight;
+    }, 100);
+  }
+} 
+
+function ajouterCommuneManuellement(communeNom) {
+  console.log('➕ Tentative ajout:', communeNom);
+  
+  // Nettoyer le nom de la commune (enlever les espaces inutiles)
+  const communeNettoyee = communeNom.trim();
+  
+  // Vérifier si la commune n'est pas déjà dans la liste
+  const dejaPresente = communesCalculeesSaved.some(c => 
+    c.toLowerCase() === communeNettoyee.toLowerCase()
+  );
+  
+  if (dejaPresente) {
+    document.getElementById('resultatsRecherche').innerHTML = `
+      <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">
+        ⚠️ Cette commune est déjà dans votre liste
+      </div>
+    `;
+    console.log('⚠️ Commune déjà présente:', communeNettoyee);
+    return;
+  }
+  
+  // Ajouter à la liste
+  communesCalculeesSaved.push(communeNettoyee);
+  console.log('✅ Commune ajoutée. Nouvelle taille:', communesCalculeesSaved.length);
+  
+  // Régénérer les checkboxes avec la nouvelle commune
+  genererCheckboxesCommunes();
+  
+  // Afficher confirmation avec timeout pour que l'utilisateur puisse la voir
+  const resultatsDiv = document.getElementById('resultatsRecherche');
+  resultatsDiv.innerHTML = `
+    <div style="background: #d1fae5; border: 1px solid #10b981; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #059669; margin-top: 8px;">
+      ✅ Commune ajoutée : <strong>${communeNettoyee}</strong>
+    </div>
+  `;
+  
+  // Effacer le message de confirmation après 3 secondes
+  setTimeout(() => {
+    resultatsDiv.innerHTML = '';
+  }, 3000);
+  
+  // Vider le champ de recherche
+  const champRecherche = document.getElementById('rechercheCommune');
+  if (champRecherche) {
+    champRecherche.value = '';
+    champRecherche.focus(); // Remettre le focus pour une nouvelle recherche
+  }
+  
+  // Scroll vers la liste pour voir la nouvelle commune
+  const listeDiv = document.getElementById('listeCommunesCheckboxes');
+  if (listeDiv) {
+    setTimeout(() => {
+      listeDiv.scrollTop = listeDiv.scrollHeight;
+    }, 100);
+  }
 }
 
 function validerModifications() {
+  console.log('💾 Validation des modifications...');
+  
   // Récupérer toutes les communes cochées
   const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
   const communesSelectionnees = [];
@@ -1282,50 +1412,75 @@ function validerModifications() {
     }
   });
   
+  console.log('📊 Communes cochées:', communesSelectionnees.length);
+  
   if (communesSelectionnees.length === 0) {
     alert('⚠️ Vous devez sélectionner au moins une commune');
     return;
   }
   
-  // Mettre à jour la liste sauvegardée
-  communesCalculeesSaved = communesSelectionnees;
+  // Mettre à jour la liste sauvegardée (avec tri)
+  communesCalculeesSaved = communesSelectionnees.sort((a, b) => {
+    return a.localeCompare(b, 'fr', { sensitivity: 'base' });
+  });
   
   // Marquer comme validé ET modifié manuellement
   communesValidees = true;
   listeModifieeManuelle = true;
   
+  console.log('✅ Liste mise à jour:', communesCalculeesSaved.length, 'communes');
+  console.log('🔧 Mode manuel activé:', listeModifieeManuelle);
+  
   // Masquer l'interface de modification
-  document.getElementById('interfaceModificationCommunes').classList.add('hidden');
+  const interfaceModif = document.getElementById('interfaceModificationCommunes');
+  if (interfaceModif) {
+    interfaceModif.classList.add('hidden');
+  }
   
   // Mettre à jour le message explicatif
   const messageExplicatif = document.getElementById('messageExplicatif');
   if (messageExplicatif) {
     messageExplicatif.innerHTML = '✅ <strong>Liste personnalisée validée</strong> - Vous avez modifié manuellement la liste des communes.';
     messageExplicatif.style.color = '#059669';
+    messageExplicatif.style.fontWeight = '600';
   }
   
   // Afficher confirmation dans l'info
   const infoDiv = document.getElementById('communesCalculeesInfo');
-  infoDiv.innerHTML = `
-    <strong style="color:#059669;">✅ ${communesSelectionnees.length} communes sélectionnées (liste personnalisée)</strong>
-  `;
+  if (infoDiv) {
+    infoDiv.innerHTML = `
+      <strong style="color:#059669;">✅ ${communesSelectionnees.length} communes sélectionnées (liste personnalisée)</strong>
+    `;
+  }
   
-  // Mettre à jour l'affichage de la liste
+  // Mettre à jour l'affichage de la liste avec les communes triées
   const listeDiv = document.getElementById('communesCalculeesListe');
-  listeDiv.innerHTML = communesSelectionnees
-    .sort()
-    .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">✓ ${c}</div>`)
-    .join('');
+  if (listeDiv) {
+    listeDiv.innerHTML = communesCalculeesSaved
+      .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">✓ ${c}</div>`)
+      .join('');
+  }
   
   // Réafficher le bouton "Modifier" pour permettre une nouvelle modification
   const btnGroupe = document.getElementById('btnGroupeCommunes');
-  btnGroupe.style.display = 'flex';
-  btnGroupe.style.flexDirection = 'column';
+  if (btnGroupe) {
+    btnGroupe.style.display = 'flex';
+    btnGroupe.style.flexDirection = 'column';
+  }
   
   // Masquer le bouton "Valider" (déjà validé)
-  document.getElementById('btnValiderCommunes').style.display = 'none';
+  const btnValider = document.getElementById('btnValiderCommunes');
+  if (btnValider) {
+    btnValider.style.display = 'none';
+  }
   
-  console.log('✅ Modifications validées:', communesSelectionnees.length, 'communes');
+  console.log('✅ Modifications validées avec succès');
+  
+  // Scroll vers le haut pour voir la confirmation
+  const zoneCommunes = document.getElementById('communesCalculeesZone');
+  if (zoneCommunes) {
+    zoneCommunes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function annulerModifications() {
@@ -1772,7 +1927,7 @@ submitBtn.addEventListener('click', async () => {
   submitBtn.disabled = true;
   submitMsg.innerHTML = '<span style="color:#6b7280">⏳ Envoi en cours...</span>';
   
-  const fd = new FormData();
+const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
   fd.append("numType", numType);
@@ -1787,16 +1942,33 @@ submitBtn.addEventListener('click', async () => {
   fd.append("modeIntervention", modeIntervention ? modeIntervention.value : "");
   
   fd.append("departement", departSelect.value);
-fd.append("commune", communeSelect.value);
+  fd.append("commune", communeSelect.value);
 
-if (listeModifieeManuelle && communesCalculeesSaved.length > 0) {
-  // Envoyer la liste modifiée manuellement
-  fd.append("communesModifiees", communesCalculeesSaved.join('|'));
-  console.log('📝 Envoi communes modifiées:', communesCalculeesSaved.length);
-} else {
-  // Pas de modification manuelle
-  fd.append("communesModifiees", "");
-}
+  // 🆕 GESTION AMÉLIORÉE DE L'ENVOI DES COMMUNES
+  if (listeModifieeManuelle && communesCalculeesSaved.length > 0) {
+    // L'utilisateur a modifié manuellement la liste
+    const communesString = communesCalculeesSaved.join('|');
+    fd.append("communesModifiees", communesString);
+    
+    console.log('📝 Envoi communes modifiées manuellement');
+    console.log('📊 Nombre:', communesCalculeesSaved.length);
+    console.log('📋 Aperçu:', communesString.substring(0, 200) + '...');
+    
+  } else if (communesValidees && communesCalculeesSaved.length > 0) {
+    // L'utilisateur a validé la liste calculée automatiquement SANS la modifier
+    const communesString = communesCalculeesSaved.join('|');
+    fd.append("communesModifiees", communesString);
+    
+    console.log('✅ Envoi communes calculées automatiquement (validées)');
+    console.log('📊 Nombre:', communesCalculeesSaved.length);
+    console.log('📋 Aperçu:', communesString.substring(0, 200) + '...');
+    
+  } else {
+    // Aucune commune validée (mode cabinet ou erreur)
+    fd.append("communesModifiees", "");
+    console.log('⚠️ Aucune commune à envoyer');
+  } 
+  
   const codeDept = departSelect.value.split(' ')[0];
 
   if (DEPS_METRO.includes(codeDept)) {
@@ -1886,6 +2058,14 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
 
