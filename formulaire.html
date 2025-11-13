@@ -94,6 +94,91 @@
     .nav-header{flex-direction:column;align-items:flex-start;gap:12px}
     .nav-links{flex-wrap:wrap}
   }
+
+  /* Styles pour la liste automatique des communes */
+    .commune-item-auto{
+      background:#fff;
+      padding:10px 14px;
+      border-radius:6px;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid #e6eef6;
+      transition:all 0.2s;
+      font-size:14px;
+    }
+    
+    .commune-item-auto:hover{
+      border-color:var(--primary);
+      box-shadow:0 2px 6px rgba(14,165,164,0.1);
+    }
+    
+    .commune-nom-auto{
+      flex:1;
+      font-weight:500;
+      color:#0f1724;
+    }
+    
+    .commune-cp-auto{
+      color:#6b7280;
+      font-size:13px;
+    }
+    
+    .dept-group-auto{
+      margin-bottom:16px;
+    }
+    
+    .dept-header-auto{
+      background:var(--primary);
+      color:#fff;
+      padding:10px 14px;
+      border-radius:6px 6px 0 0;
+      font-weight:600;
+      font-size:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    
+    .dept-content-auto{
+      background:#f9fafb;
+      padding:12px;
+      border-radius:0 0 6px 6px;
+      border:1px solid #e6eef6;
+      border-top:none;
+    }
+    
+    .filtre-btn-auto{
+      padding:6px 12px;
+      border:1px solid #e6eef6;
+      background:#fff;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:600;
+      transition:all 0.2s;
+    }
+    
+    .filtre-btn-auto:hover{
+      border-color:var(--primary);
+      color:var(--primary);
+    }
+    
+    .filtre-btn-auto.active{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
+    }
+    
+    .loading-communes{
+      text-align:center;
+      padding:20px;
+      color:#6b7280;
+      font-style:italic;
+      font-size:14px;
+    }
+  
 </style>
 </head>
 <body>
@@ -304,8 +389,46 @@
   </a>
 </div>
     </div>
-
   </div>
+   <!-- 🆕 RÉSUMÉ AUTOMATIQUE DE LA ZONE -->
+      <div id="resumeZoneAuto" style="display:none; margin-top:24px;">
+        <div style="background:#e6f7f7; border-radius:12px; padding:20px; border-left:4px solid var(--primary);">
+          <h4 style="margin:0 0 16px; color:#0f1724; font-size:16px;">🗺️ Votre zone d'intervention</h4>
+          
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+            <div style="background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+              <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">📊 Communes</div>
+              <div id="autoNbCommunes" style="font-weight:700; color:var(--primary); font-size:18px;">-</div>
+            </div>
+            
+            <div style="background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+              <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">🗺️ Départements</div>
+              <div id="autoDepartements" style="font-weight:700; color:var(--primary); font-size:14px;">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🆕 LISTE DES COMMUNES -->
+      <div id="listeCommunesAuto" style="display:none; margin-top:20px;">
+        <h4 style="margin:0 0 12px; font-size:15px; color:#0f1724;">📋 Communes couvertes</h4>
+        
+        <!-- Barre de recherche -->
+        <div style="position:relative; margin-bottom:12px;">
+          <input 
+            type="text" 
+            id="searchCommunesAuto" 
+            placeholder="🔍 Rechercher une commune..."
+            style="width:100%; padding:10px 10px 10px 36px; border:2px solid #e6eef6; border-radius:8px; font-size:14px;"
+          />
+        </div>
+        
+        <!-- Filtres par département -->
+        <div id="filtresDepartementsAuto" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
+        
+        <!-- Liste des communes groupées -->
+        <div id="communesGroupeesAuto"></div>
+      </div>
 </div>
         
        
@@ -1252,6 +1375,291 @@ function ouvrirVisualisation(e) {
 visualiserLinkMetro.addEventListener("click", ouvrirVisualisation);
 visualiserLinkOM.addEventListener("click", ouvrirVisualisation);
 
+// ============================================================
+// 🆕 CALCUL AUTOMATIQUE DES COMMUNES (sans bouton)
+// ============================================================
+
+let calculEnCours = false;
+
+// Fonction pour vérifier si on peut calculer
+function peutCalculerCommunes() {
+  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
+  
+  // Si cabinet uniquement, pas de calcul
+  if (!modeIntervention || modeIntervention.value === 'cabinet') {
+    return false;
+  }
+  
+  const dept = departSelect.value;
+  const comm = communeSelect.value;
+  
+  if (!dept || !comm) {
+    return false;
+  }
+  
+  const codeDept = dept.split(' ')[0];
+  
+  // Vérifier selon le type de département
+  if (DEPS_METRO.includes(codeDept)) {
+    const temps = document.getElementById('tempsTrajet').value;
+    return temps && temps !== "-- Sélectionnez --";
+  } else if (DEPS_DOMTOM.includes(codeDept)) {
+    const rayon = document.getElementById('rayonKm').value;
+    return rayon && rayon !== "-- Sélectionnez --";
+  }
+  
+  return false;
+}
+
+// Fonction de calcul automatique
+async function calculerCommunesAuto() {
+  if (calculEnCours || !peutCalculerCommunes()) {
+    return;
+  }
+  
+  calculEnCours = true;
+  
+  const dept = departSelect.value;
+  const comm = communeSelect.value;
+  const codeDept = dept.split(' ')[0];
+  
+  // Afficher loading
+  document.getElementById('resumeZoneAuto').style.display = 'none';
+  document.getElementById('listeCommunesAuto').innerHTML = '<div class="loading-communes">⏳ Calcul des communes en cours...</div>';
+  document.getElementById('listeCommunesAuto').style.display = 'block';
+  
+  try {
+    // Récupérer les communes du département
+    const res = await fetch(`https://geo.api.gouv.fr/departements/${codeDept}/communes?fields=nom,centre,codesPostaux`);
+    const toutesCommunes = await res.json();
+    
+    const communeCentrale = toutesCommunes.find(c => c.nom === comm);
+    if (!communeCentrale) {
+      throw new Error("Commune introuvable");
+    }
+    
+    let communesResultat = [];
+    let critereTxt = '';
+    
+    if (DEPS_METRO.includes(codeDept)) {
+      // MÉTROPOLE : utiliser le temps
+      const tempsValue = document.getElementById('tempsTrajet').value;
+      const minutes = parseInt(tempsValue.match(/\d+/)?.[0] || 0);
+      
+      if (minutes === 0) {
+        calculEnCours = false;
+        return;
+      }
+      
+      critereTxt = `${minutes} min`;
+      
+      // Pour l'instant, on fait un calcul simple basé sur la distance
+      // (l'isochrone nécessite l'API OpenRouteService côté serveur)
+      const centre = {
+        lat: communeCentrale.centre.coordinates[1],
+        lon: communeCentrale.centre.coordinates[0]
+      };
+      
+      // Approximation : 1 km par minute en moyenne
+      const rayonApprox = minutes * 1;
+      
+      toutesCommunes.forEach(c => {
+        const dist = calculerDistanceSimple(
+          centre.lat, centre.lon,
+          c.centre.coordinates[1], c.centre.coordinates[0]
+        );
+        
+        if (dist <= rayonApprox) {
+          communesResultat.push({
+            nom: c.nom,
+            codePostal: c.codesPostaux ? c.codesPostaux[0] : codeDept + '000',
+            centrale: c.nom === comm
+          });
+        }
+      });
+      
+    } else if (DEPS_DOMTOM.includes(codeDept)) {
+      // OUTRE-MER : utiliser le rayon
+      const rayonValue = document.getElementById('rayonKm').value;
+      
+      if (rayonValue === "Tout mon département") {
+        critereTxt = "Tout le département";
+        toutesCommunes.forEach(c => {
+          communesResultat.push({
+            nom: c.nom,
+            codePostal: c.codesPostaux ? c.codesPostaux[0] : codeDept + '000',
+            centrale: c.nom === comm
+          });
+        });
+      } else {
+        const rayonKm = parseFloat(rayonValue.match(/\d+/)?.[0] || 0);
+        critereTxt = `${rayonKm} km`;
+        
+        const centre = {
+          lat: communeCentrale.centre.coordinates[1],
+          lon: communeCentrale.centre.coordinates[0]
+        };
+        
+        toutesCommunes.forEach(c => {
+          const dist = calculerDistanceSimple(
+            centre.lat, centre.lon,
+            c.centre.coordinates[1], c.centre.coordinates[0]
+          );
+          
+          if (dist <= rayonKm) {
+            communesResultat.push({
+              nom: c.nom,
+              codePostal: c.codesPostaux ? c.codesPostaux[0] : codeDept + '000',
+              centrale: c.nom === comm
+            });
+          }
+        });
+      }
+    }
+    
+    // Grouper par département
+    const parDepartement = {};
+    communesResultat.forEach(c => {
+      const dept = c.codePostal.substring(0, 2);
+      if (!parDepartement[dept]) {
+        parDepartement[dept] = [];
+      }
+      parDepartement[dept].push(c);
+    });
+    
+    // Afficher le résumé
+    document.getElementById('autoNbCommunes').textContent = communesResultat.length;
+    document.getElementById('autoDepartements').textContent = Object.keys(parDepartement).sort().join(', ');
+    document.getElementById('resumeZoneAuto').style.display = 'block';
+    
+    // Afficher les filtres et la liste
+    afficherFiltresAuto(parDepartement);
+    afficherCommunesGroupeesAuto(parDepartement);
+    
+    document.getElementById('listeCommunesAuto').style.display = 'block';
+    
+  } catch (error) {
+    console.error('Erreur calcul communes:', error);
+    document.getElementById('listeCommunesAuto').innerHTML = '<div class="error-box">❌ Erreur lors du calcul. Vérifiez vos sélections.</div>';
+  } finally {
+    calculEnCours = false;
+  }
+}
+
+// Fonction distance simple (Haversine)
+function calculerDistanceSimple(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+// Fonction afficher filtres
+function afficherFiltresAuto(parDepartement) {
+  const filtresDiv = document.getElementById('filtresDepartementsAuto');
+  filtresDiv.innerHTML = '';
+  
+  const btnTous = document.createElement('button');
+  btnTous.type = 'button';
+  btnTous.className = 'filtre-btn-auto active';
+  btnTous.textContent = `Tous (${Object.values(parDepartement).flat().length})`;
+  btnTous.onclick = () => {
+    document.querySelectorAll('.filtre-btn-auto').forEach(b => b.classList.remove('active'));
+    btnTous.classList.add('active');
+    document.querySelectorAll('.dept-group-auto').forEach(g => g.style.display = 'block');
+  };
+  filtresDiv.appendChild(btnTous);
+  
+  Object.keys(parDepartement).sort().forEach(dept => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'filtre-btn-auto';
+    btn.textContent = `${dept} (${parDepartement[dept].length})`;
+    btn.onclick = () => {
+      document.querySelectorAll('.filtre-btn-auto').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.dept-group-auto').forEach(g => {
+        g.style.display = g.dataset.dept === dept ? 'block' : 'none';
+      });
+    };
+    filtresDiv.appendChild(btn);
+  });
+}
+
+// Fonction afficher communes groupées
+function afficherCommunesGroupeesAuto(parDepartement) {
+  const container = document.getElementById('communesGroupeesAuto');
+  container.innerHTML = '';
+  
+  Object.keys(parDepartement).sort().forEach(dept => {
+    const group = document.createElement('div');
+    group.className = 'dept-group-auto';
+    group.dataset.dept = dept;
+    
+    const header = document.createElement('div');
+    header.className = 'dept-header-auto';
+    header.innerHTML = `
+      <span>📍 Département ${dept}</span>
+      <span>${parDepartement[dept].length} commune${parDepartement[dept].length > 1 ? 's' : ''}</span>
+    `;
+    
+    const content = document.createElement('div');
+    content.className = 'dept-content-auto';
+    
+    parDepartement[dept].sort((a, b) => a.nom.localeCompare(b.nom)).forEach(c => {
+      const item = document.createElement('div');
+      item.className = 'commune-item-auto';
+      item.dataset.nom = c.nom.toLowerCase();
+      
+      if (c.centrale) {
+        item.style.borderColor = 'var(--primary)';
+        item.style.background = '#e6f7f7';
+      }
+      
+      item.innerHTML = `
+        <div class="commune-nom-auto">
+          ${c.centrale ? '⭐ ' : ''}${c.nom}
+        </div>
+        <div class="commune-cp-auto">${c.codePostal}</div>
+      `;
+      
+      content.appendChild(item);
+    });
+    
+    group.appendChild(header);
+    group.appendChild(content);
+    container.appendChild(group);
+  });
+}
+
+// Fonction de recherche
+document.getElementById('searchCommunesAuto').addEventListener('input', (e) => {
+  const search = e.target.value.toLowerCase();
+  
+  document.querySelectorAll('.commune-item-auto').forEach(item => {
+    const match = item.dataset.nom.includes(search);
+    item.style.display = match ? 'flex' : 'none';
+  });
+  
+  document.querySelectorAll('.dept-group-auto').forEach(group => {
+    const visibleCommunes = Array.from(group.querySelectorAll('.commune-item-auto'))
+      .filter(item => item.style.display !== 'none');
+    group.style.display = visibleCommunes.length > 0 ? 'block' : 'none';
+  });
+});
+
+// 🔥 DÉCLENCHEURS AUTOMATIQUES
+document.getElementById('tempsTrajet').addEventListener('change', calculerCommunesAuto);
+document.getElementById('rayonKm').addEventListener('change', calculerCommunesAuto);
+communeSelect.addEventListener('change', () => {
+  if (peutCalculerCommunes()) {
+    setTimeout(calculerCommunesAuto, 300);
+  }
+});
 
 </script>
 </body>
