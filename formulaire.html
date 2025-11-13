@@ -1145,6 +1145,15 @@ function genererCheckboxesCommunes() {
     return;
   }
   
+  // 🆕 MÉMORISER L'ÉTAT ACTUEL DES CHECKBOXES AVANT DE RÉGÉNÉRER
+  const etatCheckboxes = {};
+  const checkboxesActuelles = container.querySelectorAll('input[type="checkbox"]');
+  checkboxesActuelles.forEach(cb => {
+    etatCheckboxes[cb.value] = cb.checked;
+  });
+  
+  console.log('💾 États sauvegardés:', Object.keys(etatCheckboxes).length, 'communes');
+  
   // Trier les communes par ordre alphabétique
   const communesTriees = [...communesCalculeesSaved].sort((a, b) => {
     return a.localeCompare(b, 'fr', { sensitivity: 'base' });
@@ -1160,6 +1169,11 @@ function genererCheckboxesCommunes() {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
     
+    // 🆕 RESTAURER L'ÉTAT DE LA CHECKBOX (ou cocher par défaut si nouvelle commune)
+    const isChecked = etatCheckboxes.hasOwnProperty(communeEchapee) 
+      ? etatCheckboxes[communeEchapee]  // Restaurer l'état précédent
+      : true;  // Nouvelle commune = cochée par défaut
+    
     return `
       <div style="
         padding: 10px 8px; 
@@ -1174,7 +1188,7 @@ function genererCheckboxesCommunes() {
           type="checkbox" 
           id="commune_${index}" 
           value="${communeEchapee}" 
-          checked
+          ${isChecked ? 'checked' : ''}
           onchange="updateCompteurCommunes()"
           style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px; flex-shrink: 0;"
         />
@@ -1186,10 +1200,10 @@ function genererCheckboxesCommunes() {
   }).join('');
   
   container.innerHTML = html;
-  console.log('✅ Checkboxes générées');
+  console.log('✅ Checkboxes générées avec états restaurés');
   
   updateCompteurCommunes();
-} 
+}
 
 function updateCompteurCommunes() {
   const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
@@ -1287,11 +1301,17 @@ function rechercherCommune() {
       resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Erreur : ${error.message}</div>`;
     });
 }
-// 🆕 RECHERCHE EN TEMPS RÉEL (sans clic sur bouton)
+// RECHERCHE EN TEMPS RÉEL (sans clic sur bouton)
 let rechercheTimeout;
+
 function rechercherCommuneEnTempsReel() {
   // Annuler la recherche précédente si l'utilisateur tape encore
   clearTimeout(rechercheTimeout);
+  
+  const resultatsDiv = document.getElementById('resultatsRecherche');
+  
+  // NETTOYER LES ANCIENS MESSAGES D'ERREUR
+  if (!resultatsDiv) return;
   
   // Attendre 500ms après la dernière frappe avant de chercher
   rechercheTimeout = setTimeout(() => {
@@ -1299,12 +1319,12 @@ function rechercherCommuneEnTempsReel() {
     
     if (recherche.length === 0) {
       // Vider les résultats si le champ est vide
-      document.getElementById('resultatsRecherche').innerHTML = '';
+      resultatsDiv.innerHTML = '';
       return;
     }
     
     if (recherche.length < 3) {
-      document.getElementById('resultatsRecherche').innerHTML = 
+      resultatsDiv.innerHTML = 
         '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Tapez au moins 3 caractères</div>';
       return;
     }
@@ -1312,7 +1332,7 @@ function rechercherCommuneEnTempsReel() {
     // Lancer la recherche
     rechercherCommune();
   }, 500);
-} 
+}
 
 function ajouterCommuneManuellement(communeNom) {
   console.log('➕ Tentative ajout:', communeNom);
@@ -2072,8 +2092,6 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
-
-
 
 
 
