@@ -1009,6 +1009,10 @@ async function showFormAndPrefill(data) {
         
         if (data.commune) {
           await loadCommunes(deptCode, data.commune);
+          // Si la commune est déjà avec code postal, la sélectionner directement
+          if (data.commune.includes('(')) {
+            communeSelect.value = data.commune;
+          }
         }
 
         const codeDept = deptCode.split('-')[0].trim();
@@ -1171,17 +1175,38 @@ async function loadDepartements(){
 async function loadCommunes(deptCode, preselect){
   communeSelect.innerHTML = '<option>Chargement...</option>';
   try {
-    const r = await fetch(COMMUNE_API(deptCode));
+    // 🆕 Demander les codes postaux en plus
+    const url = `https://geo.api.gouv.fr/departements/${deptCode}/communes?fields=nom,codesPostaux`;
+    const r = await fetch(url);
     const list = await r.json();
+    
     communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+    
     list.forEach(c => {
       const opt = document.createElement("option");
-      opt.value = c.nom;
-      opt.textContent = c.nom;
+      
+      // 🆕 Stocker "Commune (CodePostal)" dans value ET text
+      const codePostal = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
+      const communeAvecCP = codePostal ? `${c.nom} (${codePostal})` : c.nom;
+      
+      opt.value = communeAvecCP;  // ← Changement ici
+      opt.textContent = communeAvecCP;  // ← Changement ici
+      
       communeSelect.appendChild(opt);
     });
+    
     if (preselect) {
-      communeSelect.value = preselect;
+      // 🆕 Chercher la commune qui commence par le nom pré-sélectionné
+      const options = Array.from(communeSelect.options);
+      const matchingOption = options.find(opt => 
+        opt.value.startsWith(preselect.split('(')[0].trim())
+      );
+      
+      if (matchingOption) {
+        communeSelect.value = matchingOption.value;
+      } else {
+        communeSelect.value = preselect; // Fallback
+      }
     }
   } catch (err) {
     communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
@@ -1433,6 +1458,8 @@ resetBtn.addEventListener('click', () => {
 </script>
 </body>
 </html>
+
+
 
 
 
