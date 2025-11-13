@@ -356,12 +356,11 @@
       </select>
       <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
       
-<div style="margin-top:12px;">
-  <a href="#" id="visualiserLinkMetro" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-    📍 Visualiser les communes couvertes
-  </a>
-</div>
-
+      <div style="margin-top:12px;">
+        <a href="#" id="visualiserLinkMetro" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+          📍 Visualiser les communes couvertes
+        </a>
+      </div>
     </div>
 
     <!-- OUTRE-MER : Rayon -->
@@ -383,54 +382,55 @@
       <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
       <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
       
-<div style="margin-top:12px;">
-  <a href="#" id="visualiserLinkOM" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
-    📍 Visualiser les communes couvertes
-  </a>
-</div>
+      <div style="margin-top:12px;">
+        <a href="#" id="visualiserLinkOM" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+          📍 Visualiser les communes couvertes
+        </a>
+      </div>
     </div>
-  </div>
-   <!-- 🆕 RÉSUMÉ AUTOMATIQUE DE LA ZONE -->
-      <div id="resumeZoneAuto" style="display:none; margin-top:24px;">
-        <div style="background:#e6f7f7; border-radius:12px; padding:20px; border-left:4px solid var(--primary);">
-          <h4 style="margin:0 0 16px; color:#0f1724; font-size:16px;">🗺️ Votre zone d'intervention</h4>
+
+    <!-- 🆕 RÉSUMÉ AUTOMATIQUE DE LA ZONE -->
+    <div id="resumeZoneAuto" style="display:none; margin-top:24px;">
+      <div style="background:#e6f7f7; border-radius:12px; padding:20px; border-left:4px solid var(--primary);">
+        <h4 style="margin:0 0 16px; color:#0f1724; font-size:16px;">🗺️ Votre zone d'intervention</h4>
+        
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+          <div style="background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">📊 Communes</div>
+            <div id="autoNbCommunes" style="font-weight:700; color:var(--primary); font-size:18px;">-</div>
+          </div>
           
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-            <div style="background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-              <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">📊 Communes</div>
-              <div id="autoNbCommunes" style="font-weight:700; color:var(--primary); font-size:18px;">-</div>
-            </div>
-            
-            <div style="background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-              <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">🗺️ Départements</div>
-              <div id="autoDepartements" style="font-weight:700; color:var(--primary); font-size:14px;">-</div>
-            </div>
+          <div style="background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">🗺️ Départements</div>
+            <div id="autoDepartements" style="font-weight:700; color:var(--primary); font-size:14px;">-</div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 🆕 LISTE DES COMMUNES -->
-      <div id="listeCommunesAuto" style="display:none; margin-top:20px;">
-        <h4 style="margin:0 0 12px; font-size:15px; color:#0f1724;">📋 Communes couvertes</h4>
-        
-        <!-- Barre de recherche -->
-        <div style="position:relative; margin-bottom:12px;">
-          <input 
-            type="text" 
-            id="searchCommunesAuto" 
-            placeholder="🔍 Rechercher une commune..."
-            style="width:100%; padding:10px 10px 10px 36px; border:2px solid #e6eef6; border-radius:8px; font-size:14px;"
-          />
-        </div>
-        
-        <!-- Filtres par département -->
-        <div id="filtresDepartementsAuto" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
-        
-        <!-- Liste des communes groupées -->
-        <div id="communesGroupeesAuto"></div>
+    <!-- 🆕 LISTE DES COMMUNES -->
+    <div id="listeCommunesAuto" style="display:none; margin-top:20px;">
+      <h4 style="margin:0 0 12px; font-size:15px; color:#0f1724;">📋 Communes couvertes</h4>
+      
+      <!-- Barre de recherche -->
+      <div style="position:relative; margin-bottom:12px;">
+        <input 
+          type="text" 
+          id="searchCommunesAuto" 
+          placeholder="🔍 Rechercher une commune..."
+          style="width:100%; padding:10px 10px 10px 36px; border:2px solid #e6eef6; border-radius:8px; font-size:14px;"
+        />
       </div>
-</div>
-        
+      
+      <!-- Filtres par département -->
+      <div id="filtresDepartementsAuto" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
+      
+      <!-- Liste des communes groupées -->
+      <div id="communesGroupeesAuto"></div>
+    </div>
+
+  </div> <!-- ✅ FIN DE questionsDeplacements - APRÈS les nouvelles sections -->
+</div> <!-- Fin de section-geo -->
        
 
        <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
