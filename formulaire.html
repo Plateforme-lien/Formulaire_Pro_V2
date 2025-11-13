@@ -1567,9 +1567,13 @@ async function showFormAndPrefill(data) {
   }
 }
     
-    if (data.departement) {
-      let deptCode = String(data.departement).trim();
-      if (deptCode.length === 1) deptCode = "0" + deptCode;
+   if (data.departement) {
+  let deptCode = String(data.departement).trim();
+  // ✅ Gérer les codes à 1, 2 ou 3 chiffres
+  if (deptCode.length === 1) {
+    deptCode = "0" + deptCode;
+  }
+  // Les codes à 2 ou 3 chiffres passent directement
       
       setTimeout(async () => {
         departSelect.value = deptCode;
