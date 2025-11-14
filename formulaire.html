@@ -317,46 +317,72 @@
                   </div>
                 </div>
                 
-                <!-- 🆕 BOUTONS VALIDER / MODIFIER -->
-                <div id="btnGroupeCommunes" style="display: none; margin-top: 16px; gap: 8px;">
-                  <button 
-                    type="button" 
-                    id="btnValiderCommunes" 
-                    onclick="validerCommunes()" 
-                    style="
-                      width: 100%;
-                      padding: 12px;
-                      background: var(--primary);
-                      color: white;
-                      border: none;
-                      border-radius: 8px;
-                      font-weight: 600;
-                      cursor: pointer;
-                      transition: all 0.2s;
-                    "
+                <!-- ⚠️ RECOMMANDATION IMPORTANTE -->
+                <div id="avertissementCommunes" style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 12px;margin-top: 16px;"
                   >
-                    ✓ Valider cette liste de communes
-                  </button>
+                  <div style="font-weight: 700; color: #856404; font-size: 16px; margin-bottom: 12px;">
+                    ⚠️ ATTENTION : Liste potentiellement incomplète
+                  </div>
                   
+                  <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <strong style="color: #0f1724;">💡 Recommandation :</strong><br>
+                    <span style="color: #6b7280; font-size: 13px;">
+                      Vérifiez cette liste et ajoutez les communes manquantes. Cela vous évitera de recevoir 
+                      des demandes hors de votre secteur, ou d'en manquer d'autres que vous couvrez réellement.
+                    </span>
+                  </div>
+                </div>
+                
+                <!-- BOUTON -->
+                <div id="btnGroupeCommunes" style="display: none; margin-top: 16px;">
+                  
+                  <!-- Bouton principal (Modifier) -->
                   <button 
                     type="button" 
                     id="btnModifierCommunes" 
                     onclick="afficherInterfaceModification()" 
                     style="
-                      width: 100%;
-                      padding: 12px;
-                      background: #f59e0b;
-                      color: white;
-                      border: none;
-                      border-radius: 8px;
-                      font-weight: 600;
-                      cursor: pointer;
-                      transition: all 0.2s;
-                      margin-top: 8px;
+                    width: 100%;
+                    padding: 14px;
+                    background: #f59e0b;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: 700;
+                    font-size: 15px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
                     "
-                  >
-                    ✏️ Modifier cette liste manuellement
+                    onmouseover="this.style.background='#d97706'; this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.background='#f59e0b'; this.style.transform='translateY(0)'"
+                    >
+                    ✏️ Vérifier et ajuster ma liste (recommandé)
                   </button>
+                  
+                  <!-- Bouton secondaire (Valider sans vérifier) -->
+                  <div style="text-align: center; margin-top: 16px;"> 
+                    <a 
+                      href="#" 
+                      id="btnValiderSansVerifier"
+                      onclick="validerCommunes(); return false;"
+                      style="
+                        color: #6b7280;
+                        font-size: 13px;
+                        text-decoration: underline;
+                        cursor: pointer;
+                      "
+                      onmouseover="this.style.color='#0ea5a4'"
+                      onmouseout="this.style.color='#6b7280'"
+                    >
+                      Valider cette liste sans vérifier (non recommandé)
+                    </a>
+                  </div>
+                </div>
+                
+                <!-- Message après validation (caché au départ) -->
+                <div id="messageExplicatif" class="small" style="display: none; margin-top: 12px; color: #6b7280; font-style: italic;">
+                  💡 Cette liste est calculée approximativement. <strong>Certaines communes accessibles peuvent manquer</strong>. Utilisez <strong>"Modifier"</strong> pour ajuster si nécessaire.
                 </div>
 
                 <!-- 🆕 INTERFACE DE MODIFICATION DES COMMUNES -->
@@ -1120,7 +1146,7 @@ if (btnGroupe) {
   }
 }
 
-/* ========== 🆕 FONCTION VALIDER COMMUNES ========== */
+/* ========== FONCTION VALIDER COMMUNES ========== */
 function validerCommunes() {
   if (communesCalculeesSaved.length === 0) {
     alert("⚠️ Aucune commune à valider. Veuillez d'abord calculer la liste.");
@@ -1128,26 +1154,58 @@ function validerCommunes() {
   }
   
   communesValidees = true;
+  listeModifieeManuelle = false;
   
-  const btnValider = document.getElementById('btnValiderCommunes');
-  const infoDiv = document.getElementById('communesCalculeesInfo');
-  
-  if (btnValider) {
-    btnValider.innerHTML = '✅ Liste validée';
-    btnValider.disabled = true;
-    btnValider.style.background = '#059669';
+  // Masquer l'avertissement
+  const avertissement = document.getElementById('avertissementCommunes');
+  if (avertissement) {
+    avertissement.style.display = 'none';
   }
   
+  // Afficher le message de validation
+  const messageExplicatif = document.getElementById('messageExplicatif');
+  if (messageExplicatif) {
+    messageExplicatif.style.display = 'block';
+    messageExplicatif.innerHTML = '✅ <strong>Liste validée sans vérification</strong> - Vous pourrez toujours la modifier en cliquant sur "Modifier".';
+    messageExplicatif.style.color = '#f59e0b';
+    messageExplicatif.style.fontWeight = '600';
+  }
+  
+  // Mettre à jour l'info
+  const infoDiv = document.getElementById('communesCalculeesInfo');
   if (infoDiv) {
     const existingText = infoDiv.innerHTML;
-    infoDiv.innerHTML = existingText + '<br><strong style="color:#059669;">✅ Liste validée et prête à être enregistrée</strong>';
+    infoDiv.innerHTML = existingText + '<br><strong style="color:#f59e0b;">⚠️ Liste validée sans vérification manuelle</strong>';
   }
   
-  console.log('✅ Communes validées:', communesCalculeesSaved.length);
+  // Transformer le groupe de boutons
+  const btnGroupe = document.getElementById('btnGroupeCommunes');
+  if (btnGroupe) {
+    btnGroupe.innerHTML = `
+      <button 
+        type="button" 
+        onclick="afficherInterfaceModification()" 
+        style="
+          width: 100%;
+          padding: 12px;
+          background: #f59e0b;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        "
+      >
+        ✏️ Modifier ma liste maintenant
+      </button>
+    `;
+  }
+  
+  console.log('✅ Communes validées (sans vérification):', communesCalculeesSaved.length);
 }
 
-
-/* ========== 🆕 GESTION INTERFACE MODIFICATION COMMUNES ========== */
+/* ========== GESTION INTERFACE MODIFICATION COMMUNES ========== */
 
 // Variable pour tracker si la liste a été modifiée manuellement
 let listeModifieeManuelle = false;
