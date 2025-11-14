@@ -2366,8 +2366,7 @@ try {
         bounds.push([geojsonBounds.getSouth(), geojsonBounds.getWest()]);
         bounds.push([geojsonBounds.getNorth(), geojsonBounds.getEast()]);
         
-      }
-    } catch (error) {
+      }catch (error) {
       console.warn(`⚠️ Impossible de charger ${communeNom}:`, error);
     }
   }
@@ -2396,6 +2395,15 @@ function updateCompteurCommunes() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 
