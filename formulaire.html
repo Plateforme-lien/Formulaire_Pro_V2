@@ -2316,14 +2316,14 @@ try {
           console.warn(`⚠️ ${communeNom} : code postal ${codePostal} non trouvé, utilisation de la première`);
         }
       }
-        
-        const layer = L.geoJSON(feature, {
-          style: {
-            fillColor: isCentrale ? '#ef4444' : '#10b981',
-            fillOpacity: isCentrale ? 0.5 : 0.3,
-            color: isCentrale ? '#dc2626' : '#059669',
-            weight: isCentrale ? 3 : 2
-          }, 
+  
+  const layer = L.geoJSON(feature, {
+    style: {
+      fillColor: isCentrale ? '#ef4444' : '#3b82f6',
+      fillOpacity: isCentrale ? 0.6 : 0.5,
+      color: isCentrale ? '#dc2626' : '#1e40af',
+      weight: isCentrale ? 4 : 3
+    },
           
           onEachFeature: (feature, layer) => {
             const cp = feature.properties.codesPostaux ? feature.properties.codesPostaux[0] : '';
