@@ -424,36 +424,20 @@
                     
                     <!-- 🗺️ CARTE INTERACTIVE -->
                     <div style="margin: 20px 0;">
-                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label style="font-weight: 600; display: block; color: #0f1724; margin: 0; font-size: 14px;">
-                          🗺️ Visualisation géographique
-                        </label>
-                        <button 
-                          type="button" 
+                      <label style="font-weight: 600; display: block; color: #0f1724; margin: 0 0 8px 0; font-size: 14px;">
+                        🗺️ Visualisation géographique
+                      </label>
+                      <div class="small" style="margin-bottom: 12px; color: #6b7280;">
+                        Visualisez les communes sélectionnées sur une carte 
+                        <a 
+                          href="#" 
                           id="btnToggleCarte"
-                          onclick="toggleCarte()"
-                          style="
-                            padding: 8px 16px;
-                            background: white;
-                            color: #0ea5a4;
-                            border: 2px solid #0ea5a4;
-                            border-radius: 8px;
-                            font-size: 13px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            transition: all 0.2s;
-                          "
-                          onmouseover="this.style.background='#e6f7f7'"
-                          onmouseout="this.style.background='white'"
-                        >
-                          🗺️ Afficher la carte
-                        </button>
-                      </div>
-                      
-                      <div class="small" style="margin-bottom: 8px; color: #6b7280;">
-                        Visualisez les communes sélectionnées sur une carte
-                      </div>
-                      
+                          onclick="toggleCarte(); return false;"
+                          style="color: var(--primary); text-decoration: none; font-weight: 600; margin-left: 4px;"
+                          >
+                          → Afficher la carte
+                        </a>
+                      </div>       
                       <div 
                         id="mapContainer" 
                         style="
@@ -2246,12 +2230,9 @@ function toggleCarte() {
   
   if (carteVisible) {
     mapContainer.style.display = 'block';
-    btnToggle.textContent = '🗺️ Masquer la carte';
-    btnToggle.style.background = '#0ea5a4';
-    btnToggle.style.color = 'white';
-    btnToggle.style.borderColor = '#0ea5a4';
-    btnToggle.onmouseover = null;
-    btnToggle.onmouseout = null;
+    btnToggle.textContent = '→ Masquer la carte';
+    btnToggle.style.color = '#dc2626';
+    btnToggle.style.fontWeight = '600';
     
     if (!map) {
       initMap();
@@ -2263,13 +2244,11 @@ function toggleCarte() {
     }, 100);
   
   } else {
+  } else {
     mapContainer.style.display = 'none';
-    btnToggle.textContent = '🗺️ Afficher la carte';
-    btnToggle.style.background = 'white';
-    btnToggle.style.color = '#0ea5a4';
-    btnToggle.style.borderColor = '#0ea5a4';
-    btnToggle.onmouseover = function() { this.style.background = '#e6f7f7'; };
-    btnToggle.onmouseout = function() { this.style.background = 'white'; };
+    btnToggle.textContent = '→ Afficher la carte';
+    btnToggle.style.color = 'var(--primary)';
+    btnToggle.style.fontWeight = '600';
   }
 }
 
@@ -2345,7 +2324,8 @@ try {
             fillOpacity: isCentrale ? 0.5 : 0.3,
             color: isCentrale ? '#dc2626' : '#059669',
             weight: isCentrale ? 3 : 2
-          },
+          }, 
+          
           onEachFeature: (feature, layer) => {
             const cp = feature.properties.codesPostaux ? feature.properties.codesPostaux[0] : '';
             const tooltipContent = isCentrale 
