@@ -433,17 +433,20 @@
                           id="btnToggleCarte"
                           onclick="toggleCarte()"
                           style="
-                            padding: 6px 12px;
-                            background: #e6f7f7;
-                            color: #0d8887;
-                            border: 1px solid #0ea5a4;
-                            border-radius: 6px;
-                            font-size: 12px;
+                            padding: 8px 16px;
+                            background: white;
+                            color: #0ea5a4;
+                            border: 2px solid #0ea5a4;
+                            border-radius: 8px;
+                            font-size: 13px;
                             font-weight: 600;
                             cursor: pointer;
+                            transition: all 0.2s;
                           "
+                          onmouseover="this.style.background='#e6f7f7'"
+                          onmouseout="this.style.background='white'"
                         >
-                          👁️ Afficher la carte
+                          🗺️ Afficher la carte
                         </button>
                       </div>
                       
@@ -2243,10 +2246,12 @@ function toggleCarte() {
   
   if (carteVisible) {
     mapContainer.style.display = 'block';
-    btnToggle.textContent = '👁️ Masquer la carte';
-    btnToggle.style.background = '#fee';
-    btnToggle.style.color = '#dc2626';
-    btnToggle.style.borderColor = '#dc2626';
+    btnToggle.textContent = '🗺️ Masquer la carte';
+    btnToggle.style.background = '#0ea5a4';
+    btnToggle.style.color = 'white';
+    btnToggle.style.borderColor = '#0ea5a4';
+    btnToggle.onmouseover = null;
+    btnToggle.onmouseout = null;
     
     if (!map) {
       initMap();
@@ -2256,13 +2261,15 @@ function toggleCarte() {
       map.invalidateSize();
       updateMap();
     }, 100);
-    
+  
   } else {
     mapContainer.style.display = 'none';
-    btnToggle.textContent = '👁️ Afficher la carte';
-    btnToggle.style.background = '#e6f7f7';
-    btnToggle.style.color = '#0d8887';
+    btnToggle.textContent = '🗺️ Afficher la carte';
+    btnToggle.style.background = 'white';
+    btnToggle.style.color = '#0ea5a4';
     btnToggle.style.borderColor = '#0ea5a4';
+    btnToggle.onmouseover = function() { this.style.background = '#e6f7f7'; };
+    btnToggle.onmouseout = function() { this.style.background = 'white'; };
   }
 }
 
@@ -2302,13 +2309,35 @@ async function updateMap() {
     const communeNom = communeAvecCP.split('(')[0].trim();
     const isCentrale = (communeNom.toLowerCase() === communeCentrale.toLowerCase());
     
-    try {
+try {
+      // Extraire le code postal de la commune
+      const match = communeAvecCP.match(/\((\d{5})\)/);
+      const codePostal = match ? match[1] : null;
+      
       const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(communeNom)}&fields=nom,codesPostaux,contour&format=geojson&geometry=contour`;
       const response = await fetch(url);
       const data = await response.json();
       
-      if (data.features && data.features.length > 0) {
-        const feature = data.features[0];
+      if (!data.features || data.features.length === 0) {
+        console.warn(`⚠️ Aucune commune trouvée pour ${communeNom}`);
+        continue;
+      }
+      
+      // Filtrer par code postal pour éviter les homonymes
+      let feature = data.features[0];
+      
+      if (codePostal && data.features.length > 1) {
+        const matchingFeature = data.features.find(f => 
+          f.properties.codesPostaux && f.properties.codesPostaux.includes(codePostal)
+        );
+        
+        if (matchingFeature) {
+          feature = matchingFeature;
+          console.log(`✅ ${communeNom} (${codePostal}) - commune exacte trouvée`);
+        } else {
+          console.warn(`⚠️ ${communeNom} : code postal ${codePostal} non trouvé, utilisation de la première`);
+        }
+      }
         
         const layer = L.geoJSON(feature, {
           style: {
