@@ -248,18 +248,24 @@
           <div id="questionsDeplacements" class="hidden">
             
             <div id="zoneMetropole" class="hidden">
-              <label for="rayonMetro" class="required">Quel est votre rayon d'intervention (en km) ?</label>
-              <select id="rayonMetro" name="rayonMetro" style="margin-top:8px;">
+              <label for="tempsTrajet" class="required">Quel est votre temps de trajet maximal ?</label>
+              <select id="tempsTrajet" name="tempsTrajet" style="margin-top:8px;">
                 <option value="">-- Sélectionnez --</option>
-                <option>10 km</option>
-                <option>15 km</option>
-                <option>20 km</option>
-                <option>25 km</option>
-                <option>30 km</option>
-                <option>40 km</option>
-                <option>50 km</option>
+                <option>15 min</option>
+                <option>20 min</option>
+                <option>25 min</option>
+                <option>30 min</option> 
+                <option>35 min</option>
+                <option>40 min</option>                
+                <option>45 min</option>
               </select>
-              <div class="small" style="margin-top:4px;">Distance à vol d'oiseau depuis votre commune principale.</div>
+              <div class="small" style="margin-top:4px;">Temps de trajet en voiture depuis votre commune principale.</div>
+              
+              <div style="margin-top:12px;">
+                <a href="#" id="visualiserLinkMetro" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+                  📍 Visualiser les communes couvertes
+                </a>
+              </div>
             </div>
 
             <div id="zoneOutreMer" class="hidden">
@@ -279,6 +285,12 @@
               <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
               <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
               <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
+              
+              <div style="margin-top:12px;">
+                <a href="#" id="visualiserLinkOM" style="color:var(--primary);text-decoration:none;font-size:14px;font-weight:600;">
+                  📍 Visualiser les communes couvertes
+                </a>
+              </div>
             </div>
 
             <!-- 🆕 ZONE D'AFFICHAGE DES COMMUNES CALCULÉES -->
@@ -506,7 +518,7 @@
                 
                 <!-- Message explicatif (change selon le mode) -->
                 <div id="messageExplicatif" class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
-                  💡 Cette liste est <strong>approximative</strong>. Certaines communes accessibles peuvent manquer. Utilisez "Modifier" pour ajuster si nécessaire.
+                    💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.
                 </div>
               </div>
             </div>
@@ -655,6 +667,8 @@ const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const deleteMsg = document.getElementById("deleteMsg");
 const successBanner = document.getElementById("successBanner");
+const visualiserLinkMetro = document.getElementById("visualiserLinkMetro");
+const visualiserLinkOM = document.getElementById("visualiserLinkOM");
 const placesInput = document.getElementById("placesDisponibles");
 const modeContactBlock = document.getElementById("modeContactBlock");
 const consentNumber = document.getElementById("consentNumber");
@@ -713,6 +727,7 @@ function updateSectionGeo() {
       if (DEPS_METRO.includes(codeDept)) {
         zoneMetropole.classList.remove('hidden');
         zoneOutreMer.classList.add('hidden');
+        document.getElementById('precisionsGeo').value = '';
         
       } else if (DEPS_DOMTOM.includes(codeDept)) {
         zoneMetropole.classList.add('hidden');
@@ -1010,9 +1025,9 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
   let rayonOuTemps = '';
   
   if (DEPS_METRO.includes(codeDept)) {
-    rayonOuTemps = document.getElementById("rayonMetro")?.value;
+    rayonOuTemps = document.getElementById("tempsTrajet")?.value;
     if (!rayonOuTemps) {
-      if (!silencieux) alert("⚠️ Sélectionnez un rayon d'intervention.");
+      if (!silencieux) alert("⚠️ Sélectionnez un temps de trajet.");
       return;
     }
   } else if (DEPS_DOMTOM.includes(codeDept)) {
@@ -1611,18 +1626,18 @@ async function showFormAndPrefill(data) {
         }
 
         const codeDept = deptCode.split('-')[0].trim();
-        
-        if (DEPS_METRO.includes(codeDept) && data.rayon) {
+
+        if (DEPS_METRO.includes(codeDept) && data.temps) {
           document.getElementById("zoneMetropole").classList.remove("hidden");
-          const select = document.getElementById("rayonMetro");
-          const optionExists = Array.from(select.options).some(opt => opt.value === data.rayon);
+          const select = document.getElementById("tempsTrajet");
+          const optionExists = Array.from(select.options).some(opt => opt.value === data.temps);
           if (!optionExists) {
             const opt = document.createElement("option");
-            opt.value = data.rayon;
-            opt.textContent = data.rayon;
+            opt.value = data.temps;
+            opt.textContent = data.temps;
             select.appendChild(opt);
           }
-          select.value = data.rayon;
+          select.value = data.temps;
 
         } else if (DEPS_DOMTOM.includes(codeDept) && data.rayon) {
           document.getElementById("zoneOutreMer").classList.remove("hidden");
@@ -1919,8 +1934,23 @@ communeSelect.addEventListener("change", function() {
   }
 });
 
+//  ÉVÉNEMENTS SUR LIENS VISUALISER
+if (visualiserLinkMetro) {
+  visualiserLinkMetro.addEventListener("click", function(e) {
+    e.preventDefault();
+    calculerEtAfficherCommunes(true, false);
+  });
+}
+
+if (visualiserLinkOM) {
+  visualiserLinkOM.addEventListener("click", function(e) {
+    e.preventDefault();
+    calculerEtAfficherCommunes(true, false);
+  });
+}
+
 // Sur changement de temps/rayon
-document.getElementById("rayonMetro")?.addEventListener("change", function() {
+document.getElementById("tempsTrajet")?.addEventListener("change", function() {
   if (communeSelect.value) {
     // Fermer l'interface de modification si elle est ouverte
     const interfaceModif = document.getElementById('interfaceModificationCommunes');
@@ -1936,7 +1966,7 @@ document.getElementById("rayonMetro")?.addEventListener("change", function() {
     // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
     const messageExplicatif = document.getElementById('messageExplicatif');
     if (messageExplicatif) {
-      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur un rayon en km.';
+      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
       messageExplicatif.style.color = '#6b7280';
       messageExplicatif.style.fontWeight = 'normal';
       messageExplicatif.style.fontStyle = 'italic';
@@ -1963,7 +1993,7 @@ document.getElementById("rayonKm")?.addEventListener("change", function() {
     // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
     const messageExplicatif = document.getElementById('messageExplicatif');
     if (messageExplicatif) {
-      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur un rayon en km.';
+      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
       messageExplicatif.style.color = '#6b7280';
       messageExplicatif.style.fontWeight = 'normal';
       messageExplicatif.style.fontStyle = 'italic';
@@ -2019,9 +2049,9 @@ submitBtn.addEventListener('click', async () => {
     const codeDept = departSelect.value.split(' ')[0];
     
     if (DEPS_METRO.includes(codeDept)) {
-      const rayonValue = document.getElementById("rayonMetro").value.trim();
-      if (!rayonValue || rayonValue === "-- Sélectionnez --") { 
-        submitMsg.textContent = "Indiquez votre rayon d'intervention."; 
+      const tempsValue = document.getElementById("tempsTrajet").value.trim();
+      if (!tempsValue || tempsValue === "-- Sélectionnez --") { 
+        submitMsg.textContent = "Indiquez votre temps de trajet maximal."; 
         return; 
       }
     } else if (DEPS_DOMTOM.includes(codeDept)) {
@@ -2098,10 +2128,10 @@ const fd = new FormData();
   } 
   
   const codeDept = departSelect.value.split(' ')[0];
-  
+
   if (DEPS_METRO.includes(codeDept)) {
-    fd.append("rayon", document.getElementById("rayonMetro").value);
-    fd.append("temps", "");
+    fd.append("rayon", "");
+    fd.append("temps", document.getElementById("tempsTrajet").value);
   } else if (DEPS_DOMTOM.includes(codeDept)) {
     fd.append("rayon", document.getElementById("rayonKm").value);
     fd.append("temps", "");
@@ -2344,6 +2374,18 @@ function updateCompteurCommunes() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
