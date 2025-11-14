@@ -1169,30 +1169,24 @@ function genererCheckboxesCommunes() {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
     
-    // 🆕 RESTAURER L'ÉTAT DE LA CHECKBOX (ou cocher par défaut si nouvelle commune)
+    // RESTAURER L'ÉTAT DE LA CHECKBOX (ou cocher par défaut si nouvelle commune)
     const isChecked = etatCheckboxes.hasOwnProperty(communeEchapee) 
       ? etatCheckboxes[communeEchapee]  // Restaurer l'état précédent
       : true;  // Nouvelle commune = cochée par défaut
     
     return `
-      <div style="
-        padding: 10px 8px; 
-        border-bottom: 1px solid #f3f4f6; 
-        display: flex; 
-        align-items: center;
-        transition: background 0.2s;
-      " 
-      onmouseover="this.style.background='#f9fafb'" 
-      onmouseout="this.style.background='white'">
+    
+    <div style="padding: 10px 8px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
         <input 
           type="checkbox" 
           id="commune_${index}" 
           value="${communeEchapee}" 
           ${isChecked ? 'checked' : ''}
           onchange="updateCompteurCommunes()"
+          title=""
           style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px; flex-shrink: 0;"
         />
-        <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px; line-height: 1.4;">
+        <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px; line-height: 1.4;" title="">
           ${communeEchapee}
         </label>
       </div>
