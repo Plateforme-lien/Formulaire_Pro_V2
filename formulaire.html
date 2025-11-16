@@ -780,8 +780,14 @@ function lockForm() {
   emailEl.parentElement.style.display = 'none';
   
   submitBtn.classList.add('hidden');
+  submitBtn.disabled = true;
+  
   resetBtn.classList.add('hidden');
+  resetBtn.style.display = 'none';
+  resetBtn.disabled = true;
+  
   editBtn.classList.add('hidden');
+  editBtn.disabled = true;
   
   successBanner.classList.remove('hidden');
   successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1007,6 +1013,7 @@ cancelDeleteBtn.addEventListener("click", () => {
 confirmDeleteBtn.addEventListener("click", async () => {
   deleteMsg.textContent = "Suppression en cours...";
   confirmDeleteBtn.disabled = true;
+  cancelDeleteBtn.disabled = true;
   
   try {
     const fd = new FormData();
@@ -1017,19 +1024,34 @@ confirmDeleteBtn.addEventListener("click", async () => {
     const j = await res.json();
     
     if (j.ok) {
-      deleteMsg.innerHTML = '<span style="color:#059669;font-weight:600">✅ Vos informations ont été supprimées avec succès.</span>';
+      // Masquer tout sauf le message de succès
+      document.getElementById('section-email').style.display = 'none';
+      formEl.style.display = 'none';
+      existingUserChoice.style.display = 'none';
+      
+      deleteConfirmation.innerHTML = `
+        <div style="background: #d1fae5; border: 2px solid #10b981; padding: 32px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
+          <h3 style="margin: 0 0 12px; color: #0f1724; font-size: 24px; font-weight: 700;">Suppression effectuée avec succès</h3>
+          <p style="margin: 0 0 16px; color: #059669; font-size: 16px; font-weight: 600;">Vos informations ont été supprimées définitivement.</p>
+          <p style="margin: 0; color: #6b7280; font-size: 15px;">Vous pouvez fermer cette page. Rechargement dans 3 secondes...</p>
+        </div>
+      `;
+      
       setTimeout(() => {
         location.reload();
-      }, 2000);
+      }, 3000);
     } else {
       deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur : ' + (j.error || "Impossible de supprimer") + '</span>';
       confirmDeleteBtn.disabled = false;
+      cancelDeleteBtn.disabled = false;
     }
   } catch (err) {
     deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur réseau lors de la suppression.</span>';
     confirmDeleteBtn.disabled = false;
+    cancelDeleteBtn.disabled = false;
   }
-});
+}); 
 
 /* ========== 🆕 FONCTION CALCULER ET AFFICHER COMMUNES ========== */
 async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieux = false) {
@@ -2428,10 +2450,6 @@ function updateCompteurCommunes() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
-
-
-
-
 
 
 
