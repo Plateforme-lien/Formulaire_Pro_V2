@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FAQ — Référencement TSA</title>
+<style>
+  :root{
+    --bg:#f6f8fb;
+    --card:#fff;
+    --primary:#0ea5a4;
+    --primary-dark:#0d8887;
+    --muted:#6b7280;
+    --section-bg:#f9fafb;
+  }
+
+  body{
+    font-family:Inter,Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    margin:0;
+    padding:24px;
+    line-height:1.6;
+  }
+
+  .wrap{max-width:980px;margin:18px auto}
+  .card{
+    background:var(--card);
+    border-radius:16px;
+    padding:32px 36px;
+    box-shadow:0 8px 30px rgba(2,6,23,0.06);
+    margin-bottom:24px;
+  }
+
+  .nav-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:32px;
+    padding-bottom:16px;
+    border-bottom:2px solid #e6eef6;
+  }
+  .nav-header h1{margin:0;font-size:22px;color:#0f1724;}
+  .nav-links{display:flex;gap:16px;align-items:center;}
+  .nav-links a{
+    color:var(--muted);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    transition:color 0.2s;
+  }
+  .nav-links a:hover{color:var(--primary);}
+
+  h1{margin:0 0 16px;font-size:32px;color:#0f1724;font-weight:700}
+  .subtitle{color:var(--muted);font-size:16px;margin-bottom:32px}
+
+  .faq-category{
+    margin-bottom:32px;
+  }
+  
+  .faq-category h2{
+    margin:0 0 20px;
+    font-size:22px;
+    color:#0f1724;
+    font-weight:700;
+    border-bottom:3px solid var(--primary);
+    padding-bottom:8px;
+  }
+
+  .faq-item{
+    background:var(--section-bg);
+    border-left:4px solid var(--primary);
+    padding:20px 24px;
+    border-radius:8px;
+    margin-bottom:16px;
+  }
+
+  .faq-question{
+    font-weight:700;
+    font-size:16px;
+    color:#0f1724;
+    margin:0 0 12px;
+    display:flex;
+    align-items:start;
+    gap:12px;
+  }
+
+  .faq-answer{
+    color:#0f1724;
+    font-size:15px;
+    margin:0;
+    line-height:1.6;
+  }
+
+  .faq-answer ul{
+    margin:12px 0;
+    padding-left:20px;
+  }
+
+  .faq-answer li{
+    margin:8px 0;
+  }
+
+  .highlight{
+    background:#fff3cd;
+    padding:16px;
+    border-radius:8px;
+    border-left:4px solid #ffc107;
+    margin:12px 0;
+  }
+
+  .info-box{
+    background:#e6f7f7;
+    border-left:4px solid var(--primary);
+    padding:20px;
+    border-radius:8px;
+    margin:24px 0;
+  }
+  .info-box strong{color:var(--primary)}
+
+  footer{
+    text-align:center;
+    margin-top:48px;
+    padding-top:32px;
+    border-top:2px solid #e6eef6;
+    color:var(--muted);
+    font-size:14px;
+  }
+  footer a{color:var(--primary);text-decoration:none;font-weight:600}
+  footer a:hover{text-decoration:underline}
+
+  @media(max-width:768px){
+    body{padding:16px;}
+    .card{padding:24px 20px;}
+    .nav-header{flex-direction:column;align-items:flex-start;gap:12px;}
+    .nav-links{flex-wrap:wrap;}
+    h1{font-size:26px;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="nav-header">
+      <h1>❓ FAQ</h1>
+      <nav class="nav-links">
+        <a href="index.html">🏠 Accueil</a>
+        <a href="formulaire.html">📝 Questionnaire</a>
+        <a href="mentions.html">📄 Mentions légales</a>
+      </nav>
+    </div>
+
+    <div class="card">
+      <h1>Questions fréquentes</h1>
+      <p class="subtitle">Toutes les réponses à vos questions sur la plateforme de référencement</p>
+
+      <!-- INSCRIPTION -->
+      <div class="faq-category">
+        <h2>Inscription et accès</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Comment m'inscrire sur la plateforme ?</span>
+          </p>
+          <p class="faq-answer">
+            L'inscription se fait en 3 étapes simples :
+          </p>
+          <ul class="faq-answer">
+            <li>Saisissez votre email professionnel</li>
+            <li>Recevez un code de vérification par email (valable 15 minutes)</li>
+            <li>Remplissez le formulaire (profession, zone d'intervention, disponibilités...)</li>
+          </ul>
+          <p class="faq-answer">⏱️ Temps estimé : <strong>5 minutes maximum</strong></p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Pourquoi un code de vérification par email ?</span>
+          </p>
+          <p class="faq-answer">
+            Le code de vérification permet de :
+          </p>
+          <ul class="faq-answer">
+            <li>Sécuriser votre accès et vos données</li>
+            <li>Vérifier que l'email est valide et que vous en êtes bien le propriétaire</li>
+            <li>Éviter les inscriptions frauduleuses</li>
+          </ul>
+          <p class="faq-answer">Le code est valable <strong>15 minutes</strong>. Si vous ne l'avez pas reçu, vérifiez vos spams.</p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Je n'ai pas reçu le code de vérification, que faire ?</span>
+          </p>
+          <p class="faq-answer">
+            Si vous ne recevez pas le code dans les 2-3 minutes :
+          </p>
+          <ul class="faq-answer">
+            <li>Vérifiez votre dossier spam/courrier indésirable</li>
+            <li>Vérifiez que l'adresse email saisie est correcte</li>
+            <li>Attendez 2 heures avant de redemander un code (limite de sécurité)</li>
+          </ul>
+          <div class="highlight">
+            <strong>⚠️ Limite de sécurité :</strong> Pour éviter les spams, vous ne pouvez demander que <strong>3 codes maximum par jour</strong>.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Puis-je m'inscrire si je n'exerce pas dans le Grand Est ?</span>
+          </p>
+          <p class="faq-answer">
+            Oui ! Vous pouvez vous inscrire dès maintenant, mais la plateforme est actuellement en phase test sur le <strong>Grand Est (départements 54, 55, 57, 88)</strong>.
+          </p>
+          <p class="faq-answer" style="margin-top:12px">
+            Si vous exercez ailleurs, votre profil sera créé mais la plateforme ne sera pas enore diffusée pour les particuliers. 
+        </div>
+      </div>
+
+      <!-- MODIFICATION ET GESTION -->
+      <div class="faq-category">
+        <h2>Modification et gestion de mon profil</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Comment modifier mes informations ?</span>
+          </p>
+          <p class="faq-answer">
+            Pour modifier vos informations :
+          </p>
+          <ul class="faq-answer">
+            <li>Retournez sur le <a href="formulaire.html" style="color:var(--primary);font-weight:600">formulaire</a></li>
+            <li>Saisissez votre email et recevez un nouveau code</li>
+            <li>Vos informations actuelles s'afficheront automatiquement</li>
+            <li>Modifiez ce que vous souhaitez et validez</li>
+          </ul>
+          <p class="faq-answer" style="margin-top:12px">
+            Vous pouvez modifier vos informations <strong>autant de fois que nécessaire</strong>.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Comment supprimer mon profil ?</span>
+          </p>
+          <p class="faq-answer">
+            Pour supprimer définitivement vos données :
+          </p>
+          <ul class="faq-answer">
+            <li>Connectez-vous au formulaire avec votre email</li>
+            <li>Cliquez sur le bouton "Supprimer mes informations" en bas du formulaire</li>
+            <li>Confirmez la suppression</li>
+          </ul>
+          <div class="highlight">
+            <strong>⚠️ Action irréversible :</strong> Une fois supprimées, vos données ne pourront pas être récupérées. Vous devrez vous réinscrire si vous changez d'avis.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>Comment mettre à jour mes disponibilités ?</span>
+          </p>
+          <p class="faq-answer">
+            Vous pouvez mettre à jour vos disponibilités à tout moment en modifiant votre profil :
+          </p>
+          <ul class="faq-answer">
+            <li><strong>"Oui, j'ai des places"</strong> : Vous êtes visible sur la plateforme</li>
+            <li><strong>"Non, je suis complet"</strong> : Vous n'apparaissez plus dans les résultats de recherche</li>
+          </ul>
+          <p class="faq-answer" style="margin-top:12px">
+            💡 <strong>Astuce :</strong> Pensez à mettre à jour vos disponibilités régulièrement pour éviter les demandes inutiles.
+          </p>
+        </div>
+      </div>
+
+      <!-- ZONE D'INTERVENTION -->
+      <div class="faq-category">
+        <h2>Zone d'intervention</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>Comment définir ma zone d'intervention ?</span>
+          </p>
+          <p class="faq-answer">
+            Selon votre mode d'intervention :
+          </p>
+          <ul class="faq-answer">
+            <li><strong>Cabinet uniquement</strong> : Indiquez simplement votre commune d'exercice</li>
+            <li><strong>Déplacement à domicile (Métropole)</strong> : Choisissez un temps de trajet (15, 30, 45 ou 60 min)</li>
+            <li><strong>Déplacement à domicile (Outre-mer)</strong> : Choisissez un rayon en km (10, 20, 30 km ou tout le département)</li>
+          </ul>
+          <p class="faq-answer" style="margin-top:12px">
+            La plateforme calcule automatiquement les communes couvertes en fonction de votre temps de trajet ou rayon.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>Puis-je couvrir plusieurs départements ?</span>
+          </p>
+          <p class="faq-answer">
+            Oui ! Si vous intervenez à domicile, la plateforme calcule automatiquement les communes accessibles, <strong>même si elles sont dans un département limitrophe</strong>.
+            <br>Vous pouvez aussi ajouter manuellement des communes dans n'importe quel autre département.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>Puis-je modifier manuellement la liste des communes ?</span>
+          </p>
+          <p class="faq-answer">
+            Oui ! Après le calcul automatique, vous pouvez :
+          </p>
+          <ul class="faq-answer">
+            <li>Supprimer des communes que vous ne souhaitez pas couvrir</li>
+            <li>Ajouter des communes spécifiques</li>
+          </ul>
+          <p class="faq-answer" style="margin-top:12px">
+            💡 <strong>Astuce :</strong> Cliquez sur "Modifier la liste" après le calcul pour personnaliser votre zone.
+          </p>
+        </div>
+      </div>
+
+      <!-- VÉRIFICATION ET VALIDATION -->
+      <div class="faq-category">
+        <h2>Vérification et validation</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Pourquoi demandez-vous mon numéro SIRET ?</span>
+          </p>
+          <p class="faq-answer">
+            Le numéro SIRET permet de vérifier que vous êtes bien un professionnel en activité. C'est une garantie pour les familles.
+          </p>
+          <p class="faq-answer" style="margin-top:12px">
+            La vérification est automatique via l'API SIRET de l'État français. Seuls les professionnels avec un SIRET valide et actif sont visibles sur la plateforme.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Quand serai-je visible sur la plateforme ?</span>
+          </p>
+          <p class="faq-answer">
+            Vous êtes visible pour les particuliers 15 min après avoir valider le formulaire, si : 
+          </p>
+          <ul class="faq-answer">
+            <li>Votre SIRET est valide et actif</li>
+            <li>Vous avez accepté les conditions d'utilisation</li>
+            <li>Vous avez indiqué avoir des places disponibles</li>
+          </ul>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Que se passe-t-il si mon SIRET n'est pas valide ?</span>
+          </p>
+          <ul class="faq-answer">
+            <li>Votre profil ne sera pas visible sur la plateforme</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- CONTACT ET MESSAGES -->
+      <div class="faq-category">
+        <h2>Contact et messages</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Comment les familles me contactent-elles ?</span>
+          </p>
+          <p class="faq-answer">
+            Les familles peuvent vous envoyer un message directement via leur interface : https......... Vous recevrez leur message par email avec leur adresse de contact.
+          </p>
+          <p class="faq-answer" style="margin-top:12px">
+            Vous pouvez ensuite <strong>répondre directement par email</strong> à la famille (en cliquant sur "Répondre").
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Combien de messages puis-je recevoir ?</span>
+          </p>
+          <p class="faq-answer">
+            Pour éviter la saturation et si vous choissiez d'être contacter via un formulaire de contact, la plateforme limite le nombre de messages que vous recevez :
+          </p>
+          <ul class="faq-answer">
+            <li>Maximum = <strong>Nombre de places disponibles × 2</strong> par semaine</li>
+            <li>Exemple : Si vous avez 3 places, vous recevrez maximum 6 messages/semaine</li>
+          </ul>
+          <p class="faq-answer" style="margin-top:12px">
+            Une fois la limite atteinte, les familles verront un message leur demandant de réessayer plus tard.
+          </p>
+          <p class="faq-answer">
+            Si vous avez choisi d'afficher vos informations de contact directement pour les particuliers, cette limite ne s'applique pas à vous. 
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Que faire si je reçois trop de demandes ?</span>
+          </p>
+          <p class="faq-answer">
+            Si vous êtes saturé de demandes :
+          </p>
+          <ul class="faq-answer">
+            <li>Mettez à jour vos disponibilités </li>
+            <li>Réduisez le nombre de places disponibles</li>
+            <li>Actualiser vos informations où vous pouvez choisir de ne pas laisser votre mail visible et d'être contacté par formulaire</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- DONNÉES ET CONFIDENTIALITÉ -->
+      <div class="faq-category">
+        <h2>Données et confidentialité</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Mes données sont-elles protégées ?</span>
+          </p>
+          <p class="faq-answer">
+            Oui, la plateforme est <strong>conforme au RGPD</strong> (Règlement Général sur la Protection des Données) :
+          </p>
+          <ul class="faq-answer">
+            <li>Vos données ne sont jamais vendues ou partagées à des tiers</li>
+            <li>Elles sont utilisées uniquement pour la mise en relation avec les familles</li>
+            <li>Vous pouvez modifier ou supprimer vos données à tout moment</li>
+          </ul>
+          <p class="faq-answer" style="margin-top:12px">
+            Pour plus de détails : <a href="mentions.html#confidentialite" style="color:var(--primary);font-weight:600">Politique de confidentialité</a>
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Combien de temps mes données sont-elles conservées ?</span>
+          </p>
+          <p class="faq-answer">
+            Vos données professionnelles (nom, prénom, email, profession, zone d'intervention, disponibilités) sont conservées tant que vous êtes inscrit sur la plateforme.
+          </p>
+           <p class="faq-answer">
+            Si vous n'avez aucune activité pendant 2 ans, vos données sont supprimées.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Quelles informations sont visibles par les familles ?</span>
+          </p>
+          <p class="faq-answer">
+            Les familles voient uniquement :
+          </p>
+          <ul class="faq-answer">
+            <li>Votre prénom et nom</li>
+            <li>Votre profession</li>
+            <li>Les publics que vous accompagnez (tranches d'âge)</li>
+            <li>Votre zone d'intervention (communes)</li>
+            <li>Vos disponibilités</li>
+            <li>Votre mode de contact (si renseigné)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PROBLÈMES TECHNIQUES -->
+      <div class="faq-category">
+        <h2>Problèmes techniques</h2>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Le formulaire ne s'envoie pas, que faire ?</span>
+          </p>
+          <p class="faq-answer">
+            Si vous rencontrez un problème lors de l'envoi :
+          </p>
+          <ul class="faq-answer">
+            <li>Vérifiez que tous les champs obligatoires (*) sont remplis</li>
+            <li>Vérifiez votre connexion internet</li>
+            <li>Essayez avec un autre navigateur (Chrome, Firefox, Safari)</li>
+            <li>Videz le cache de votre navigateur</li>
+          </ul>
+        </div>
+
+        <div class="faq-item">
+          <p class="faq-question">
+            <span>❓</span>
+            <span>Le calcul des communes ne fonctionne pas</span>
+          </p>
+          <p class="faq-answer">
+            Si le calcul automatique ne fonctionne pas :
+          </p>
+          <ul class="faq-answer">
+            <li>Vérifiez que votre commune est bien sélectionnée dans la liste déroulante</li>
+            <li>Attendez quelques secondes, le calcul peut prendre un peu de temps</li>
+            <li>Si le calcul échoue, vous pouvez saisir manuellement vos communes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- BESOIN D'AIDE -->
+    <div class="card">
+      <div class="info-box">
+        <strong>Besoin d'aide ?</strong>
+        <p style="margin:12px 0 0">
+          Vous n'avez pas trouvé la réponse à votre question ? Consultez nos 
+          <a href="mentions.html" style="color:var(--primary);font-weight:600">mentions légales</a> ou 
+          <a href="mentions.html#contact" style="color:var(--primary);font-weight:600">contactez-nous</a> directement.
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        <a href="index.html">Accueil</a> • 
+        <a href="formulaire.html">Formulaire</a> • 
+        <a href="mentions.html">Mentions légales</a> • 
+        <a href="mentions.html#confidentialite">Confidentialité</a> • 
+        <a href="mentions.html#contact">Contact</a>
+      </p>
+      <p style="margin-top:12px;font-size:13px">© 2025 - Plateforme Lien Pro TSA</p>
+    </footer>
+
+  </div>
+</body>
+</html>
