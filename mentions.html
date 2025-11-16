@@ -228,6 +228,24 @@
           <li><strong>Données d'activité :</strong> zone géographique d'intervention, publics accompagnés, modes d'intervention, disponibilités</li>
           <li><strong>Données de consentement :</strong> acceptation des conditions d'utilisation</li>
         </ul>
+        
+        <h3>Données calculées automatiquement par la plateforme :</h3>
+        <ul>
+          <li><strong>Liste des communes</strong> où vous pouvez intervenir (calculée selon votre temps de trajet ou rayon)</li>
+          <li><strong>Départements couverts</strong> (déduits de la liste des communes)</li>
+          <li><strong>Statut de votre SIRET</strong> : vérifié auprès de l'administration française (valide, invalide, radié, non diffusible)</li>
+          <li><strong>Date d'inscription</strong> et <strong>date de dernière modification</strong> (visibles par les particuliers pour savoir si vos informations sont à jour)</li>
+        </ul>
+        
+        <h3>Si vous recevez des messages via le formulaire de contact :</h3>
+        <p>Nous conservons temporairement :</p>
+        <ul>
+          <li>Le nom et l'email du particulier</li>
+          <li>Son message</li>
+          <li>La date</li>
+        </ul>
+        <p><strong>Pourquoi ?</strong> Pour éviter le spam et la saturation de votre boîte mail (limite : 1 message par particulier toutes les 24h, et limite hebdomadaire selon vos places disponibles).</p>
+        <p><strong>Combien de temps ?</strong> 2 mois maximum, puis suppression automatique.</p>
 
         <h3>3.3. Finalités du traitement</h3>
         <p>Les données collectées sont utilisées exclusivement pour les finalités suivantes :</p>
@@ -259,15 +277,33 @@
         </ul>
 
         <h3>3.6. Durée de conservation</h3>
-        <p>Vos données sont conservées :</p>
-        <ul>
-          <li><strong>Tant que votre compte est actif</strong> et que vous souhaitez être référencé</li>
-          <li><strong>Suppression sur demande</strong> via le formulaire ou par e-mail</li>
-          <li>Les codes de vérification sont conservés 24 heures maximum</li>
-        </ul>
-        <div class="placeholder">
-          [Vous pouvez préciser une durée de conservation maximale, par exemple : "En cas d'inactivité prolongée (ex: 2 ans sans modification), nous vous contactons pour confirmer votre souhait de rester référencé"]
-        </div>
+        
+        <table style="width:100%; border-collapse:collapse; margin:20px 0;">
+          <tr style="background:#f9fafb;">
+            <th style="border:1px solid #e5e7eb; padding:10px; text-align:left;">Donnée</th>
+            <th style="border:1px solid #e5e7eb; padding:10px; text-align:left;">Durée de conservation</th>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e5e7eb; padding:10px;"><strong>Votre profil complet</strong></td>
+            <td style="border:1px solid #e5e7eb; padding:10px;">Tant que vous le souhaitez (vous pouvez le modifier ou le supprimer à tout moment)</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e5e7eb; padding:10px;"><strong>Si vous ne modifiez rien pendant 2 ans</strong></td>
+            <td style="border:1px solid #e5e7eb; padding:10px;">Votre profil est supprimé automatiquement le 1er du mois suivant</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e5e7eb; padding:10px;"><strong>Codes de vérification par email</strong></td>
+            <td style="border:1px solid #e5e7eb; padding:10px;">15 minutes seulement</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e5e7eb; padding:10px;"><strong>Messages reçus via le formulaire</strong></td>
+            <td style="border:1px solid #e5e7eb; padding:10px;">2 mois maximum</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e5e7eb; padding:10px;"><strong>Traces de vos modifications</strong></td>
+            <td style="border:1px solid #e5e7eb; padding:10px;">2 mois (pour sécurité : on garde temporairement qui a créé/modifié/supprimé un profil et quand)</td>
+          </tr>
+        </table> 
 
         <h3>3.7. Sécurité des données</h3>
         <p>Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données :</p>
@@ -276,7 +312,17 @@
           <li>Chiffrement des communications (HTTPS)</li>
           <li>Accès restreint aux données par authentification</li>
           <li>Hébergement sécurisé conforme aux normes</li>
-        </ul>
+        </ul> 
+        <div class="placeholder">
+          <p><strong>⚠️ Limites actuelles (transparence) :</strong></p>
+          <p>Cette plateforme est un <strong>prototype bénévole</strong> avec des limites techniques :</p>
+          <ul style="margin-top:8px;">
+            <li>Quota limité : 100 emails par jour pour tous les utilisateurs (codes de vérification + messages de contact)</li>
+            <li>Code source public (hébergement gratuit)</li>
+            <li>Pas d'authentification renforcée (pas de double vérification)</li>
+          </ul>
+          <p style="margin-top:12px;">Si vous constatez un problème de sécurité, merci de nous contacter immédiatement.</p>
+        </div>
       </div>
 
       <div class="section">
@@ -324,7 +370,32 @@
       </div>
 
       <div class="section">
-        <h2 data-number="5" id="cookies">Cookies</h2>
+        <h2 data-number="5">Traçabilité et statistiques</h2>
+        
+        <p>Pour améliorer la plateforme et identifier les besoins, nous conservons :</p>
+        
+        <p><strong>Pendant 2 mois :</strong></p>
+        <ul>
+          <li>Un historique de vos actions (création, modification ou suppression de votre profil)</li>
+          <li>Les messages que vous recevez via le formulaire</li>
+        </ul>
+        
+        <p><strong>Au-delà de 2 mois :</strong> Ces données sont supprimées.</p>
+        
+        <p style="margin-top:20px;"><strong>Conservé de manière permanente (mais totalement anonyme) :</strong></p>
+        <p>Des statistiques mensuelles agrégées, par exemple :</p>
+        <ul>
+          <li>"Le département 54 compte 12 psychologues disponibles en novembre"</li>
+          <li>"45 recherches de professionnels pour la tranche 3-6 ans ce mois-ci"</li>
+        </ul>
+        
+        <div class="info-box">
+          <strong>❌ Ces statistiques ne contiennent AUCUN nom, AUCUN email, AUCUNE donnée personnelle.</strong>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 data-number="6" id="cookies">Cookies</h2>
         <p>Ce site n'utilise pas de cookies de suivi ou de publicité.</p>
         <div class="placeholder">
           ⚠️ À VÉRIFIER : Si vous utilisez des outils d'analyse (Google Analytics, etc.), vous devez :
@@ -337,13 +408,21 @@
       </div>
 
       <div class="section">
-        <h2 data-number="6" id="propriete">Propriété intellectuelle</h2>
+        <h2 data-number="7" id="propriete">Propriété intellectuelle</h2>
         <p>L'ensemble du contenu de ce site (textes, images, design, structure) est protégé par le droit d'auteur.</p>
         <p>Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
       </div>
+      <h3>Calculs géographiques approximatifs</h3>
+        <ul>
+          <li>Votre zone d'intervention est calculée automatiquement selon le temps de trajet (métropole) ou le rayon en km (outre-mer)</li>
+          <li>Ces calculs sont <strong>approximatifs</strong> (précision ±3-5 km)</li>
+          <li>Certaines communes en bordure de zone peuvent être incluses ou exclues à tort</li>
+          <li><strong>Vous pouvez modifier manuellement</strong> la liste des communes après le calcul automatique</li>
+        </ul>
+        <p style="margin-top:12px;">💡 <strong>Conseil :</strong> Pensez à vérifier la liste des communes et à la personnaliser si nécessaire lors de votre inscription.</p>
 
       <div class="section">
-        <h2 data-number="7" id="contact">Contact</h2>
+        <h2 data-number="8" id="contact">Contact</h2>
         <p>Pour toute question concernant ces mentions légales, la protection de vos données ou l'utilisation du site :</p>
         <div class="placeholder">
           ⚠️ À COMPLÉTER :
@@ -356,7 +435,7 @@
       </div>
 
       <div class="section">
-        <h2 data-number="8" id="modifications">Modifications</h2>
+        <h2 data-number="9" id="modifications">Modifications</h2>
         <p>Nous nous réservons le droit de modifier ces mentions légales à tout moment. Les utilisateurs seront informés de toute modification substantielle.</p>
         <p>La date de dernière mise à jour est indiquée en haut de cette page.</p>
       </div>
