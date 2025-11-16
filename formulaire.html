@@ -767,30 +767,30 @@ document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
 function lockForm() {
   FORM_LOCKED = true;
   
-  rest.style.display = 'none';
-  document.querySelector('.prereq-section').style.display = 'none';
-  newUserMessage.classList.add('hidden');
-  
-  document.getElementById('section-email').style.display = 'none';
-  document.querySelectorAll('label.required').forEach(label => { label.style.display = 'none'; });
-  document.querySelector('h1').style.display = 'none';
-  document.querySelector('h2').style.display = 'none';
-  document.querySelector('.info-box').style.display = 'none';
-  emailEl.parentElement.parentElement.querySelector('label').style.display = 'none';
-  emailEl.parentElement.style.display = 'none';
-  
-  submitBtn.classList.add('hidden');
-  submitBtn.disabled = true;
-  
-  resetBtn.classList.add('hidden');
-  resetBtn.style.display = 'none';
-  resetBtn.disabled = true;
-  
-  editBtn.classList.add('hidden');
-  editBtn.disabled = true;
-  
-  successBanner.classList.remove('hidden');
-  successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // 🔒 MASQUER TOUT LE CONTENU
+  document.querySelector('.wrap').innerHTML = `
+    <div style="max-width: 600px; margin: 80px auto; text-align: center;">
+      <div style="background: #d1fae5; border: 2px solid #10b981; padding: 48px 32px; border-radius: 16px; box-shadow: 0 8px 30px rgba(2,6,23,0.06);">
+        <div style="font-size: 72px; margin-bottom: 24px;">✅</div>
+        <h2 style="margin: 0 0 16px; color: #0f1724; font-size: 28px; font-weight: 700;">Action effectuée avec succès !</h2>
+        <p style="margin: 0 0 20px; color: #059669; font-size: 18px; font-weight: 600;">Vos informations ont été enregistrées.</p>
+        <p style="margin: 0 0 32px; color: #6b7280; font-size: 15px; line-height: 1.6;">
+          Vous avez reçu un email de confirmation.<br>
+          Vous pouvez fermer cette page en toute sécurité.
+        </p>
+        
+        <div style="background: #f0f9ff; border: 2px solid #3b82f6; padding: 20px; border-radius: 12px; margin-top: 24px;">
+          <p style="margin: 0; color: #1e40af; font-size: 14px; font-weight: 600;">
+            💡 Pour modifier à nouveau vos informations, vous devrez redemander un code de vérification.
+          </p>
+        </div>
+        
+        <a href="index.html" style="display: inline-block; margin-top: 24px; padding: 12px 24px; background: #0ea5a4; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s;">
+          ← Retour à l'accueil
+        </a>
+      </div>
+    </div>
+  `;
 }
   
 function unlockForm() {
@@ -1024,23 +1024,30 @@ confirmDeleteBtn.addEventListener("click", async () => {
     const j = await res.json();
     
     if (j.ok) {
-      // Masquer tout sauf le message de succès
-      document.getElementById('section-email').style.display = 'none';
-      formEl.style.display = 'none';
-      existingUserChoice.style.display = 'none';
-      
-      deleteConfirmation.innerHTML = `
-        <div style="background: #d1fae5; border: 2px solid #10b981; padding: 32px; border-radius: 12px; text-align: center;">
-          <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
-          <h3 style="margin: 0 0 12px; color: #0f1724; font-size: 24px; font-weight: 700;">Suppression effectuée avec succès</h3>
-          <p style="margin: 0 0 16px; color: #059669; font-size: 16px; font-weight: 600;">Vos informations ont été supprimées définitivement.</p>
-          <p style="margin: 0; color: #6b7280; font-size: 15px;">Vous pouvez fermer cette page. Rechargement dans 3 secondes...</p>
+      // 🔒 VERROUILLAGE COMPLET APRÈS SUPPRESSION
+      document.querySelector('.wrap').innerHTML = `
+        <div style="max-width: 600px; margin: 80px auto; text-align: center;">
+          <div style="background: #d1fae5; border: 2px solid #10b981; padding: 48px 32px; border-radius: 16px; box-shadow: 0 8px 30px rgba(2,6,23,0.06);">
+            <div style="font-size: 72px; margin-bottom: 24px;">✅</div>
+            <h2 style="margin: 0 0 16px; color: #0f1724; font-size: 28px; font-weight: 700;">Suppression effectuée avec succès</h2>
+            <p style="margin: 0 0 20px; color: #059669; font-size: 18px; font-weight: 600;">Vos informations ont été supprimées définitivement.</p>
+            <p style="margin: 0 0 32px; color: #6b7280; font-size: 15px; line-height: 1.6;">
+              Vous avez reçu un email de confirmation.<br>
+              Vous pouvez fermer cette page en toute sécurité.
+            </p>
+            
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 12px; margin-top: 24px;">
+              <p style="margin: 0; color: #856404; font-size: 14px; font-weight: 600;">
+                ⚠️ Cette action est irréversible. Pour vous réinscrire, utilisez le formulaire avec un nouveau code.
+              </p>
+            </div>
+            
+            <a href="index.html" style="display: inline-block; margin-top: 24px; padding: 12px 24px; background: #0ea5a4; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s;">
+              ← Retour à l'accueil
+            </a>
+          </div>
         </div>
       `;
-      
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
     } else {
       deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur : ' + (j.error || "Impossible de supprimer") + '</span>';
       confirmDeleteBtn.disabled = false;
