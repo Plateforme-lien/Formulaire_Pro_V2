@@ -53,21 +53,14 @@
   .faq-category{margin-bottom:48px;padding-top:32px;border-top:1px solid #e5e7eb;}
   .faq-category:first-child{border-top:none;padding-top:0;}
   .faq-category h2{margin:0 0 24px;font-size:22px;color:var(--primary);font-weight:700;padding-bottom:0;border-bottom:none;display:flex;align-items:center;gap:12px;}
-  .faq-category h2::before{content:attr(data-number);display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border-radius:8px;font-size:18px;font-weight:700;flex-shrink:0;}
+  .faq-category h2::before{content:attr(data-number);display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border-radius:50%;font-size:16px;font-weight:700;flex-shrink:0;}
   .faq-item{background:white;border-left:none;padding:0 0 24px 0;border-radius:0;margin-bottom:24px;border-bottom:1px solid #f3f4f6;}
   .faq-item:last-child{border-bottom:none;}
   .faq-question{font-weight:700;font-size:18px;color:var(--primary);margin:0 0 12px;display:block;}
-
-  .faq-answer{color:#0f1724;font-size:15px;margin:0;line-height:1.6;text-align:justify;}
-
-  .faq-answer ul{
-    margin:12px 0;
-    padding-left:20px;
-  }
-
-  .faq-answer li{
-    margin:8px 0;
-  }
+  
+  .faq-answer{color:#0f1724;font-size:15px;margin:0;line-height:1.6;text-align:left;hyphens:auto;}
+  .faq-answer ul{margin:12px 0;padding-left:20px;}
+  .faq-answer li{margin:8px 0;}
 
   .highlight{
     background:#fff3cd;
@@ -129,7 +122,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Comment m'inscrire sur la plateforme ?</span>
           </p>
           <p class="faq-answer">
@@ -145,7 +137,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Pourquoi un code de vérification par email ?</span>
           </p>
           <p class="faq-answer">
@@ -161,7 +152,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Je n'ai pas reçu le code de vérification, que faire ?</span>
           </p>
           <p class="faq-answer">
@@ -179,7 +169,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Puis-je m'inscrire si je n'exerce pas dans le Grand Est ?</span>
           </p>
           <p class="faq-answer">
@@ -196,7 +185,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Comment modifier mes informations ?</span>
           </p>
           <p class="faq-answer">
@@ -215,7 +203,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Comment supprimer mon profil ?</span>
           </p>
           <p class="faq-answer">
@@ -302,7 +289,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Pourquoi demandez-vous mon numéro SIRET ?</span>
           </p>
           <p class="faq-answer">
@@ -315,7 +301,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Quand serai-je visible sur la plateforme ?</span>
           </p>
           <p class="faq-answer">
@@ -330,7 +315,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Que se passe-t-il si mon SIRET n'est pas valide ?</span>
           </p>
           <ul class="faq-answer">
@@ -345,7 +329,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Comment les familles me contactent-elles ?</span>
           </p>
           <p class="faq-answer">
@@ -358,7 +341,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Combien de messages puis-je recevoir ?</span>
           </p>
           <p class="faq-answer">
@@ -378,7 +360,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Que faire si je reçois trop de demandes ?</span>
           </p>
           <p class="faq-answer">
@@ -398,7 +379,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Mes données sont-elles protégées ?</span>
           </p>
           <p class="faq-answer">
@@ -416,7 +396,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Combien de temps mes données sont-elles conservées ?</span>
           </p>
           <p class="faq-answer">
@@ -429,7 +408,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Quelles informations sont visibles par les familles ?</span>
           </p>
           <p class="faq-answer">
@@ -452,7 +430,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Le formulaire ne s'envoie pas, que faire ?</span>
           </p>
           <p class="faq-answer">
@@ -468,7 +445,6 @@
 
         <div class="faq-item">
           <p class="faq-question">
-            <span>❓</span>
             <span>Le calcul des communes ne fonctionne pas</span>
           </p>
           <p class="faq-answer">
