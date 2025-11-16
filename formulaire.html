@@ -768,14 +768,21 @@ function lockForm() {
   FORM_LOCKED = true;
   
   // 🔒 DÉSACTIVER TOUS LES CHAMPS
-  document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
+  document.querySelectorAll('#form input, #form select, #form textarea, #form button').forEach(el => {
     el.disabled = true;
   });
   
-  // 🔒 MASQUER TOUS LES BOUTONS
-  submitBtn.style.display = 'none';
-  editBtn.style.display = 'none';
-  resetBtn.style.display = 'none';
+  // 🔒 MASQUER TOUS LES BOUTONS (au lieu de juste les cacher)
+  const actions = document.querySelector('.actions');
+  if (actions) {
+    actions.style.display = 'none';
+  }
+  
+  // 🔒 MASQUER AUSSI L'INTERFACE DE MODIFICATION DES COMMUNES SI OUVERTE
+  const interfaceModif = document.getElementById('interfaceModificationCommunes');
+  if (interfaceModif) {
+    interfaceModif.classList.add('hidden');
+  }
   
   // ✅ AFFICHER BANDEAU DE SUCCÈS
   successBanner.classList.remove('hidden');
@@ -1017,9 +1024,9 @@ confirmDeleteBtn.addEventListener("click", async () => {
     const j = await res.json();
     
     if (j.ok) {
-      // 🔒 VERROUILLAGE COMPLET APRÈS SUPPRESSION
-      document.querySelector('.wrap').innerHTML = `
-        <div style="max-width: 600px; margin: 80px auto; text-align: center;">
+      // 🔒 VERROUILLAGE COMPLET DE TOUTE LA PAGE
+      document.body.innerHTML = `
+        <div style="max-width: 600px; margin: 80px auto; text-align: center; padding: 0 20px;">
           <div style="background: #d1fae5; border: 2px solid #10b981; padding: 48px 32px; border-radius: 16px; box-shadow: 0 8px 30px rgba(2,6,23,0.06);">
             <div style="font-size: 72px; margin-bottom: 24px;">✅</div>
             <h2 style="margin: 0 0 16px; color: #0f1724; font-size: 28px; font-weight: 700;">Suppression effectuée avec succès</h2>
@@ -1051,7 +1058,8 @@ confirmDeleteBtn.addEventListener("click", async () => {
     confirmDeleteBtn.disabled = false;
     cancelDeleteBtn.disabled = false;
   }
-}); 
+});
+  
 
 /* ========== 🆕 FONCTION CALCULER ET AFFICHER COMMUNES ========== */
 async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieux = false) {
