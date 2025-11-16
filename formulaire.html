@@ -769,26 +769,31 @@ document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
 function lockForm() {
   FORM_LOCKED = true;
   
-  // 🔒 MASQUER COMPLÈTEMENT TOUT LE FORMULAIRE
+  // 🔒 MASQUER LE FORMULAIRE
   formEl.style.display = 'none';
   
-  // 🔒 MASQUER LA SECTION EMAIL/CODE
+  // 🔒 MASQUER LA SECTION EMAIL
   const sectionEmail = document.getElementById('section-email');
   if (sectionEmail) {
     sectionEmail.style.display = 'none';
   }
   
-  // 🔒 MASQUER LES TEXTES D'EN-TÊTE
-  const headerTexts = document.getElementById('headerTexts');
-  if (headerTexts) {
-    headerTexts.style.display = 'none';
+  // 🔒 MASQUER LE TITRE ET L'INFO-BOX
+  const h2 = document.querySelector('.card h2');
+  if (h2) {
+    h2.style.display = 'none';
   }
   
-  // ✅ AFFICHER UNIQUEMENT LE BANDEAU DE SUCCÈS
+  const infoBox = document.querySelector('.info-box');
+  if (infoBox) {
+    infoBox.style.display = 'none';
+  }
+  
+  // ✅ AFFICHER LE BANDEAU
   successBanner.classList.remove('hidden');
   successBanner.style.marginTop = '40px';
   
-  // 📜 SCROLL VERS LE BANDEAU
+  // 📜 SCROLL
   setTimeout(() => {
     successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 300);
