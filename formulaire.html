@@ -767,27 +767,20 @@ document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
 function lockForm() {
   FORM_LOCKED = true;
   
-  // 🔒 DÉSACTIVER TOUS LES CHAMPS
-  document.querySelectorAll('#form input, #form select, #form textarea, #form button').forEach(el => {
-    el.disabled = true;
-  });
+  // 🔒 MASQUER COMPLÈTEMENT TOUT LE FORMULAIRE
+  formEl.style.display = 'none';
   
-  // 🔒 MASQUER TOUS LES BOUTONS (au lieu de juste les cacher)
-  const actions = document.querySelector('.actions');
-  if (actions) {
-    actions.style.display = 'none';
+  // 🔒 MASQUER LA SECTION EMAIL/CODE SI ENCORE VISIBLE
+  const sectionEmail = document.getElementById('section-email');
+  if (sectionEmail) {
+    sectionEmail.style.display = 'none';
   }
   
-  // 🔒 MASQUER AUSSI L'INTERFACE DE MODIFICATION DES COMMUNES SI OUVERTE
-  const interfaceModif = document.getElementById('interfaceModificationCommunes');
-  if (interfaceModif) {
-    interfaceModif.classList.add('hidden');
-  }
-  
-  // ✅ AFFICHER BANDEAU DE SUCCÈS
+  // ✅ AFFICHER UNIQUEMENT LE BANDEAU DE SUCCÈS
   successBanner.classList.remove('hidden');
+  successBanner.style.marginTop = '40px';
   
-  // 📜 SCROLL
+  // 📜 SCROLL VERS LE BANDEAU
   setTimeout(() => {
     successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 300);
@@ -796,15 +789,28 @@ function lockForm() {
 function unlockForm() {
   FORM_LOCKED = false;
   
+  // 🔓 RÉAFFICHER LE FORMULAIRE
+  formEl.style.display = 'block';
+  
+  // 🔓 RÉACTIVER LES CHAMPS
   document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
     el.disabled = false;
   });
+  
+  // 🔓 RÉAFFICHER LES BOUTONS
+  const actions = document.querySelector('.actions');
+  if (actions) {
+    actions.style.display = 'flex';
+  }
   
   submitBtn.classList.remove('hidden');
   editBtn.classList.add('hidden');
   resetBtn.classList.remove('hidden');
   
+  // 🔓 MASQUER LE BANDEAU
   successBanner.classList.add('hidden');
+  successBanner.style.marginTop = '24px';
+  
   submitMsg.textContent = "";
 }
 
