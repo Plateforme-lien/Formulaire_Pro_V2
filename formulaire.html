@@ -113,10 +113,12 @@
   </div>
   
   <div class="card">
-    <h2>Complétez vos informations professionnelles pour être référencé sur la plateforme</h2>
+    <div id="headerTexts">
+      <h2>Complétez vos informations professionnelles pour être référencé sur la plateforme</h2>
 
-    <div class="info-box">
-      <strong>⏱️ Temps estimé :</strong> 5 minutes maximum
+      <div class="info-box">
+        <strong>⏱️ Temps estimé :</strong> 5 minutes maximum
+      </div>
     </div>
 
     <div id="section-email">
@@ -770,10 +772,16 @@ function lockForm() {
   // 🔒 MASQUER COMPLÈTEMENT TOUT LE FORMULAIRE
   formEl.style.display = 'none';
   
-  // 🔒 MASQUER LA SECTION EMAIL/CODE SI ENCORE VISIBLE
+  // 🔒 MASQUER LA SECTION EMAIL/CODE
   const sectionEmail = document.getElementById('section-email');
   if (sectionEmail) {
     sectionEmail.style.display = 'none';
+  }
+  
+  // 🔒 MASQUER LES TEXTES D'EN-TÊTE
+  const headerTexts = document.getElementById('headerTexts');
+  if (headerTexts) {
+    headerTexts.style.display = 'none';
   }
   
   // ✅ AFFICHER UNIQUEMENT LE BANDEAU DE SUCCÈS
