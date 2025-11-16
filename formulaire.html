@@ -2112,12 +2112,21 @@ submitBtn.addEventListener('click', async () => {
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
-  //  VALIDATION DES COMMUNES pour mode déplacement
+  // 🔒 DÉSACTIVER IMMÉDIATEMENT TOUS LES BOUTONS
+  submitBtn.disabled = true;
+  resetBtn.disabled = true;
+  editBtn.disabled = true;
+  
+  // VALIDATION DES COMMUNES pour mode déplacement
   const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
   if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
     if (!communesValidees || communesCalculeesSaved.length === 0) {
       submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Liste de communes non validée</span><br>' +
         '<span style="color:#6b7280">Vous devez calculer et valider la liste des communes couvertes avant de soumettre le formulaire.</span>';
+      
+      // 🔓 RÉACTIVER LES BOUTONS
+      submitBtn.disabled = false;
+      resetBtn.disabled = false;
       
       const zoneCommunes = document.getElementById('communesCalculeesZone');
       if (zoneCommunes) {
@@ -2264,6 +2273,7 @@ const fd = new FormData();
       lockForm();
     } else {
       submitBtn.disabled = false;
+      resetBtn.disabled = false;
       
       if (j.error === "SIRET_ALREADY_EXISTS") {
         submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ SIRET déjà enregistré</span><br>' +
