@@ -55,16 +55,9 @@
 
   .btn-secondary{background:#eef2f7;color:#0f1724;margin-top:20px}
   .btn-secondary:hover{background:#e1e7ef;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-  .btn-danger{background:#ef4444;color:#fff;margin-top:20px}
-  .btn-danger:hover{background:#dc2626}
 
   .info-box{background:#e6f7f7;padding:16px 20px;border-left:4px solid var(--primary);border-radius:8px;margin-bottom:20px;color:#0f1724}
   .info-box strong{color:var(--primary)}
-
-  .checkbox-group{margin-top:12px}
-  .checkbox-item{display:flex;align-items:center;margin:10px 0}
-  .checkbox-item input[type="checkbox"]{width:auto;margin:0 8px 0 0;cursor:pointer}
-  .checkbox-item label{margin:0;font-weight:400;cursor:pointer}
 
   textarea{font-family:Arial, sans-serif;line-height:1.4;min-height:100px;resize:vertical}
   .help-text{font-size:13px;color:var(--muted);margin-top:6px;font-style:italic}
@@ -79,6 +72,34 @@
   .error{color:#dc2626;margin-top:8px;font-weight:500}
   .small{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
   .hidden{display:none}
+
+  .champ-requis-manquant {
+  border: 3px solid #ef4444 !important;
+  background: #fef2f2 !important;
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.error-message-inline {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 6px;
+  display: block;
+}
+
+.zone-communes-encadree {
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  padding: 0;
+  margin-top: 20px;
+}
+  
   .custom-tooltip {
     background: white;
     border: 2px solid #0ea5a4;
@@ -91,11 +112,163 @@
   .success-banner{background:#d1fae5;border:2px solid #10b981;padding:24px;border-radius:12px;margin-top:24px;text-align:center}
   .section-number{background:var(--primary);color:white;min-width:28px;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
 
+  .zone-communes-container {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .zone-communes-header {
+  padding: 8px 28px 20px 28px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+  .zone-communes-title {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f1724;
+  }
+
+  .zone-communes-stats {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .info-discrete {
+    background: #f9fafb;
+    border-left: 3px solid #3b82f6;
+    padding: 16px 20px;
+    margin: 20px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #4b5563;
+  }
+
+  .deux-colonnes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #e5e7eb;
+    margin: 0;
+  }
+
+  .colonne {
+    background: white;
+    padding: 24px 28px;
+  }
+
+  .colonne-titre {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f1724;
+    margin: 0 0 16px 0;
+  }
+
+  .liste-communes-colonne {
+    max-height: 350px;
+    overflow-y: auto;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #4b5563;
+  }
+
+  .liste-communes-colonne > div {
+    padding: 4px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .carte-colonne {
+    height: 350px;
+    background: #f9fafb;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    position: relative;
+  }
+
+  .carte-legende {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .carte-legende-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .carte-legende-point {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .actions-communes {
+    padding: 24px 28px;
+    border-top: 2px solid #f3f4f6;
+  }
+
+  .btn-principal-epure {
+    padding: 12px 24px;
+    background: #0ea5a4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-principal-epure:hover {
+    background: #0d8887;
+    transform: translateY(-1px);
+  }
+
+  .lien-secondaire {
+    color: #6b7280;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 1px dashed #d1d5db;
+    padding-bottom: 2px;
+  }
+
+  .recherche-moderne {
+    position: relative;
+  }
+
+  .recherche-moderne input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .recherche-moderne::before {
+    content: '🔍';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+  }
+
   @media(max-width:768px){
-    body{padding:16px}
-    .card{padding:24px 20px}
-    .nav-header{flex-direction:column;align-items:flex-start;gap:12px}
-    .nav-links{flex-wrap:wrap}
+    .deux-colonnes{grid-template-columns: 1fr;}
   }
 </style>
 </head>
@@ -115,7 +288,6 @@
   <div class="card">
     <div id="headerTexts">
       <h2>Complétez vos informations professionnelles pour être référencé sur la plateforme</h2>
-
       <div class="info-box">
         <strong>⏱️ Temps estimé :</strong> 5 minutes maximum
       </div>
@@ -123,7 +295,6 @@
 
     <div id="section-email">
       <h3 class="section-title">1️⃣ Vérification de votre identité</h3>
-
       <p class="small" style="margin-top:8px">
         Les questions avec un <span style="color:#ef4444;font-weight:bold">*</span> sont obligatoires.
       </p>
@@ -179,7 +350,6 @@
     <form id="form" class="hidden" onsubmit="return false;">
       <div class="prereq-section">
         <div style="font-weight:700;margin-bottom:8px">Prérequis</div>
-
         <label style="margin-top:0" class="required">Avez-vous un numéro professionnel ?</label>
         <div style="margin-top:12px">
           <label class="inline"><input type="radio" name="numType" value="siret"> Oui, j'ai un numéro SIRET</label>
@@ -229,7 +399,6 @@
         </div>
         
         <label style="margin-top:24px" class="required">Quel est votre mode d'intervention principal ?</label>
-        <div class="small" style="margin-top:4px">Sélectionnez l'option qui correspond le mieux à votre pratique.</div>
         <div style="margin-top:12px">
           <label><input type="radio" name="modeIntervention" value="cabinet"> Uniquement en cabinet</label>
           <label><input type="radio" name="modeIntervention" value="deplacement"> Je me déplace au domicile</label>
@@ -286,273 +455,123 @@
 
               <label for="precisionsGeo" style="margin-top:20px">Précisions géographiques (optionnel)</label>
               <textarea id="precisionsGeo" name="precisionsGeo" rows="3" placeholder="Ex: Je couvre uniquement certains quartiers..."></textarea>
-              <div class="small" style="margin-top:4px;">Indiquez ici toute précision utile.</div>
-              
             </div>
 
-            <!-- 🆕 ZONE D'AFFICHAGE DES COMMUNES CALCULÉES -->
-            <div id="communesCalculeesZone" class="hidden" style="margin-top: 20px;">
-              <div style="background: #f0f9ff; border: 2px solid #3b82f6; padding: 20px; border-radius: 12px;">
-                <h4 style="margin: 0 0 12px; color: #1e40af; font-size: 16px;">
-                    📍 Communes couvertes par votre intervention <span style="color: #ef4444; font-weight: bold;">*</span>
-                </h4>
-                
-                <div id="communesCalculeesInfo" style="margin-bottom: 12px; color: #666; font-size: 14px;">
-                  <!-- Stats affichées ici -->
+            <div id="communesCalculeesZone" class="hidden">
+                <div class="zone-communes-encadree">
+              <div class="zone-communes-container">
+                <div class="zone-communes-header">
+                  <h4 class="zone-communes-title">Communes couvertes par votre intervention</h4>
+                  <p class="zone-communes-stats" id="communesCalculeesInfo">Calcul en cours...</p>
                 </div>
                 
-                <div id="communesCalculeesListe" style="
-                  max-height: 300px; 
-                  overflow-y: auto; 
-                  background: white; 
-                  border: 1px solid #e5e7eb; 
-                  border-radius: 8px; 
-                  padding: 12px;
-                ">
-                  <div style="text-align: center; color: #999; padding: 20px;">
-                    Cliquez sur "Visualiser" pour calculer les communes
-                  </div>
-                </div>
-                
-                <!-- ⚠️ RECOMMANDATION IMPORTANTE -->
-                <div id="avertissementCommunes" style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 12px;margin-top: 16px;"
-                  >
-                  <div style="font-weight: 700; color: #856404; font-size: 16px; margin-bottom: 12px;">
-                    ⚠️ ATTENTION : Liste potentiellement incomplète
-                  </div>
-                  
-                  <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                    <strong style="color: #0f1724;">💡 Recommandation :</strong><br>
-                    <span style="color: #6b7280; font-size: 13px;">
-                      Vérifiez cette liste et ajoutez les communes manquantes. Cela vous évitera de recevoir 
-                      des demandes hors de votre secteur, ou d'en manquer d'autres que vous couvrez réellement.
-                    </span>
-                  </div>
-                </div>
-                
-                <!-- BOUTON -->
-                <div id="btnGroupeCommunes" style="display: none; margin-top: 16px;">
-                  
-                  <!-- Bouton principal (Modifier) -->
-                  <button 
-                    type="button" 
-                    id="btnModifierCommunes" 
-                    onclick="afficherInterfaceModification()" 
-                    style="
-                    width: 100%;
-                    padding: 14px;
-                    background: #f59e0b;
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    font-weight: 700;
-                    font-size: 15px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-                    "
-                    onmouseover="this.style.background='#d97706'; this.style.transform='translateY(-2px)'"
-                    onmouseout="this.style.background='#f59e0b'; this.style.transform='translateY(0)'"
-                    >
-                    ✏️ Vérifier et ajuster ma liste (recommandé)
-                  </button>
-                  
-                  <!-- Bouton secondaire (Valider sans vérifier) -->
-                  <div style="text-align: center; margin-top: 16px;"> 
-                    <a 
-                      href="#" 
-                      id="btnValiderSansVerifier"
-                      onclick="validerCommunes(); return false;"
-                      style="
-                        color: #6b7280;
-                        font-size: 13px;
-                        text-decoration: underline;
-                        cursor: pointer;
-                      "
-                      onmouseover="this.style.color='#0ea5a4'"
-                      onmouseout="this.style.color='#6b7280'"
-                    >
-                      Valider cette liste sans vérifier (non recommandé)
-                    </a>
-                  </div>
-                </div>
-                
-                <!-- Message après validation (caché au départ) -->
-                <div id="messageExplicatif" class="small" style="display: none; margin-top: 12px; color: #6b7280; font-style: italic;">
-                  💡 Cette liste est calculée approximativement. <strong>Certaines communes accessibles peuvent manquer</strong>. Utilisez <strong>"Modifier"</strong> pour ajuster si nécessaire.
-                </div>
+                <div class="deux-colonnes">
+                  <div class="colonne">
+                    
+                    <div id="vueListeCommunes">
+                      <h5 class="colonne-titre">📋 Liste des communes</h5>
+                      <div id="communesCalculeesListe" class="liste-communes-colonne">
+                        <div style="text-align: center; color: #999; padding: 20px;">Calcul en cours...</div>
+                      </div>
+                    </div>
 
-                <!-- 🆕 INTERFACE DE MODIFICATION DES COMMUNES -->
-                <div id="interfaceModificationCommunes" class="hidden" style="margin-top: 20px;">
-                  <div style="background: #fff9e6; border: 2px solid #ffc107; padding: 20px; border-radius: 12px;">
-                    <h4 style="margin: 0 0 16px; color: #856404; font-size: 16px; font-weight: 700;">
-                      ✏️ Personnaliser la liste des communes
-                    </h4>
-                    
-                    <!-- BARRE DE RECHERCHE -->
-                    <div style="margin-bottom: 20px;">
-                      <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #0f1724; font-size: 14px;">
-                        🔍 Ajouter une commune manuellement
-                      </label>
-                      <div class="small" style="margin-bottom: 8px; color: #6b7280;">
-                        Recherchez n'importe quelle commune en France (minimum 3 lettres)
+                    <div id="vuePersonnalisation" class="hidden">
+                      <h5 class="colonne-titre">✏️ Personnaliser ma zone</h5>
+                      <div style="background: #f0f9ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; line-height: 1.5; color: #1e40af;">
+                        <strong>💡 Comment ça marche ?</strong><br>
+                        Décochez les communes où vous n'intervenez pas. 
+                        Vous pouvez aussi ajouter n'importe quelle commune en France (même hors département) avec la recherche ci-dessous.
                       </div>
-                      
-                      <div style="display: flex; gap: 8px; align-items: stretch;">
-                        <input 
-                          type="text" 
-                          id="rechercheCommune" 
-                          placeholder="Ex: Nancy, Paris, Marseille..."
-                          oninput="rechercherCommuneEnTempsReel()"
-                          onkeypress="if(event.key==='Enter'){event.preventDefault();}"
-                          autocomplete="off"
-                          autocorrect="off"
-                          autocapitalize="off"
-                          spellcheck="false"
-                          style="
-                          flex: 1 !important; 
-                          width: auto !important;
-                          padding: 10px 12px !important; 
-                          border: 2px solid #e6eef6 !important; 
-                          border-radius: 8px !important;
-                          font-size: 14px !important;
-                          margin-top: 0 !important;
-                          "
-                          />
-                        
-                        <button 
-                          type="button" 
-                          onclick="rechercherCommune()" 
-                          style="
-                          width: auto !important;
-                          flex: 0 0 auto !important;
-                          padding: 10px 16px !important; 
-                          background: var(--primary) !important; 
-                          color: white !important; 
-                          border: none !important; 
-                          border-radius: 8px !important; 
-                          cursor: pointer !important; 
-                          font-weight: 600 !important;
-                          white-space: nowrap !important;
-                          font-size: 14px !important;
-                          margin-top: 0 !important;
-                          display: none !important;
-                          "
-                          >
-                          Rechercher
-                        </button>
-                      </div>
-<div id="resultatsRecherche" style="margin-top: 8px;"></div>
-                    </div>
-                    
-                    <!-- 🗺️ CARTE INTERACTIVE -->
-                    <div style="margin: 20px 0;">
-                      <label style="font-weight: 600; display: block; color: #0f1724; margin: 0 0 8px 0; font-size: 14px;">
-                        🗺️ Visualisation géographique
-                      </label>
-                      <div class="small" style="margin-bottom: 12px; color: #6b7280;">
-                        Visualisez les communes sélectionnées sur une carte 
-                        <a 
-                          href="#" 
-                          id="btnToggleCarte"
-                          onclick="toggleCarte(); return false;"
-                          style="color: var(--primary); text-decoration: none; font-weight: 600; margin-left: 4px;"
-                          >
-                          → Afficher la carte
-                        </a>
-                      </div>       
-                      <div 
-                        id="mapContainer" 
-                        style="
-                          display: none;
-                          height: 400px; 
-                          border: 2px solid #e6eef6; 
-                          border-radius: 8px; 
-                          overflow: hidden;
-                          margin-top: 8px;
-                        "
-                      >
-                        <div id="map" style="height: 100%; width: 100%;"></div>
-                      </div>
-                    </div>
-                    
-                    <!-- LISTE DES COMMUNES AVEC CHECKBOXES -->
-                    <div style="margin-top: 20px;">
-                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label style="font-weight: 600; display: block; color: #0f1724; margin: 0; font-size: 14px;">
-                          📋 Communes sélectionnées
-                        </label>
-                        <span id="compteurCommunes" style="font-size: 13px; color: #6b7280; font-weight: 600;">
-                          0 commune(s)
-                        </span>
-                      </div>
-                      <div class="small" style="margin-bottom: 8px; color: #6b7280;">
-                        Cochez/décochez les communes à inclure dans votre zone d'intervention
-                      </div>
-                      <div style="background: white; border: 2px solid #e6eef6; border-radius: 8px; padding: 8px; margin-top: 8px;">
-                        <div id="listeCommunesCheckboxes" style="max-height: 300px; overflow-y: auto;" title="">
-                          <p style="color: #999; text-align: center; padding: 20px; margin: 0;">
-                            Chargement...
-                          </p>
+                      <!-- 1️⃣ D'ABORD : Cochez/décochez -->
+                       <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                          <p style="margin: 0; font-size: 13px; color: #6b7280; font-weight: 600;">Cochez/décochez les communes</p>
+                          <span id="compteurCommunes" style="font-size: 14px; color: #6b7280; font-weight: 600;">0 commune(s)</span>
+                        </div>
+                        <div style="background: white; border: 2px solid #e5e7eb; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                          <div id="listeCommunesCheckboxes">
+                            <p style="color: #999; text-align: center; padding: 20px; margin: 0;">Chargement...</p>
+                          </div>
                         </div>
                       </div>
+                      <!-- 2️⃣ ENSUITE : Rechercher et ajouter -->
+                       <div>
+                        <p style="margin: 0 0 12px 0; font-size: 13px; color: #6b7280; font-weight: 600;">Ajouter une commune manquante</p>
+                        <div class="recherche-moderne">
+                          <input type="text" id="rechercheCommune" placeholder="Ex: Nancy, Paris..." oninput="rechercherCommuneEnTempsReel()" autocomplete="off"/>
+                        </div>
+                        <div id="resultatsRecherche" style="margin-top: 8px;"></div>
+                      </div>
                     </div>
-                    
-                    <!-- BOUTONS ACTIONS -->
-                    <div style="display: flex; gap: 8px; margin-top: 20px;">
-                      <button 
-                        type="button" 
-                        onclick="validerModifications()" 
-                        style="
-                          flex: 1;
-                          padding: 12px;
-                          background: #10b981;
-                          color: white;
-                          border: none;
-                          border-radius: 8px;
-                          font-weight: 600;
-                          cursor: pointer;
-                          transition: all 0.2s;
-                        "
-                      >
-                        ✓ Enregistrer mes modifications
-                      </button>
-                      
-                      <button 
-                        type="button" 
-                        onclick="annulerModifications()" 
-                        style="
-                          flex: 1;
-                          padding: 12px;
-                          background: #6b7280;
-                          color: white;
-                          border: none;
-                          border-radius: 8px;
-                          font-weight: 600;
-                          cursor: pointer;
-                          transition: all 0.2s;
-                        "
-                      >
-                        ✕ Annuler
-                      </button>
+                   </div>
+                  
+                  <div class="colonne">
+                    <h5 class="colonne-titre">🗺️ Visualisation géographique</h5>
+                    <div class="carte-colonne">
+                      <div id="mapLoadingIndicator" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center;">
+                        <div style="font-size: 36px; margin-bottom: 12px;">⏳</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #0ea5a4;">Chargement de la carte...</div>
+                      </div>
+                      <div id="mapPrincipal" style="height: 100%; width: 100%;"></div>
+                    </div>
+                    <div class="carte-legende">
+                      <div class="carte-legende-item">
+                        <span class="carte-legende-point" style="background: #ef4444;"></span>
+                        <span>Commune centrale</span>
+                      </div>
+                      <div class="carte-legende-item">
+                        <span class="carte-legende-point" style="background: #3b82f6;"></span>
+                        <span>Autres communes</span>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                <div class="actions-communes" id="btnGroupeCommunes" style="display: none;">
+                  <!-- Message d'avertissement (masqué par défaut) -->
+                   <div id="avertissementCommunes" style="display: none; background: #fff3cd; border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 8px; margin-bottom: 16px;">
+                    <strong style="color: #92400e; font-size: 15px;">⚠️ Vérification recommandée</strong>
+                    <p style="margin: 8px 0 0 0; line-height: 1.5; font-size: 14px; color: #78350f;">
+                      Cette liste est <strong>générée automatiquement</strong> et peut contenir des erreurs. 
+                      <strong>Nous vous conseillons vivement de la vérifier</strong> pour éviter des demandes hors de votre zone ou de manquer des opportunités.
+                    </p>
+                  </div>
+  
+  <div id="boutons-validation" style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <button type="button" onclick="afficherInterfaceModification()" class="btn-principal-epure">Vérifier et ajuster</button>
+    <a href="#" onclick="validerCommunes(); return false;" class="lien-secondaire">Cette liste me convient</a>
+  </div>
                 
-                <!-- Message explicatif (change selon le mode) -->
-                <div id="messageExplicatif" class="small" style="margin-top: 12px; color: #6b7280; font-style: italic;">
-                  💡 Cette liste est calculée approximativement. <strong>Certaines communes accessibles peuvent manquer</strong>. Utilisez <strong>"Modifier"</strong> pour ajuster si nécessaire.
+                
+                  
+                  <div id="boutons-personnalisation" class="hidden" style="display: flex; gap: 12px;">
+                    <button type="button" onclick="validerModifications()" class="btn-principal-epure" style="flex: 1;">✓ Enregistrer mes choix</button>
+                    <button type="button" onclick="annulerModifications()" style="flex: 1; padding: 12px 24px; background: #6b7280; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">✕ Annuler</button>
+                  </div>
+                  
+                  <div id="zone-validee-badge" class="hidden" style="width: 100%;">
+                    <div style="padding: 14px 24px; background: #d1fae5; border: 2px solid #10b981; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 24px;">✅</span>
+                        <div>
+                          <div style="font-size: 15px; font-weight: 700; color: #059669;">Zone validée</div>
+                          <div id="zone-validee-nb" style="font-size: 13px; color: #047857; margin-top: 2px;">0 communes</div>
+                        </div>
+                      </div>
+                      <button type="button" onclick="afficherInterfaceModification()" style="padding: 8px 16px; background: white; color: #059669; border: 2px solid #10b981; border-radius: 6px; font-weight: 600; cursor: pointer;">✏️ Modifier</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-          </div> <!-- FIN questionsDeplacements -->
-        </div> <!-- FIN section-geo -->
-                
+          </div>
+        </div>
+      </div>
+        
         <div class="section-title"><span class="section-number">4</span> Disponibilités</div>
         <label class="required">Avez-vous des disponibilités pour de nouveaux bénéficiaires ?</label>
         <div style="margin-top:12px">
-          <label><input type="radio" name="dispo" value="oui"> Oui</input></label>
+          <label><input type="radio" name="dispo" value="oui"> Oui</label>
           <label><input type="radio" name="dispo" value="non"> Non</label>
         </div>
         
@@ -560,21 +579,9 @@
           <label for="dateDispo" class="required">À partir de quelle date êtes-vous disponible ?</label>
           <input id="dateDispo" name="dateDispo" type="date"/>
           
-          <label for="placesDisponibles" class="required" style="margin-top:20px">
-            Combien de nouveaux bénéficiaires pourrez-vous accueillir ?
-          </label>
-          <input 
-            id="placesDisponibles" 
-            name="placesDisponibles" 
-            type="number" 
-            min="1" 
-            max="10" 
-            placeholder="Ex: 1"
-            style="width: 150px;margin-top:8px"
-          />
-          <div class="small" style="margin-top:6px;color:#6b7280">
-            Indiquez le nombre de places disponibles (entre 1 et 10)
-          </div>
+          <label for="placesDisponibles" class="required" style="margin-top:20px">Combien de nouveaux bénéficiaires pourrez-vous accueillir ?</label>
+          <input id="placesDisponibles" name="placesDisponibles" type="number" min="1" max="10" placeholder="Ex: 1" style="width: 150px;margin-top:8px"/>
+          <div class="small" style="margin-top:6px;">Indiquez le nombre de places disponibles (entre 1 et 10)</div>
         </div>
 
         <div id="modeContactBlock" class="hidden">
@@ -582,25 +589,20 @@
           
           <label class="required">Comment souhaitez-vous être contacté par les particuliers ?</label>
           <div class="info-box" style="margin-top:8px">
-            <strong>ℹ️ Important :</strong> Cette option détermine si vos coordonnées (email et téléphone) 
-            seront visibles directement ou si les particuliers devront passer par un formulaire de contact.
+            <strong>ℹ️ Important :</strong> Cette option détermine si vos coordonnées seront visibles directement.
           </div>
           
           <div style="margin-top:12px">
             <label>
               <input type="radio" name="modeContact" value="direct">
               <strong>📧 Contact direct</strong>
-              <div class="small" style="margin-left:24px;margin-top:4px">
-                Mon email et mon téléphone seront affichés. Les particuliers peuvent me contacter directement.
-              </div>
+              <div class="small" style="margin-left:24px;margin-top:4px">Mon email et mon téléphone seront affichés.</div>
             </label>
             
             <label style="margin-top:12px">
               <input type="radio" name="modeContact" value="formulaire">
               <strong>📝 Contact via formulaire uniquement</strong>
-              <div class="small" style="margin-left:24px;margin-top:4px">
-                Mes coordonnées restent privées. Les particuliers m'envoient un message via un formulaire.
-              </div>
+              <div class="small" style="margin-left:24px;margin-top:4px">Mes coordonnées restent privées.</div>
             </label>
           </div>
         </div>
@@ -624,7 +626,6 @@
       <div style="font-size:64px;margin-bottom:16px">✅</div>
       <h3 style="margin:0 0 12px;color:#0f1724;font-size:24px;font-weight:700">Formulaire envoyé avec succès !</h3>
       <p style="margin:0 0 16px;color:#059669;font-size:16px;font-weight:600">Vous avez reçu un email de confirmation.</p>
-      <p style="margin:0 0 24px;color:#6b7280;font-size:15px">Vos informations ont été enregistrées. Vous pouvez fermer cette page.</p>
     </div>
   </div>
 
@@ -632,25 +633,22 @@
     <p>
       <a href="index.html">Accueil</a> • 
       <a href="faq.html">FAQ</a> • 
-      <a href="mentions.html">Mentions légales</a> • 
-      <a href="mentions.html#confidentialite">Politique de confidentialité</a> • 
-      <a href="mentions.html#contact">Contact</a>
+      <a href="mentions.html">Mentions légales</a>
     </p>
     <p style="margin-top:12px;font-size:13px">© 2025 - Référencement Professionnels TSA</p>
   </footer>
   
 </div>
 <script>
-/* ========== CONFIG ========== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww78Q-FrcILGHJu0O0lRgajYaFn9qJPq8ViSwDEixSOQ_ZiTWgJVX64mMcNHwirwFf/exec"; 
 const DEPT_API = "https://geo.api.gouv.fr/departements";
-const COMMUNE_API = code => `https://geo.api.gouv.fr/departements/${code}/communes`;
 
-// 🆕 VARIABLES GLOBALES pour gestion des communes
 let communesCalculeesSaved = [];
 let communesValidees = false;
+let listeModifieeManuelle = false;
+let mapPrincipal = null;
+let communeLayersPrincipal = {};
 
-/* ========== HELPERS VALIDATION ========== */
 const isDigits = s => /^\d+$/.test(s||"");
 const validSiret = v => isDigits(v) && v.length === 14;
 const validPhone = v => {
@@ -659,7 +657,6 @@ const validPhone = v => {
   return /^(0[1-9]\d{8}|\+33[1-9]\d{8})$/.test(c) || /^[0-9]{10,15}$/.test(c);
 };
 
-/* ========== DOM ========= */
 const emailEl = document.getElementById("email");
 const sendCodeBtn = document.getElementById("sendCodeBtn");
 const emailMsg = document.getElementById("emailMsg");
@@ -691,8 +688,6 @@ const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const deleteMsg = document.getElementById("deleteMsg");
 const successBanner = document.getElementById("successBanner");
-const visualiserLinkMetro = document.getElementById("visualiserLinkMetro");
-const visualiserLinkOM = document.getElementById("visualiserLinkOM");
 const placesInput = document.getElementById("placesDisponibles");
 const modeContactBlock = document.getElementById("modeContactBlock");
 const consentNumber = document.getElementById("consentNumber");
@@ -702,7 +697,6 @@ let EXISTING = false;
 let EXISTING_DATA = null;
 let FORM_LOCKED = false;
 
-/* ========== AFFICHAGE DYNAMIQUE SECTION 3 (MODE + DÉPARTEMENT) ========== */
 const DEPS_METRO = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','2A','2B','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95'];
 const DEPS_DOMTOM = ['971','972','973','974','976'];
 
@@ -751,7 +745,6 @@ function updateSectionGeo() {
       if (DEPS_METRO.includes(codeDept)) {
         zoneMetropole.classList.remove('hidden');
         zoneOutreMer.classList.add('hidden');
-        document.getElementById('precisionsGeo').value = '';
         
       } else if (DEPS_DOMTOM.includes(codeDept)) {
         zoneMetropole.classList.add('hidden');
@@ -762,38 +755,40 @@ function updateSectionGeo() {
 }
 
 document.querySelectorAll('input[name="modeIntervention"]').forEach(radio => {
-  radio.addEventListener('change', updateSectionGeo);
+  radio.addEventListener('change', () => {
+    // Réinitialiser les sélections
+    departSelect.value = "";
+    communeSelect.innerHTML = '<option value="">-- Choisissez d\'abord un département --</option>';
+    
+    // Réinitialiser les temps/rayons
+    const tempsTrajet = document.getElementById("tempsTrajet");
+    const rayonKm = document.getElementById("rayonKm");
+    if (tempsTrajet) tempsTrajet.value = "";
+    if (rayonKm) rayonKm.value = "";
+    
+    resetZoneCommunes();
+    communesValidees = false;
+    communesCalculeesSaved = [];
+    listeModifieeManuelle = false;
+    updateSectionGeo();
+  });
 });
 
-/* ========== FONCTIONS DE VERROUILLAGE ========== */
 function lockForm() {
   FORM_LOCKED = true;
-  
-  // 🔒 MASQUER LE FORMULAIRE
   formEl.style.display = 'none';
   
-  // 🔒 MASQUER LA SECTION EMAIL
   const sectionEmail = document.getElementById('section-email');
-  if (sectionEmail) {
-    sectionEmail.style.display = 'none';
-  }
+  if (sectionEmail) sectionEmail.style.display = 'none';
   
-  // 🔒 MASQUER LE TITRE ET L'INFO-BOX
   const h2 = document.querySelector('.card h2');
-  if (h2) {
-    h2.style.display = 'none';
-  }
+  if (h2) h2.style.display = 'none';
   
   const infoBox = document.querySelector('.info-box');
-  if (infoBox) {
-    infoBox.style.display = 'none';
-  }
+  if (infoBox) infoBox.style.display = 'none';
   
-  // ✅ AFFICHER LE BANDEAU
   successBanner.classList.remove('hidden');
-  successBanner.style.marginTop = '40px';
   
-  // 📜 SCROLL
   setTimeout(() => {
     successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 300);
@@ -801,38 +796,24 @@ function lockForm() {
   
 function unlockForm() {
   FORM_LOCKED = false;
-  
-  // 🔓 RÉAFFICHER LE FORMULAIRE
   formEl.style.display = 'block';
   
-  // 🔓 RÉACTIVER LES CHAMPS
   document.querySelectorAll('#form input, #form select, #form textarea').forEach(el => {
     el.disabled = false;
   });
-  
-  // 🔓 RÉAFFICHER LES BOUTONS
-  const actions = document.querySelector('.actions');
-  if (actions) {
-    actions.style.display = 'flex';
-  }
   
   submitBtn.classList.remove('hidden');
   editBtn.classList.add('hidden');
   resetBtn.classList.remove('hidden');
   
-  // 🔓 MASQUER LE BANDEAU
   successBanner.classList.add('hidden');
-  successBanner.style.marginTop = '24px';
-  
   submitMsg.textContent = "";
 }
 
-/* ========== BOUTON MODIFIER ========== */
 editBtn.addEventListener('click', () => {
   unlockForm();
 });
 
-/* ========== SEND CODE ========== */
 sendCodeBtn.addEventListener("click", async () => {
   const mail = (emailEl.value || "").trim().toLowerCase();
   if (!mail) { 
@@ -847,72 +828,32 @@ sendCodeBtn.addEventListener("click", async () => {
     const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`);
     const j = await r.json();
     
-    console.log("Réponse serveur sendCode:", j);
-    if (j.alreadySent) {
-      console.log("🔍 Code déjà envoyé récemment - pas de nouvel email");
-    } else if (j.ok) {
-      console.log("✅ Nouveau code envoyé par email");
-    }
-
     if (j.error === "DAILY_LIMIT_REACHED") {
-      if (j.minutesRestantes && j.minutesRestantes > 0) {
-        const heures = Math.floor(j.minutesRestantes / 60);
-        const minutes = j.minutesRestantes % 60;
-        const tempsRestant = heures > 0
-          ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}`
-          : `${minutes} minutes`;
-
-        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Vous avez déjà demandé trois codes aujourd'hui</span><br>
-          <span style="color:#6b7280">Le dernier vous a été envoyé il y a moins de 15 minutes. Il est encore valable pendant environ ${tempsRestant}.</span>`;
-      } else {
-        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
-          <span style="color:#6b7280">Vous avez déjà demandé ${j.codesEnvoyes || 3} codes aujourd'hui. Maximum autorisé : 3 codes par jour. Réessayez demain.</span>`;
-      }
-      sendCodeBtn.disabled = false;
-      return;
-    }
-
-    if (j.error === "COOLDOWN_ACTIVE") {
-      const heures = Math.floor(j.minutesRestantes / 60);
-      const minutes = j.minutesRestantes % 60;
-      const tempsRestant = heures > 0 ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}` : `${minutes} minutes`;
-      
-      emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Veuillez patienter</span><br>
-        <span style="color:#6b7280">Vous avez récemment soumis le formulaire. Vous pourrez redemander un code dans environ ${tempsRestant}.</span>`;
-      sendCodeBtn.disabled = false;
-      return;
-    }
-
-    if (j.error === "SERVICE_QUOTA_EXCEEDED") {
-      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Service temporairement indisponible</span><br>
-        <span style="color:#6b7280">Le quota d'emails quotidien est atteint. Merci de réessayer demain.</span>`;
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span>`;
       sendCodeBtn.disabled = false;
       return;
     }
     
     if (j.ok) {
-        if (j.alreadySent) {
-          emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé</span><br>
-          <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
-          codeMsg.textContent = "";
-        } else {
-          emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé avec succès</span><br>
-          <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
-          codeMsg.textContent = ""; 
-        }
-      
+      emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé</span><br><span style="color:#6b7280">Vérifiez votre boîte mail.</span>`;
       CURRENT_EMAIL = mail;
       codeArea.classList.remove("hidden");
       sendCodeBtn.style.display = "none";
       codeEl.focus();
     } else {
-      emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible d'envoyer le code"}</span>`;
+      emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible d'envoyer"}</span>`;
     }
   } catch (err) {
-    console.error("Erreur réseau:", err);
-    emailMsg.innerHTML = `<span style="color:#dc2626">Erreur réseau lors de l'envoi du code</span>`;
+    emailMsg.innerHTML = `<span style="color:#dc2626">Erreur réseau</span>`;
   } finally {
     sendCodeBtn.disabled = false;
+  }
+});
+
+codeEl.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    verifyBtn.click();
   }
 });
 
@@ -923,57 +864,6 @@ emailEl.addEventListener("keypress", (e) => {
   }
 });
 
-/* ========== RESEND ========== */
-resendBtn.addEventListener("click", async () => {
-  emailMsg.textContent = "Renvoi du code en cours...";
-  codeMsg.textContent = ""; 
-  resendBtn.disabled = true;
-  
-  const mail = (emailEl.value || "").trim().toLowerCase();
-  
-  try {
-    const r = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`);
-    const j = await r.json();
-    
-    if (j.alreadySent) {
-      emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Code déjà envoyé récemment</span><br>
-      <span style="color:#6b7280">Un code vous a déjà été envoyé il y a moins de 15 minutes. Le code est encore valable.</span>`;
-    } else if (j.ok) {
-      emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code renvoyé avec succès</span><br>
-      <span style="color:#6b7280">Vérifiez votre boîte mail (pensez aux spams).</span>`;
-    } else if (j.error === "DAILY_LIMIT_REACHED") {
-      if (j.minutesRestantes && j.minutesRestantes > 0) {
-        const heures = Math.floor(j.minutesRestantes / 60);
-        const minutes = j.minutesRestantes % 60;
-        const tempsRestant = heures > 0
-          ? `${heures}h${minutes > 0 ? minutes + 'min' : ''}`
-          : `${minutes} minutes`;
-        
-        emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Vous avez déjà demandé trois codes aujourd'hui</span><br>
-          <span style="color:#6b7280">Le dernier vous a été envoyé il y a moins de 15 minutes. Il est encore valable pendant environ ${tempsRestant}.</span>`;
-      } else {
-        emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br>
-        <span style="color:#6b7280">Maximum 3 codes par jour. Réessayez demain.</span>`;
-      }
-    } else {
-      emailMsg.innerHTML = `<span style="color:#dc2626">Erreur : ${j.error || "Impossible de renvoyer"}</span>`;
-    }
-  } catch (err) {
-    emailMsg.innerHTML = `<span style="color:#dc2626">Erreur réseau</span>`;
-  } finally {
-    resendBtn.disabled = false;
-  }
-});
-
-/* ========== TOUCHE ENTRÉE POUR VALIDER LE CODE ========== */
-codeEl.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    verifyBtn.click();
-  }
-});
-
-/* ========== VERIFY CODE ========== */
 verifyBtn.addEventListener("click", async () => {
   const mail = (emailEl.value || "").trim().toLowerCase();
   const code = (codeEl.value || "").trim();
@@ -984,7 +874,7 @@ verifyBtn.addEventListener("click", async () => {
     const j = await r.json();
     if (!j.ok) { codeMsg.textContent = "Erreur : " + (j.error||"code invalide"); return; }
     
-    codeMsg.textContent = "✅ E-mail vérifié avec succès !";
+    codeMsg.textContent = "✅ E-mail vérifié !";
     CURRENT_EMAIL = mail;
     codeArea.style.display = "none";
     emailMsg.style.display = "none";
@@ -1005,30 +895,26 @@ verifyBtn.addEventListener("click", async () => {
       rest.classList.add("hidden");
     }
   } catch (err) {
-    codeMsg.textContent = "Erreur réseau lors de la vérification.";
+    codeMsg.textContent = "Erreur réseau.";
   }
 });
 
-/* ========== BOUTON MODIFIER (utilisateur existant) ========== */
 modifyBtn.addEventListener("click", async () => {
   existingUserChoice.classList.add("hidden");
   await showFormAndPrefill(EXISTING_DATA);
 });
 
-/* ========== BOUTON SUPPRIMER (utilisateur existant) ========== */
 deleteBtn.addEventListener("click", () => {
   existingUserChoice.classList.add("hidden");
   deleteConfirmation.classList.remove("hidden");
 });
 
-/* ========== ANNULER LA SUPPRESSION ========== */
 cancelDeleteBtn.addEventListener("click", () => {
   deleteConfirmation.classList.add("hidden");
   existingUserChoice.classList.remove("hidden");
   deleteMsg.textContent = "";
 });
 
-/* ========== CONFIRMER LA SUPPRESSION ========== */
 confirmDeleteBtn.addEventListener("click", async () => {
   deleteMsg.textContent = "Suppression en cours...";
   confirmDeleteBtn.disabled = true;
@@ -1043,53 +929,204 @@ confirmDeleteBtn.addEventListener("click", async () => {
     const j = await res.json();
     
     if (j.ok) {
-      // 🔒 VERROUILLAGE COMPLET DE TOUTE LA PAGE
       document.body.innerHTML = `
         <div style="max-width: 600px; margin: 80px auto; text-align: center; padding: 0 20px;">
-          <div style="background: #d1fae5; border: 2px solid #10b981; padding: 48px 32px; border-radius: 16px; box-shadow: 0 8px 30px rgba(2,6,23,0.06);">
+          <div style="background: #d1fae5; border: 2px solid #10b981; padding: 48px 32px; border-radius: 16px;">
             <div style="font-size: 72px; margin-bottom: 24px;">✅</div>
-            <h2 style="margin: 0 0 16px; color: #0f1724; font-size: 28px; font-weight: 700;">Suppression effectuée avec succès</h2>
-            <p style="margin: 0 0 20px; color: #059669; font-size: 18px; font-weight: 600;">Vos informations ont été supprimées définitivement.</p>
-            <p style="margin: 0 0 32px; color: #6b7280; font-size: 15px; line-height: 1.6;">
-              Vous avez reçu un email de confirmation.<br>
-              Vous pouvez fermer cette page en toute sécurité.
-            </p>
-            
-            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 12px; margin-top: 24px;">
-              <p style="margin: 0; color: #856404; font-size: 14px; font-weight: 600;">
-                ⚠️ Cette action est irréversible. Pour vous réinscrire, utilisez le formulaire avec un nouveau code.
-              </p>
-            </div>
-            
-            <a href="index.html" style="display: inline-block; margin-top: 24px; padding: 12px 24px; background: #0ea5a4; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s;">
-              ← Retour à l'accueil
-            </a>
+            <h2 style="margin: 0 0 16px; color: #0f1724;">Suppression effectuée</h2>
+            <p style="color: #059669;">Vos informations ont été supprimées.</p>
+            <a href="index.html" style="display: inline-block; margin-top: 24px; padding: 12px 24px; background: #0ea5a4; color: white; text-decoration: none; border-radius: 8px;">← Retour</a>
           </div>
         </div>
       `;
     } else {
-      deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur : ' + (j.error || "Impossible de supprimer") + '</span>';
+      deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur</span>';
       confirmDeleteBtn.disabled = false;
       cancelDeleteBtn.disabled = false;
     }
   } catch (err) {
-    deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur réseau lors de la suppression.</span>';
+    deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur réseau</span>';
     confirmDeleteBtn.disabled = false;
     cancelDeleteBtn.disabled = false;
   }
 });
-  
 
-/* ========== 🆕 FONCTION CALCULER ET AFFICHER COMMUNES ========== */
+document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
+  const v = e.target.value;
+  siretErr.textContent = "";
+  siretNum.value = "";
+  siretBlock.classList.add("hidden"); 
+  noNum.classList.add("hidden");
+  rest.classList.add("hidden");
+  if (v === "siret") siretBlock.classList.remove("hidden");
+  else noNum.classList.remove("hidden");
+}));
+
+siretNum.addEventListener('input', () => {
+  const v = siretNum.value.trim();
+  if (v.length === 14 && validSiret(v)) {
+    siretErr.textContent = ""; 
+    rest.classList.remove("hidden");
+  } else if (v.length === 14) {
+    siretErr.textContent = "SIRET invalide."; 
+    rest.classList.add("hidden");
+  }
+});
+
+document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener('change', e => {
+  const show = e.target.value === "oui";
+  dateBlock.classList.toggle("hidden", !show);
+  modeContactBlock.classList.toggle("hidden", !show);
+  
+  consentNumber.textContent = show ? "6" : "5";
+  
+  if (show) {
+    dateInput.setAttribute("min", new Date().toISOString().split("T")[0]);
+  } else {
+    dateInput.value = "";
+    placesInput.value = "";
+    document.querySelectorAll('input[name="modeContact"]').forEach(r => r.checked = false);
+  }
+}));
+
+placesInput.addEventListener('input', function() {
+  const value = parseInt(this.value);
+  if (value < 1) this.value = 1;
+  else if (value > 99) this.value = 99;
+});
+
+async function loadDepartements(){
+  departSelect.innerHTML = '<option value="">-- chargement --</option>';
+  try {
+    const r = await fetch(DEPT_API);
+    const list = await r.json();
+    departSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+    list.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.code;
+      opt.textContent = `${d.code} — ${d.nom}`;
+      departSelect.appendChild(opt);
+    });
+  } catch (err) {
+    departSelect.innerHTML = '<option value="">Erreur</option>';
+  }
+}
+
+async function loadCommunes(deptCode, preselect){
+  communeSelect.innerHTML = '<option>Chargement...</option>';
+  try {
+    const url = `https://geo.api.gouv.fr/departements/${deptCode}/communes?fields=nom,codesPostaux`;
+    const r = await fetch(url);
+    const list = await r.json();
+    
+    communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
+    
+    list.forEach(c => {
+      const opt = document.createElement("option");
+      const codePostal = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
+      const communeAvecCP = codePostal ? `${c.nom} (${codePostal})` : c.nom;
+      
+      opt.value = communeAvecCP;
+      opt.textContent = communeAvecCP;
+      
+      communeSelect.appendChild(opt);
+    });
+    
+    if (preselect) {
+      const options = Array.from(communeSelect.options);
+      const matchingOption = options.find(opt => 
+        opt.value.startsWith(preselect.split('(')[0].trim())
+      );
+      
+      if (matchingOption) {
+        communeSelect.value = matchingOption.value;
+      }
+    }
+  } catch (err) {
+    communeSelect.innerHTML = '<option value="">Erreur</option>';
+  }
+}
+
+departSelect.addEventListener('change', e => {
+  const v = e.target.value;
+  resetZoneCommunes();
+  communesValidees = false;
+  communesCalculeesSaved = [];
+  listeModifieeManuelle = false;
+  
+  if (!v) { 
+    communeSelect.innerHTML = '<option value="">-- choisissez le département --</option>'; 
+    return; 
+  }
+  loadCommunes(v);
+  updateSectionGeo();
+});
+
+communeSelect.addEventListener("change", function() {
+  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
+  if (modeIntervention && modeIntervention.value !== 'cabinet' && this.value) {
+    resetZoneCommunes();
+    communesValidees = false;
+    communesCalculeesSaved = [];
+    listeModifieeManuelle = false;
+    calculerEtAfficherCommunes(false, true);
+  }
+});
+
+document.getElementById("tempsTrajet")?.addEventListener("change", function() {
+  if (communeSelect.value) {
+    resetZoneCommunes();
+    communesValidees = false;
+    communesCalculeesSaved = [];
+    listeModifieeManuelle = false;
+    calculerEtAfficherCommunes(false, true);
+  }
+});
+
+document.getElementById("rayonKm")?.addEventListener("change", function() {
+  if (communeSelect.value) {
+    resetZoneCommunes();
+    communesValidees = false;
+    communesCalculeesSaved = [];
+    listeModifieeManuelle = false;
+    calculerEtAfficherCommunes(false, true);
+  }
+});
+
+function resetZoneCommunes() {
+  const zoneCommunes = document.getElementById('communesCalculeesZone');
+  const btnGroupe = document.getElementById('btnGroupeCommunes');
+  const vueListeCommunes = document.getElementById('vueListeCommunes');
+  const vuePersonnalisation = document.getElementById('vuePersonnalisation');
+  
+  if (zoneCommunes) {
+    zoneCommunes.classList.add('hidden');
+  }
+  
+  if (btnGroupe) {
+    btnGroupe.style.display = 'none';
+  }
+  
+  // IMPORTANT : Forcer le retour à la vue liste
+  if (vuePersonnalisation) {
+    vuePersonnalisation.classList.add('hidden');
+  }
+  if (vueListeCommunes) {
+    vueListeCommunes.classList.remove('hidden');
+  }
+  
+  communesCalculeesSaved = [];
+  communesValidees = false;
+  listeModifieeManuelle = false;
+}
+
 async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieux = false) {
   const dep = departSelect.value;
   const commune = communeSelect.value;
   const codeDept = dep ? dep.split(' ')[0] : '';
   
   if (!dep || !commune) {
-    if (!silencieux) {
-      alert("⚠️ Veuillez d'abord sélectionner le département et la commune.");
-    }
+    if (!silencieux) alert("⚠️ Sélectionnez département et commune.");
     return;
   }
 
@@ -1104,7 +1141,7 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
   } else if (DEPS_DOMTOM.includes(codeDept)) {
     rayonOuTemps = document.getElementById("rayonKm")?.value;
     if (!rayonOuTemps) {
-      if (!silencieux) alert("⚠️ Sélectionnez un rayon d'intervention.");
+      if (!silencieux) alert("⚠️ Sélectionnez un rayon.");
       return;
     }
   } else {
@@ -1114,236 +1151,206 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
   const zoneCommunes = document.getElementById('communesCalculeesZone');
   const listeDiv = document.getElementById('communesCalculeesListe');
   const infoDiv = document.getElementById('communesCalculeesInfo');
-  const btnValider = document.getElementById('btnValiderCommunes');
+  const btnGroupe = document.getElementById('btnGroupeCommunes');
   
-  if (!zoneCommunes || !listeDiv || !infoDiv) {
-    console.error('❌ Éléments DOM introuvables');
-    return;
-  }
+  if (!zoneCommunes || !listeDiv || !infoDiv) return;
   
   zoneCommunes.classList.remove('hidden');
-listeDiv.innerHTML = `
-  <div style="text-align:center; padding:40px; color:#0ea5a4;">
-    <div style="font-size:48px; margin-bottom:16px;">⏳</div>
-    <div style="font-size:18px; font-weight:600; margin-bottom:8px;">Calcul en cours...</div>
-    <div style="font-size:14px; color:#6b7280;">Recherche des communes accessibles dans votre zone d'intervention<br>
-    Un instant, nous analysons votre secteur</div>
-  </div> 
-`;  
-infoDiv.innerHTML = '<span style="color:#0ea5a4; font-weight:600;">🔄 Calcul en cours, veuillez patienter...</span>';
-if (btnValider) {
-    btnValider.disabled = true;
-    btnValider.style.display = 'none';
-  }
-
+  listeDiv.innerHTML = '<div style="text-align:center; padding:40px; color:#0ea5a4;"><div style="font-size:48px; margin-bottom:16px;">⏳</div><div>Calcul en cours...</div></div>';  
+  infoDiv.innerHTML = '<span style="color:#0ea5a4; font-weight:600;">Recherche...</span>';
+  
+  if (btnGroupe) btnGroupe.style.display = 'none';
   
   communesValidees = false;
+  
+  if (!mapPrincipal) initMapPrincipal();
   
   try {
     const url = `${SCRIPT_URL}?action=calculerCommunes&modeIntervention=deplacement&departement=${encodeURIComponent(dep)}&commune=${encodeURIComponent(commune)}&rayonOuTemps=${encodeURIComponent(rayonOuTemps)}`;
     
-    console.log('📞 Appel API:', url);
-    
     const response = await fetch(url);
     const result = await response.json();
-    
-    console.log('📦 Résultat:', result);
     
     if (result.ok && result.communes && result.communes.length > 0) {
       communesCalculeesSaved = result.communes;
       
-      infoDiv.innerHTML = `
-        <strong style="color:#059669;">✅ ${result.nbCommunes} communes trouvées</strong> 
-        dans <strong>${result.departements.length} département(s)</strong> : 
-        ${result.departements.join(', ')}
-      `;
+      infoDiv.innerHTML = `${result.nbCommunes} communes • ${result.departements.length} département(s)`;
       
-      listeDiv.innerHTML = result.communes
-        .sort()
-        .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">${c}</div>`)
-        .join('');
+      updateListeCommunes();
       
-// Afficher le groupe de boutons Valider/Modifier
-const btnGroupe = document.getElementById('btnGroupeCommunes');
-if (btnGroupe) {
-  btnGroupe.style.display = 'flex';
-  btnGroupe.style.flexDirection = 'column';
-}
-      
-      if (ouvrirVisualisation) {
-        const urlVisu = `visualisation.html?dep=${encodeURIComponent(codeDept)}&commune=${encodeURIComponent(commune)}&${DEPS_METRO.includes(codeDept) ? 'tempsTrajet' : 'rayonKm'}=${encodeURIComponent(rayonOuTemps)}`;
-        window.open(urlVisu, "_blank");
+      if (btnGroupe) {
+        // Afficher UNIQUEMENT les boutons de validation
+        const boutonsValidation = document.getElementById('boutons-validation');
+        const boutonsPersonnalisation = document.getElementById('boutons-personnalisation');
+        const zoneValideeBadge = document.getElementById('zone-validee-badge');
+        
+        if (boutonsValidation) {
+          boutonsValidation.style.display = 'flex';
+          boutonsValidation.classList.remove('hidden');
+        }
+        // Afficher l'avertissement
+        const avertissement = document.getElementById('avertissementCommunes');
+        if (avertissement) {
+          avertissement.style.display = 'block';
+        }
+        
+        // Masquer les autres boutons
+        if (boutonsPersonnalisation) {
+          boutonsPersonnalisation.style.display = 'none';
+          boutonsPersonnalisation.classList.add('hidden');
+        }
+        if (zoneValideeBadge) {
+          zoneValideeBadge.style.display = 'none';
+          zoneValideeBadge.classList.add('hidden');
+        }
+        
+        btnGroupe.style.display = 'block';
       }
+      
+      updateMapPrincipal();
       
     } else {
       communesCalculeesSaved = [];
-      infoDiv.innerHTML = `<span style="color:#dc2626;">❌ Aucune commune trouvée</span>`;
+      infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Aucune commune</span>';
       listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucun résultat</div>';
-      if (btnValider) btnValider.style.display = 'none';
+      if (btnGroupe) btnGroupe.style.display = 'none';
     }
     
   } catch (error) {
     console.error('❌ Erreur:', error);
     communesCalculeesSaved = [];
-    infoDiv.innerHTML = `<span style="color:#dc2626;">❌ Erreur lors du calcul</span>`;
-    listeDiv.innerHTML = `<div style="text-align:center; padding:20px; color:#dc2626;">Erreur réseau</div>`;
-    if (btnValider) btnValider.style.display = 'none';
+    infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Erreur</span>';
+    listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#dc2626;">Erreur réseau</div>';
+    if (btnGroupe) btnGroupe.style.display = 'none';
   }
 }
 
-/* ========== FONCTION VALIDER COMMUNES ========== */
+function updateListeCommunes() {
+  const listeDiv = document.getElementById('communesCalculeesListe');
+  if (!listeDiv) return;
+  
+  if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
+    listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucune commune</div>';
+    return;
+  }
+  
+  listeDiv.innerHTML = communesCalculeesSaved
+    .sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }))
+    .map(c => `<div>${c}</div>`)
+    .join('');
+}
+
 function validerCommunes() {
   if (communesCalculeesSaved.length === 0) {
-    alert("⚠️ Aucune commune à valider. Veuillez d'abord calculer la liste.");
+    alert("⚠️ Aucune commune à valider.");
     return;
   }
   
   communesValidees = true;
   listeModifieeManuelle = false;
   
-  // Masquer l'avertissement
   const avertissement = document.getElementById('avertissementCommunes');
-  if (avertissement) {
-    avertissement.style.display = 'none';
-  }
+  if (avertissement) avertissement.style.display = 'none';
   
-  // Afficher le message de validation
-  const messageExplicatif = document.getElementById('messageExplicatif');
-  if (messageExplicatif) {
-    messageExplicatif.style.display = 'block';
-    messageExplicatif.innerHTML = '✅ <strong>Liste validée sans vérification</strong> - Vous pourrez toujours la modifier en cliquant sur "Modifier".';
-    messageExplicatif.style.color = '#f59e0b';
-    messageExplicatif.style.fontWeight = '600';
-  }
-  
-  // Mettre à jour l'info
   const infoDiv = document.getElementById('communesCalculeesInfo');
   if (infoDiv) {
-    const existingText = infoDiv.innerHTML;
-    infoDiv.innerHTML = existingText + '<br><strong style="color:#f59e0b;">⚠️ Liste validée sans vérification manuelle</strong>';
+    infoDiv.innerHTML = `${communesCalculeesSaved.length} communes • <span style="background: #d1fae5; color: #059669; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">✓ Validée</span>`;
   }
   
-  // Transformer le groupe de boutons
-  const btnGroupe = document.getElementById('btnGroupeCommunes');
-  if (btnGroupe) {
-    btnGroupe.innerHTML = `
-      <button 
-        type="button" 
-        onclick="afficherInterfaceModification()" 
-        style="
-          width: 100%;
-          padding: 12px;
-          background: #f59e0b;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        "
-      >
-        ✏️ Modifier ma liste maintenant
-      </button>
-    `;
+  const boutonsValidation = document.getElementById('boutons-validation');
+  const zoneValideeBadge = document.getElementById('zone-validee-badge');
+  const zoneValideeNb = document.getElementById('zone-validee-nb');
+  
+  // Masquer les boutons de validation
+  if (boutonsValidation) {
+    boutonsValidation.style.display = 'none';
+    boutonsValidation.classList.add('hidden');
   }
   
-  console.log('✅ Communes validées (sans vérification):', communesCalculeesSaved.length);
+  // Afficher UNIQUEMENT le badge validé
+  if (zoneValideeBadge) {
+    zoneValideeBadge.style.display = 'block';
+    zoneValideeBadge.classList.remove('hidden');
+
+    if (zoneValideeNb) zoneValideeNb.textContent = `${communesCalculeesSaved.length} communes`;
+  }
 }
 
-/* ========== GESTION INTERFACE MODIFICATION COMMUNES ========== */
-
-// Variable pour tracker si la liste a été modifiée manuellement
-let listeModifieeManuelle = false;
-
 function afficherInterfaceModification() {
-  const interfaceModif = document.getElementById('interfaceModificationCommunes');
-  const btnGroupe = document.getElementById('btnGroupeCommunes');
+  const vueListeCommunes = document.getElementById('vueListeCommunes');
+  const vuePersonnalisation = document.getElementById('vuePersonnalisation');
+  const boutonsValidation = document.getElementById('boutons-validation');
+  const boutonsPersonnalisation = document.getElementById('boutons-personnalisation');
+  const zoneValideeBadge = document.getElementById('zone-validee-badge');
+  const infoDiv = document.getElementById('communesCalculeesInfo');
+  const avertissement = document.getElementById('avertissementCommunes');
   
-  // Masquer les boutons Valider/Modifier
-  btnGroupe.style.display = 'none';
+  if (avertissement) avertissement.style.display = 'none';
   
-  // Afficher l'interface de modification
-  interfaceModif.classList.remove('hidden');
+  // Masquer la liste, afficher la personnalisation
+  if (vueListeCommunes) vueListeCommunes.classList.add('hidden');
+  if (vuePersonnalisation) vuePersonnalisation.classList.remove('hidden');
   
-  // Générer les checkboxes à partir de communesCalculeesSaved
+  // IMPORTANT : Masquer TOUS les autres boutons
+  if (boutonsValidation) {
+    boutonsValidation.style.display = 'none';
+    boutonsValidation.classList.add('hidden');
+  }
+  if (zoneValideeBadge) {
+    zoneValideeBadge.style.display = 'none';
+    zoneValideeBadge.classList.add('hidden');
+  }
+  
+  // Afficher UNIQUEMENT les boutons de personnalisation
+  // Afficher UNIQUEMENT les boutons de personnalisation
+  if (boutonsPersonnalisation) {
+    boutonsPersonnalisation.style.display = 'flex';
+    boutonsPersonnalisation.classList.remove('hidden');
+  }
+  
+  if (infoDiv) {
+    const nbCommunes = communesCalculeesSaved.length;
+    infoDiv.innerHTML = `<span style="color:#f59e0b; font-weight:600;">✏️ Mode édition</span> • ${nbCommunes} communes`;
+  }
+  
   genererCheckboxesCommunes();
   
-  // Vider la recherche et les résultats
   document.getElementById('rechercheCommune').value = '';
   document.getElementById('resultatsRecherche').innerHTML = '';
   
-  // Scroll vers l'interface
   setTimeout(() => {
-    interfaceModif.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    updateMapPrincipalAvecSelection();
   }, 100);
 }
 
 function genererCheckboxesCommunes() {
+  
   const container = document.getElementById('listeCommunesCheckboxes');
   
-  if (!container) {
-    console.error('❌ Conteneur listeCommunesCheckboxes introuvable');
-    return;
-  }
-  
-  console.log('📋 Génération checkboxes pour', communesCalculeesSaved.length, 'commune(s)');
+  if (!container) return;
   
   if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
-    container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px; margin: 0;">Aucune commune à afficher</p>';
+    container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px; margin: 0;">Aucune commune</p>';
     updateCompteurCommunes();
     return;
   }
   
-  // 🆕 MÉMORISER L'ÉTAT ACTUEL DES CHECKBOXES AVANT DE RÉGÉNÉRER
-  const etatCheckboxes = {};
-  const checkboxesActuelles = container.querySelectorAll('input[type="checkbox"]');
-  checkboxesActuelles.forEach(cb => {
-    etatCheckboxes[cb.value] = cb.checked;
-  });
-  
-  console.log('💾 États sauvegardés:', Object.keys(etatCheckboxes).length, 'communes');
-  
-  // Trier les communes par ordre alphabétique
   const communesTriees = [...communesCalculeesSaved].sort((a, b) => {
     return a.localeCompare(b, 'fr', { sensitivity: 'base' });
   });
   
-  // Générer le HTML
   const html = communesTriees.map((commune, index) => {
-    // Échapper les caractères spéciaux pour éviter les problèmes HTML/JS
-    const communeEchapee = commune
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    const communeEchapee = commune.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     
-    // RESTAURER L'ÉTAT DE LA CHECKBOX (ou cocher par défaut si nouvelle commune)
-    const isChecked = etatCheckboxes.hasOwnProperty(communeEchapee) 
-      ? etatCheckboxes[communeEchapee]  // Restaurer l'état précédent
-      : true;  // Nouvelle commune = cochée par défaut
-    
-        return `
-      <div style="padding: 10px 8px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; transition: background 0.2s;" title="" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">        
-      <input 
-          type="checkbox" 
-          id="commune_${index}" 
-          value="${communeEchapee}" 
-          ${isChecked ? 'checked' : ''}
-          onchange="updateCompteurCommunes()"
-          title=""
-          style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px; flex-shrink: 0;"
-        />
-        <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px; line-height: 1.4;" title="">
-          ${communeEchapee}
-        </label>
+    return `
+      <div style="padding: 10px 8px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">        
+        <input type="checkbox" id="commune_${index}" value="${communeEchapee}" checked onchange="updateCompteurCommunes()" style="margin-right: 10px; cursor: pointer; width: 18px; height: 18px;"/>
+        <label for="commune_${index}" style="cursor: pointer; flex: 1; margin: 0; font-size: 14px;">${communeEchapee}</label>
       </div>
     `;
   }).join('');
   
   container.innerHTML = html;
-  console.log('✅ Checkboxes générées avec états restaurés');
-  
   updateCompteurCommunes();
 }
 
@@ -1352,191 +1359,192 @@ function updateCompteurCommunes() {
   const nbCochees = Array.from(checkboxes).filter(cb => cb.checked).length;
   
   const compteur = document.getElementById('compteurCommunes');
-  if (compteur) {
-    compteur.textContent = `${nbCochees} commune(s)`;
+  if (compteur) compteur.textContent = `${nbCochees} commune(s)`;
+  
+  updateMapPrincipalAvecSelection();
+}
+
+async function updateMapPrincipalAvecSelection() {
+  if (!mapPrincipal) {
+    initMapPrincipal();
+    setTimeout(() => updateMapPrincipalAvecSelection(), 500);
+    return;
   }
+  
+  const loadingIndicator = document.getElementById('mapLoadingIndicator');
+  if (loadingIndicator) loadingIndicator.style.display = 'block';
+  
+  Object.values(communeLayersPrincipal).forEach(layer => mapPrincipal.removeLayer(layer));
+  communeLayersPrincipal = {};
+  
+  const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
+  const communesCochees = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+  
+  if (communesCochees.length === 0) {
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
+    return;
+  }
+  
+  const communeCentrale = communeSelect.value.split('(')[0].trim();
+  const bounds = [];
+  
+  for (const communeAvecCP of communesCochees) {
+    const communeNom = communeAvecCP.split('(')[0].trim();
+    const isCentrale = (communeNom.toLowerCase() === communeCentrale.toLowerCase());
+    
+    try {
+      const match = communeAvecCP.match(/\((\d{5})\)/);
+      const codePostal = match ? match[1] : null;
+      
+      const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(communeNom)}&fields=nom,codesPostaux,contour&format=geojson&geometry=contour`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (!data.features || data.features.length === 0) continue;
+      
+      let feature = data.features[0];
+      
+      if (codePostal && data.features.length > 1) {
+        const matchingFeature = data.features.find(f => 
+          f.properties.codesPostaux && f.properties.codesPostaux.includes(codePostal)
+        );
+        if (matchingFeature) feature = matchingFeature;
+      }
+      
+      const layer = L.geoJSON(feature, {
+        style: {
+          fillColor: isCentrale ? '#ef4444' : '#3b82f6',
+          fillOpacity: isCentrale ? 0.6 : 0.4,
+          color: isCentrale ? '#dc2626' : '#1e40af',
+          weight: isCentrale ? 3 : 2
+        },
+        onEachFeature: (feature, layer) => {
+          const cp = feature.properties.codesPostaux ? feature.properties.codesPostaux[0] : '';
+          const tooltipContent = isCentrale 
+            ? `📍 <strong>${communeNom}</strong>${cp ? ' (' + cp + ')' : ''}<br><em>Commune centrale</em>`
+            : `${communeNom}${cp ? ' (' + cp + ')' : ''}`;
+          
+          layer.bindTooltip(tooltipContent, {
+            permanent: false,
+            direction: 'top',
+            className: 'custom-tooltip'
+          });
+        }
+      }).addTo(mapPrincipal);
+      
+      communeLayersPrincipal[communeNom] = layer;
+      
+      const geojsonBounds = layer.getBounds();
+      bounds.push([geojsonBounds.getSouth(), geojsonBounds.getWest()]);
+      bounds.push([geojsonBounds.getNorth(), geojsonBounds.getEast()]);
+      
+    } catch (error) {
+      console.warn(`⚠️ Impossible de charger ${communeNom}:`, error);
+    }
+  }
+  
+  if (bounds.length > 0) {
+    mapPrincipal.fitBounds(bounds, { padding: [20, 20] });
+  }
+  
+  if (loadingIndicator) loadingIndicator.style.display = 'none';
+}
+
+let rechercheTimeout;
+
+function rechercherCommuneEnTempsReel() {
+  clearTimeout(rechercheTimeout);
+  
+  const resultatsDiv = document.getElementById('resultatsRecherche');
+  if (!resultatsDiv) return;
+  
+  rechercheTimeout = setTimeout(() => {
+    const recherche = document.getElementById('rechercheCommune').value.trim();
+    
+    if (recherche.length === 0) {
+      resultatsDiv.innerHTML = '';
+      return;
+    }
+    
+    if (recherche.length < 3) {
+      resultatsDiv.innerHTML = '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404;">⚠️ Tapez au moins 3 caractères</div>';
+      return;
+    }
+    
+    rechercherCommune();
+  }, 500);
 }
 
 function rechercherCommune() {
   const recherche = document.getElementById('rechercheCommune').value.trim();
   const resultatsDiv = document.getElementById('resultatsRecherche');
   
-  console.log('🔍 Recherche lancée pour:', recherche);
+  if (recherche.length < 3) return;
   
-  if (recherche.length < 3) {
-    resultatsDiv.innerHTML = '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Tapez au moins 3 caractères</div>';
-    return;
-  }
-  
-  resultatsDiv.innerHTML = '<div style="background: #e6f7f7; border: 1px solid #0ea5a4; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #0d8887; margin-top: 8px;">🔄 Recherche en cours...</div>';
+  resultatsDiv.innerHTML = '<div style="background: #e6f7f7; border: 1px solid #0ea5a4; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #0d8887;">🔄 Recherche...</div>';
   
   const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(recherche)}&fields=nom,codesPostaux,departement&limit=10`;
-  console.log('🌐 URL appelée:', url);
   
-  fetch(url, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json'
-    }
-  })
-    .then(response => {
-      console.log('📡 Status HTTP:', response.status);
-      if (!response.ok) {
-        throw new Error(`Erreur API (${response.status})`);
-      }
-      return response.json();
-    })
+  fetch(url)
+    .then(response => response.json())
     .then(communes => {
-      console.log('📦 Résultats:', communes.length, 'commune(s)');
-      
       if (!communes || communes.length === 0) {
-        resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Aucune commune trouvée pour "${recherche}"</div>`;
+        resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626;">❌ Aucune commune trouvée</div>`;
         return;
       }
       
       const html = communes.map(c => {
         const cp = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
         const nomComplet = cp ? `${c.nom} (${cp})` : c.nom;
-        const deptNom = c.departement.nom || '';
         const deptCode = c.departement.code || '';
         
-        // Échapper les guillemets pour éviter les erreurs JavaScript
         const nomEchape = nomComplet.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const deptNomEchape = deptNom.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         
         return `
-          <div 
-              onclick="ajouterCommuneManuellement('${nomEchape}')"
-            style="
-              padding: 12px; 
-              cursor: pointer; 
-              border-bottom: 1px solid #f3f4f6;
-              transition: background 0.2s;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-            "
-            onmouseover="this.style.background='#f0f9ff'"
-            onmouseout="this.style.background='white'"
-          >
-          <span style="font-weight: 600; color: #0f1724; font-size: 14px;" title="">${nomComplet}</span>
-            <span style="color: #6b7280; font-size: 12px; white-space: nowrap; margin-left: 12px;">${deptCode} - ${deptNomEchape}</span>
+          <div onclick="ajouterCommuneManuellement('${nomEchape}')" style="padding: 12px; cursor: pointer; border-bottom: 1px solid #f3f4f6;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='white'">
+            <span style="font-weight: 600; color: #0f1724; font-size: 14px;">${nomComplet}</span>
+            <span style="color: #6b7280; font-size: 12px; margin-left: 12px;">${deptCode}</span>
           </div>
         `;
       }).join('');
       
-      resultatsDiv.innerHTML = `
-        <div style="
-          background: white; 
-          border: 2px solid #0ea5a4; 
-          border-radius: 8px; 
-          margin-top: 8px; 
-          max-height: 250px; 
-          overflow-y: auto;
-        ">
-          ${html}
-        </div>
-      `;
+      resultatsDiv.innerHTML = `<div style="background: white; border: 2px solid #0ea5a4; border-radius: 8px; max-height: 250px; overflow-y: auto;">${html}</div>`;
     })
     .catch(error => {
-      console.error('❌ Erreur:', error);
-      resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626; margin-top: 8px;">❌ Erreur : ${error.message}</div>`;
+      resultatsDiv.innerHTML = `<div style="background: #fee; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #dc2626;">❌ Erreur</div>`;
     });
-}
-// RECHERCHE EN TEMPS RÉEL (sans clic sur bouton)
-let rechercheTimeout;
-
-function rechercherCommuneEnTempsReel() {
-  // Annuler la recherche précédente si l'utilisateur tape encore
-  clearTimeout(rechercheTimeout);
-  
-  const resultatsDiv = document.getElementById('resultatsRecherche');
-  
-  // NETTOYER LES ANCIENS MESSAGES D'ERREUR
-  if (!resultatsDiv) return;
-  
-  // Attendre 500ms après la dernière frappe avant de chercher
-  rechercheTimeout = setTimeout(() => {
-    const recherche = document.getElementById('rechercheCommune').value.trim();
-    
-    if (recherche.length === 0) {
-      // Vider les résultats si le champ est vide
-      resultatsDiv.innerHTML = '';
-      return;
-    }
-    
-    if (recherche.length < 3) {
-      resultatsDiv.innerHTML = 
-        '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">⚠️ Tapez au moins 3 caractères</div>';
-      return;
-    }
-    
-    // Lancer la recherche
-    rechercherCommune();
-  }, 500);
 }
 
 function ajouterCommuneManuellement(communeNom) {
-  console.log('➕ Tentative ajout:', communeNom);
-  
-  // Nettoyer le nom de la commune (enlever les espaces inutiles)
   const communeNettoyee = communeNom.trim();
   
-  // Vérifier si la commune n'est pas déjà dans la liste
   const dejaPresente = communesCalculeesSaved.some(c => 
     c.toLowerCase() === communeNettoyee.toLowerCase()
   );
   
   if (dejaPresente) {
-    document.getElementById('resultatsRecherche').innerHTML = `
-      <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404; margin-top: 8px;">
-        ⚠️ Cette commune est déjà dans votre liste
-      </div>
-    `;
-    console.log('⚠️ Commune déjà présente:', communeNettoyee);
+    document.getElementById('resultatsRecherche').innerHTML = '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #856404;">⚠️ Déjà dans la liste</div>';
     return;
   }
   
-  // Ajouter à la liste
   communesCalculeesSaved.push(communeNettoyee);
-  console.log('✅ Commune ajoutée. Nouvelle taille:', communesCalculeesSaved.length);
-  
-  // Régénérer les checkboxes avec la nouvelle commune
   genererCheckboxesCommunes();
   
-  // Afficher confirmation avec timeout pour que l'utilisateur puisse la voir
   const resultatsDiv = document.getElementById('resultatsRecherche');
-  resultatsDiv.innerHTML = `
-    <div style="background: #d1fae5; border: 1px solid #10b981; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #059669; margin-top: 8px;">
-      ✅ Commune ajoutée : <strong>${communeNettoyee}</strong>
-    </div>
-  `;
+  resultatsDiv.innerHTML = `<div style="background: #d1fae5; border: 1px solid #10b981; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #059669;">✅ Commune ajoutée</div>`;
   
-  // Effacer le message de confirmation après 3 secondes
   setTimeout(() => {
     resultatsDiv.innerHTML = '';
   }, 3000);
   
-  // Vider le champ de recherche
   const champRecherche = document.getElementById('rechercheCommune');
   if (champRecherche) {
     champRecherche.value = '';
-    champRecherche.focus(); // Remettre le focus pour une nouvelle recherche
-  }
-  
-  // Scroll vers la liste pour voir la nouvelle commune
-  const listeDiv = document.getElementById('listeCommunesCheckboxes');
-  if (listeDiv) {
-    setTimeout(() => {
-      listeDiv.scrollTop = listeDiv.scrollHeight;
-    }, 100);
+    champRecherche.focus();
   }
 } 
 
 function validerModifications() {
-  console.log('💾 Validation des modifications...');
-  
-  // Récupérer toutes les communes cochées
   const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
   const communesSelectionnees = [];
   
@@ -1546,130 +1554,117 @@ function validerModifications() {
     }
   });
   
-  console.log('📊 Communes cochées:', communesSelectionnees.length);
-  
   if (communesSelectionnees.length === 0) {
-    alert('⚠️ Vous devez sélectionner au moins une commune');
+    alert('⚠️ Sélectionnez au moins une commune');
     return;
   }
   
-  // Mettre à jour la liste sauvegardée (avec tri)
   communesCalculeesSaved = communesSelectionnees.sort((a, b) => {
     return a.localeCompare(b, 'fr', { sensitivity: 'base' });
   });
   
-  // Marquer comme validé ET modifié manuellement
   communesValidees = true;
   listeModifieeManuelle = true;
   
-  console.log('✅ Liste mise à jour:', communesCalculeesSaved.length, 'communes');
-  console.log('🔧 Mode manuel activé:', listeModifieeManuelle);
+  const vueListeCommunes = document.getElementById('vueListeCommunes');
+  const vuePersonnalisation = document.getElementById('vuePersonnalisation');
+  const boutonsValidation = document.getElementById('boutons-validation');
+  const boutonsPersonnalisation = document.getElementById('boutons-personnalisation');
+  const zoneValideeBadge = document.getElementById('zone-validee-badge');
+  const zoneValideeNb = document.getElementById('zone-validee-nb');
   
-  // Masquer l'interface de modification
-  const interfaceModif = document.getElementById('interfaceModificationCommunes');
-  if (interfaceModif) {
-    interfaceModif.classList.add('hidden');
+  if (vuePersonnalisation) vuePersonnalisation.classList.add('hidden');
+  if (vueListeCommunes) vueListeCommunes.classList.remove('hidden');
+  
+    // Masquer les boutons de personnalisation
+  if (boutonsPersonnalisation) {
+    boutonsPersonnalisation.style.display = 'none';
+    boutonsPersonnalisation.classList.add('hidden');
   }
   
-  // Mettre à jour le message explicatif
-  const messageExplicatif = document.getElementById('messageExplicatif');
-  if (messageExplicatif) {
-    messageExplicatif.innerHTML = '✅ <strong>Liste personnalisée validée</strong> - Vous avez modifié manuellement la liste des communes.';
-    messageExplicatif.style.color = '#059669';
-    messageExplicatif.style.fontWeight = '600';
+  // Masquer les boutons de validation
+  if (boutonsValidation) {
+    boutonsValidation.style.display = 'none';
+    boutonsValidation.classList.add('hidden');
   }
   
-  // Afficher confirmation dans l'info
+  // Afficher UNIQUEMENT le badge validé
+  if (zoneValideeBadge) {
+    zoneValideeBadge.style.display = 'block';
+    zoneValideeBadge.classList.remove('hidden');
+    if (zoneValideeNb) zoneValideeNb.textContent = `${communesSelectionnees.length} communes`;
+  }
+  
+  // Masquer l'avertissement après validation
+  const avertissement = document.getElementById('avertissementCommunes');
+  if (avertissement) {
+    avertissement.style.display = 'none';
+  }
+  
+  updateListeCommunes();
+  
   const infoDiv = document.getElementById('communesCalculeesInfo');
   if (infoDiv) {
-    infoDiv.innerHTML = `
-      <strong style="color:#059669;">✅ ${communesSelectionnees.length} communes sélectionnées (liste personnalisée)</strong>
-    `;
+    infoDiv.innerHTML = `${communesSelectionnees.length} communes • <span style="background: #d1fae5; color: #059669; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">✓ Personnalisée</span>`;
   }
   
-  // Mettre à jour l'affichage de la liste avec les communes triées
-  const listeDiv = document.getElementById('communesCalculeesListe');
-  if (listeDiv) {
-    listeDiv.innerHTML = communesCalculeesSaved
-      .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">✓ ${c}</div>`)
-      .join('');
-  }
-  
-  // Réafficher le bouton "Modifier" pour permettre une nouvelle modification
-  const btnGroupe = document.getElementById('btnGroupeCommunes');
-  if (btnGroupe) {
-    btnGroupe.style.display = 'flex';
-    btnGroupe.style.flexDirection = 'column';
-  }
-  
-  // Masquer le bouton "Valider" (déjà validé)
-  const btnValider = document.getElementById('btnValiderCommunes');
-  if (btnValider) {
-    btnValider.style.display = 'none';
-  }
-  
-  console.log('✅ Modifications validées avec succès');
-  
-  // Scroll vers le haut pour voir la confirmation
-  const zoneCommunes = document.getElementById('communesCalculeesZone');
-  if (zoneCommunes) {
-    zoneCommunes.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  updateMapPrincipal();
 }
 
 function annulerModifications() {
-  // Masquer l'interface de modification
-  document.getElementById('interfaceModificationCommunes').classList.add('hidden');
+  const vueListeCommunes = document.getElementById('vueListeCommunes');
+  const vuePersonnalisation = document.getElementById('vuePersonnalisation');
+  const boutonsValidation = document.getElementById('boutons-validation');
+  const boutonsPersonnalisation = document.getElementById('boutons-personnalisation');
+  const zoneValideeBadge = document.getElementById('zone-validee-badge');
   
-  // Réafficher les boutons
-  const btnGroupe = document.getElementById('btnGroupeCommunes');
-  btnGroupe.style.display = 'flex';
-  btnGroupe.style.flexDirection = 'column';
+  if (vuePersonnalisation) vuePersonnalisation.classList.add('hidden');
+  if (vueListeCommunes) vueListeCommunes.classList.remove('hidden');
   
-  // Vider la recherche
+  // Masquer les boutons de personnalisation
+  if (boutonsPersonnalisation) {
+    boutonsPersonnalisation.style.display = 'none';
+    boutonsPersonnalisation.classList.add('hidden');
+  }
+  
+  // Afficher les bons boutons selon l'état
+  if (communesValidees) {
+    // Zone validée : afficher uniquement le badge
+    if (boutonsValidation) {
+      boutonsValidation.style.display = 'none';
+      boutonsValidation.classList.add('hidden');
+    }
+    if (zoneValideeBadge) {
+      zoneValideeBadge.style.display = 'block';
+      zoneValideeBadge.classList.remove('hidden');
+    }
+  } else {
+    // Zone non validée : afficher les boutons de validation
+    if (boutonsValidation) {
+      boutonsValidation.style.display = 'flex';
+      boutonsValidation.classList.remove('hidden');
+    }
+    if (zoneValideeBadge) {
+      zoneValideeBadge.style.display = 'none';
+      zoneValideeBadge.classList.add('hidden');
+    }
+  }
+  
   document.getElementById('rechercheCommune').value = '';
   document.getElementById('resultatsRecherche').innerHTML = '';
   
-  console.log('❌ Modifications annulées');
+  // Si la zone n'est pas validée, réafficher l'avertissement
+  if (!communesValidees) {
+    const avertissement = document.getElementById('avertissementCommunes');
+    if (avertissement) {
+      avertissement.style.display = 'block';
+    }
+  }
+  
+  updateMapPrincipal();
 }
 
-// 🆕 Modifier la fonction validerCommunes() originale
-function validerCommunes() {
-  if (communesCalculeesSaved.length === 0) {
-    alert("⚠️ Aucune commune à valider. Veuillez d'abord calculer la liste.");
-    return;
-  }
-  
-  communesValidees = true;
-  listeModifieeManuelle = false; // Pas de modification manuelle
-  
-  const btnValider = document.getElementById('btnValiderCommunes');
-  const infoDiv = document.getElementById('communesCalculeesInfo');
-  
-  if (btnValider) {
-    btnValider.innerHTML = '✅ Liste validée';
-    btnValider.disabled = true;
-    btnValider.style.background = '#059669';
-  }
-  
-  if (infoDiv) {
-    const existingText = infoDiv.innerHTML;
-    infoDiv.innerHTML = existingText + '<br><strong style="color:#059669;">✅ Liste validée et prête à être enregistrée</strong>';
-  }
-  
-  // Masquer le bouton Valider, garder le bouton Modifier visible
-  if (btnValider) {
-    btnValider.style.display = 'none';
-  }
-  
-  console.log('✅ Communes validées:', communesCalculeesSaved.length);
-}
-
-
-/* ========== PREFILL FUNCTION ========== */
 async function showFormAndPrefill(data) {
-  console.log("Données reçues pour pré-remplissage:", data);
-
   formEl.classList.remove("hidden");
   rest.classList.remove("hidden");
   
@@ -1700,29 +1695,20 @@ async function showFormAndPrefill(data) {
     }
     
     if (data.visio !== undefined && data.visio !== null) {
-  const visioValue = String(data.visio).toLowerCase().trim();
-  const visioRadio = document.querySelector(`input[name="visio"][value="${visioValue}"]`);
-  if (visioRadio) {
-    visioRadio.checked = true;
-  } else {
-    console.warn("⚠️ Aucun bouton radio trouvé pour visio =", visioValue);
-  }
-}
+      const visioValue = String(data.visio).toLowerCase().trim();
+      const visioRadio = document.querySelector(`input[name="visio"][value="${visioValue}"]`);
+      if (visioRadio) visioRadio.checked = true;
+    }
     
-   if (data.departement) {
-  let deptCode = String(data.departement).trim();
-  // ✅ Gérer les codes à 1, 2 ou 3 chiffres
-  if (deptCode.length === 1) {
-    deptCode = "0" + deptCode;
-  }
-  // Les codes à 2 ou 3 chiffres passent directement
+    if (data.departement) {
+      let deptCode = String(data.departement).trim();
+      if (deptCode.length === 1) deptCode = "0" + deptCode;
       
       setTimeout(async () => {
         departSelect.value = deptCode;
         
         if (data.commune) {
           await loadCommunes(deptCode, data.commune);
-          // Si la commune est déjà avec code postal, la sélectionner directement
           if (data.commune.includes('(')) {
             communeSelect.value = data.commune;
           }
@@ -1774,9 +1760,6 @@ async function showFormAndPrefill(data) {
             const modeContactRadio = document.querySelector(`input[name="modeContact"][value="${data.modeContact}"]`);
             if (modeContactRadio) modeContactRadio.checked = true;
           }
-        } else {
-          modeContactBlock.classList.add("hidden");
-          consentNumber.textContent = "5";
         }
       }
     }
@@ -1788,416 +1771,310 @@ async function showFormAndPrefill(data) {
     setTimeout(() => updateSectionGeo(), 300);
   }
   
-// 🆕 CHARGEMENT DES COMMUNES SAUVEGARDÉES
   setTimeout(async () => {
     const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
     if (modeIntervention && modeIntervention.value !== 'cabinet') {
       
-      // 📦 CHARGER LES COMMUNES DEPUIS LES DONNÉES EXISTANTES
       if (data.communesCouvertes && data.communesCouvertes.trim() !== '') {
-        console.log('📦 Chargement des communes sauvegardées...');
-        
-        // Convertir la chaîne en tableau
         communesCalculeesSaved = data.communesCouvertes.split('|').filter(c => c.trim());
         communesValidees = true;
-        listeModifieeManuelle = true; // Considérer comme modifiées pour éviter le recalcul
+        listeModifieeManuelle = true;
         
-        console.log(`✅ ${communesCalculeesSaved.length} communes chargées depuis la BDD`);
-        
-        // Afficher la zone des communes
         const zoneCommunes = document.getElementById('communesCalculeesZone');
-        const listeDiv = document.getElementById('communesCalculeesListe');
         const infoDiv = document.getElementById('communesCalculeesInfo');
         
-        if (zoneCommunes && listeDiv && infoDiv) {
+        if (zoneCommunes && infoDiv) {
           zoneCommunes.classList.remove('hidden');
           
-          // Afficher les infos
-          const departements = data.departementsCouvertes || 'N/A';
-          infoDiv.innerHTML = `
-            <strong style="color:#059669;">✅ ${communesCalculeesSaved.length} communes enregistrées</strong> 
-            dans <strong>${departements}</strong>
-          `;
+          infoDiv.innerHTML = `✅ ${communesCalculeesSaved.length} communes enregistrées`;
           
-          // Afficher la liste
-          listeDiv.innerHTML = communesCalculeesSaved
-            .sort()
-            .map(c => `<div style="padding: 6px 0; border-bottom: 1px solid #f3f4f6;">✓ ${c}</div>`)
-            .join('');
+          updateListeCommunes();
           
-          // Afficher le bouton Modifier
           const btnGroupe = document.getElementById('btnGroupeCommunes');
-          if (btnGroupe) {
-            btnGroupe.style.display = 'flex';
-            btnGroupe.style.flexDirection = 'column';
+          const zoneValideeBadge = document.getElementById('zone-validee-badge');
+          const zoneValideeNb = document.getElementById('zone-validee-nb');
+          const boutonsValidation = document.getElementById('boutons-validation');
+          const boutonsPersonnalisation = document.getElementById('boutons-personnalisation');
+          
+          if (btnGroupe && zoneValideeBadge) {
+            // Masquer TOUS les boutons sauf le badge validé
+            if (boutonsValidation) {
+              boutonsValidation.style.display = 'none';
+              boutonsValidation.classList.add('hidden');
+            }
+            if (boutonsPersonnalisation) {
+              boutonsPersonnalisation.style.display = 'none';
+              boutonsPersonnalisation.classList.add('hidden');
+            }
+            // Masquer l'avertissement pour les utilisateurs existants
+            const avertissement = document.getElementById('avertissementCommunes');
+            if (avertissement) {
+              avertissement.style.display = 'none';
+            }
+            
+            // Afficher UNIQUEMENT le badge
+            if (zoneValideeNb) zoneValideeNb.textContent = `${communesCalculeesSaved.length} communes`;
+            zoneValideeBadge.style.display = 'block';
+            zoneValideeBadge.classList.remove('hidden');
+            btnGroupe.style.display = 'block';
           }
           
-          // Masquer le bouton Valider (déjà validé)
-          const btnValider = document.getElementById('btnValiderCommunes');
-          if (btnValider) {
-            btnValider.style.display = 'none';
-          }
-          
-          // Message personnalisé
-          const messageExplicatif = document.getElementById('messageExplicatif');
-          if (messageExplicatif) {
-            messageExplicatif.innerHTML = '✅ <strong>Liste sauvegardée</strong> - Ces communes ont été enregistrées lors de votre dernière modification.';
-            messageExplicatif.style.color = '#059669';
-            messageExplicatif.style.fontWeight = '600';
-          }
+          if (!mapPrincipal) initMapPrincipal();
+          setTimeout(() => {
+            updateMapPrincipal();
+          }, 500);
         }
       }
     }
   }, 1000);
 }
-
-/* ========== LISTENERS: numType toggles ========== */
-document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
-  const v = e.target.value;
-  siretErr.textContent = "";
-  siretNum.value = "";
-  siretBlock.classList.add("hidden"); noNum.classList.add("hidden");
-  rest.classList.add("hidden");
-  if (v === "siret") siretBlock.classList.remove("hidden");
-  else noNum.classList.remove("hidden");
-}));
-
-/* ========== VALIDATION on blur for SIRET ========== */
-siretNum.addEventListener('input', () => {
-  const v = siretNum.value.trim();
-  if (v.length === 14 && validSiret(v)) {
-    siretErr.textContent = ""; 
-    rest.classList.remove("hidden");
-  } else if (v.length === 14) {
-    siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; 
-    rest.classList.add("hidden");
-  }
-});
-
-siretNum.addEventListener('blur', () => {
-  const v = siretNum.value.trim();
-  if (!validSiret(v)) { 
-    siretErr.textContent = "Un numéro SIRET doit contenir exactement 14 chiffres."; 
-    rest.classList.add("hidden"); 
-  } else { 
-    siretErr.textContent = ""; 
-    rest.classList.remove("hidden");
-  }
-});
-
-/* ========== DISPO date logic ========== */
-document.querySelectorAll('input[name="dispo"]').forEach(r => r.addEventListener('change', e => {
-  const show = e.target.value === "oui";
-  dateBlock.classList.toggle("hidden", !show);
-  modeContactBlock.classList.toggle("hidden", !show);
+function validerChamps() {
+  // Nettoyer les anciennes erreurs
+  document.querySelectorAll('.champ-requis-manquant').forEach(el => {
+    el.classList.remove('champ-requis-manquant');
+  });
+  document.querySelectorAll('.error-message-inline').forEach(el => el.remove());
   
-  consentNumber.textContent = show ? "6" : "5";
+  const erreurs = [];
   
-  if (show) {
-    dateInput.setAttribute("min", new Date().toISOString().split("T")[0]);
-  } else {
-    dateInput.value = "";
-    placesInput.value = "";
-    document.querySelector('input[name="modeContact"][value="direct"]').checked = true;
+  // Type de numéro
+  const numTypeChecked = document.querySelector('input[name="numType"]:checked');
+  if (!numTypeChecked) {
+    erreurs.push({ element: document.querySelector('.prereq-section'), message: "Sélectionnez votre type de numéro professionnel" });
+  } else if (numTypeChecked.value === "siret" && !validSiret(siretNum.value.trim())) {
+    siretNum.classList.add('champ-requis-manquant');
+    erreurs.push({ element: siretNum, message: "SIRET invalide (14 chiffres)" });
   }
-}));
-
-/* ========== VALIDATION NOMBRE DE PLACES ========== */
-placesInput.addEventListener('input', function() {
-  const value = parseInt(this.value);
-  if (value < 1) this.value = 1;
-  else if (value > 99) this.value = 99;
-});
-
-/* ========== DEPARTEMENTS / COMMUNES ========== */
-async function loadDepartements(){
-  departSelect.innerHTML = '<option value="">-- chargement --</option>';
-  try {
-    const r = await fetch(DEPT_API);
-    const list = await r.json();
-    departSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
-    list.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d.code;
-      opt.textContent = `${d.code} — ${d.nom}`;
-      departSelect.appendChild(opt);
-    });
-  } catch (err) {
-    departSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+  
+  // Nom
+  if (!document.getElementById("nom").value.trim()) {
+    document.getElementById("nom").classList.add('champ-requis-manquant');
+    erreurs.push({ element: document.getElementById("nom"), message: "Le nom est obligatoire" });
   }
-}
-
-async function loadCommunes(deptCode, preselect){
-  communeSelect.innerHTML = '<option>Chargement...</option>';
-  try {
-    // 🆕 Demander les codes postaux en plus
-    const url = `https://geo.api.gouv.fr/departements/${deptCode}/communes?fields=nom,codesPostaux`;
-    const r = await fetch(url);
-    const list = await r.json();
+  
+  // Prénom
+  if (!document.getElementById("prenom").value.trim()) {
+    document.getElementById("prenom").classList.add('champ-requis-manquant');
+    erreurs.push({ element: document.getElementById("prenom"), message: "Le prénom est obligatoire" });
+  }
+  
+  // Profession
+  if (!document.getElementById("profession").value) {
+    document.getElementById("profession").classList.add('champ-requis-manquant');
+    erreurs.push({ element: document.getElementById("profession"), message: "Sélectionnez votre profession" });
+  }
+  
+  // Public
+  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) {
+    erreurs.push({ element: document.querySelector('input[name="public"]').closest('div'), message: "Sélectionnez au moins un public" });
+  }
+  
+  // Mode d'intervention
+  if (!document.querySelector('input[name="modeIntervention"]:checked')) {
+    erreurs.push({ element: document.querySelector('input[name="modeIntervention"]').closest('div'), message: "Sélectionnez votre mode d'intervention" });
+  }
+  
+  // Visio
+  if (!document.querySelector('input[name="visio"]:checked')) {
+    erreurs.push({ element: document.querySelector('input[name="visio"]').closest('div'), message: "Indiquez si vous proposez la visio" });
+  }
+  
+  // Département
+  if (!departSelect.value) {
+    departSelect.classList.add('champ-requis-manquant');
+    erreurs.push({ element: departSelect, message: "Sélectionnez votre département" });
+  }
+  
+  // Commune
+  if (!communeSelect.value) {
+    communeSelect.classList.add('champ-requis-manquant');
+    erreurs.push({ element: communeSelect, message: "Sélectionnez votre commune" });
+  }
+  
+  // Temps/rayon pour déplacements
+  const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
+  if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
+    const codeDept = departSelect.value ? departSelect.value.split(' ')[0] : '';
     
-    communeSelect.innerHTML = '<option value="">-- sélectionnez --</option>';
-    
-    list.forEach(c => {
-      const opt = document.createElement("option");
-      
-      // 🆕 Stocker "Commune (CodePostal)" dans value ET text
-      const codePostal = c.codesPostaux && c.codesPostaux.length > 0 ? c.codesPostaux[0] : '';
-      const communeAvecCP = codePostal ? `${c.nom} (${codePostal})` : c.nom;
-      
-      opt.value = communeAvecCP;  // ← Changement ici
-      opt.textContent = communeAvecCP;  // ← Changement ici
-      
-      communeSelect.appendChild(opt);
-    });
-    
-    if (preselect) {
-      // 🆕 Chercher la commune qui commence par le nom pré-sélectionné
-      const options = Array.from(communeSelect.options);
-      const matchingOption = options.find(opt => 
-        opt.value.startsWith(preselect.split('(')[0].trim())
-      );
-      
-      if (matchingOption) {
-        communeSelect.value = matchingOption.value;
-      } else {
-        communeSelect.value = preselect; // Fallback
+    if (DEPS_METRO.includes(codeDept)) {
+      const tempsSelect = document.getElementById("tempsTrajet");
+      if (tempsSelect && !tempsSelect.value) {
+        tempsSelect.classList.add('champ-requis-manquant');
+        erreurs.push({ element: tempsSelect, message: "Sélectionnez un temps de trajet" });
+      }
+    } else if (DEPS_DOMTOM.includes(codeDept)) {
+      const rayonSelect = document.getElementById("rayonKm");
+      if (rayonSelect && !rayonSelect.value) {
+        rayonSelect.classList.add('champ-requis-manquant');
+        erreurs.push({ element: rayonSelect, message: "Sélectionnez un rayon" });
       }
     }
-  } catch (err) {
-    communeSelect.innerHTML = '<option value="">Erreur chargement</option>';
-  }
-}
-
-departSelect.addEventListener('change', e => {
-  const v = e.target.value;
-  
-  // 🆕 Réinitialiser la zone de communes ET fermer l'interface de modification
-  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
-  if (modeIntervention && modeIntervention.value !== 'cabinet') {
-    // Fermer l'interface de modification si elle est ouverte
-    const interfaceModif = document.getElementById('interfaceModificationCommunes');
-    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
-      interfaceModif.classList.add('hidden');
-      console.log('🔄 Interface de modification fermée (changement département)');
-    }
     
-    // Réinitialiser les données
-    const zoneCommunes = document.getElementById('communesCalculeesZone');
-    if (zoneCommunes) {
-      zoneCommunes.classList.add('hidden');
-      communesCalculeesSaved = [];
-      communesValidees = false;
-      listeModifieeManuelle = false;
-    }
-    
-    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
-    const messageExplicatif = document.getElementById('messageExplicatif');
-    if (messageExplicatif) {
-      messageExplicatif.innerHTML = '💡 Cette liste est calculée approximativement. <strong>Certaines communes accessibles peuvent manquer</strong>. Utilisez <strong>"Modifier"</strong> pour ajuster si nécessaire.';
-      messageExplicatif.style.color = '#6b7280';
-      messageExplicatif.style.fontWeight = 'normal';
-      messageExplicatif.style.fontStyle = 'italic';
+    // Communes validées
+    if (!communesValidees || communesCalculeesSaved.length === 0) {
+      erreurs.push({ element: document.getElementById('communesCalculeesZone') || departSelect, message: "Validez la liste des communes" });
     }
   }
   
-  if (!v) { 
-    communeSelect.innerHTML = '<option value="">-- choisissez d\'abord le département --</option>'; 
-    return; 
-  }
-  loadCommunes(v);
-  updateSectionGeo();
-});
-
-//  Sur changement de commune
-communeSelect.addEventListener("change", function() {
-  const modeIntervention = document.querySelector('input[name="modeIntervention"]:checked');
-  if (modeIntervention && modeIntervention.value !== 'cabinet' && this.value) {
-    // Fermer l'interface de modification si elle est ouverte
-    const interfaceModif = document.getElementById('interfaceModificationCommunes');
-    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
-      interfaceModif.classList.add('hidden');
-      console.log('🔄 Interface de modification fermée (changement commune)');
+  // Disponibilités
+  const dispoChecked = document.querySelector('input[name="dispo"]:checked');
+  if (!dispoChecked) {
+    erreurs.push({ element: document.querySelector('input[name="dispo"]').closest('div'), message: "Répondez sur vos disponibilités" });
+  } else if (dispoChecked.value === "oui") {
+    if (!dateInput.value) {
+      dateInput.classList.add('champ-requis-manquant');
+      erreurs.push({ element: dateInput, message: "Date de disponibilité obligatoire" });
     }
     
-    // Réinitialiser l'état
-    communesValidees = false;
-    listeModifieeManuelle = false;
-    
-    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
-    const messageExplicatif = document.getElementById('messageExplicatif');
-    if (messageExplicatif) {
-      messageExplicatif.innerHTML = '💡 Cette liste est calculée approximativement. <strong>Certaines communes accessibles peuvent manquer</strong>. Utilisez <strong>"Modifier"</strong> pour ajuster si nécessaire.';
-      messageExplicatif.style.color = '#6b7280';
-      messageExplicatif.style.fontWeight = 'normal';
-      messageExplicatif.style.fontStyle = 'italic';
+    const places = parseInt(placesInput.value);
+    if (!places || places < 1 || places > 10) {
+      placesInput.classList.add('champ-requis-manquant');
+      erreurs.push({ element: placesInput, message: "Nombre de places (1-10)" });
     }
     
-    // Recalculer les communes
-    calculerEtAfficherCommunes(false, true);
+    if (!document.querySelector('input[name="modeContact"]:checked')) {
+      erreurs.push({ element: document.querySelector('input[name="modeContact"]').closest('div'), message: "Mode de contact obligatoire" });
+    }
   }
-});
-
-//  ÉVÉNEMENTS SUR LIENS VISUALISER
-if (visualiserLinkMetro) {
-  visualiserLinkMetro.addEventListener("click", function(e) {
-    e.preventDefault();
-    calculerEtAfficherCommunes(true, false);
+  
+  // Consentement
+  if (!document.getElementById("consent").checked) {
+    erreurs.push({ element: document.getElementById("consent").parentElement, message: "Le consentement est obligatoire" });
+  }
+  
+  // Afficher les erreurs
+  erreurs.forEach(err => {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'error-message-inline';
+    msgDiv.textContent = '⚠️ ' + err.message;
+    if (err.element.nextSibling) {
+      err.element.parentNode.insertBefore(msgDiv, err.element.nextSibling);
+    } else {
+      err.element.parentNode.appendChild(msgDiv);
+    }
   });
+  
+  // Scroller vers la première erreur
+  if (erreurs.length > 0) {
+    submitMsg.innerHTML = `<span style="color:#dc2626;font-weight:600;">❌ ${erreurs.length} champ(s) manquant(s) - voir ci-dessus</span>`;
+    erreurs[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return false;
+  }
+  
+  return true;
 }
 
-if (visualiserLinkOM) {
-  visualiserLinkOM.addEventListener("click", function(e) {
-    e.preventDefault();
-    calculerEtAfficherCommunes(true, false);
-  });
-}
-
-// Sur changement de temps/rayon
-document.getElementById("tempsTrajet")?.addEventListener("change", function() {
-  if (communeSelect.value) {
-    // Fermer l'interface de modification si elle est ouverte
-    const interfaceModif = document.getElementById('interfaceModificationCommunes');
-    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
-      interfaceModif.classList.add('hidden');
-      console.log('🔄 Interface de modification fermée (changement temps)');
-    }
-    
-    // Réinitialiser l'état
-    communesValidees = false;
-    listeModifieeManuelle = false;
-    
-    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
-    const messageExplicatif = document.getElementById('messageExplicatif');
-    if (messageExplicatif) {
-      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
-      messageExplicatif.style.color = '#6b7280';
-      messageExplicatif.style.fontWeight = 'normal';
-      messageExplicatif.style.fontStyle = 'italic';
-    }
-    
-    // Recalculer les communes
-    calculerEtAfficherCommunes(false, true);
-  }
-});
-
-document.getElementById("rayonKm")?.addEventListener("change", function() {
-  if (communeSelect.value) {
-    // Fermer l'interface de modification si elle est ouverte
-    const interfaceModif = document.getElementById('interfaceModificationCommunes');
-    if (interfaceModif && !interfaceModif.classList.contains('hidden')) {
-      interfaceModif.classList.add('hidden');
-      console.log('🔄 Interface de modification fermée (changement rayon)');
-    }
-    
-    // Réinitialiser l'état
-    communesValidees = false;
-    listeModifieeManuelle = false;
-    
-    // 🆕 RÉINITIALISER LE MESSAGE EXPLICATIF
-    const messageExplicatif = document.getElementById('messageExplicatif');
-    if (messageExplicatif) {
-      messageExplicatif.innerHTML = '💡 Cette liste est une <strong>estimation automatique</strong> basée sur votre temps de trajet / rayon.';
-      messageExplicatif.style.color = '#6b7280';
-      messageExplicatif.style.fontWeight = 'normal';
-      messageExplicatif.style.fontStyle = 'italic';
-    }
-    
-    // Recalculer les communes
-    calculerEtAfficherCommunes(false, true);
-  }
-});
-
-/* ========== SUBMIT FORM ========== */
 submitBtn.addEventListener('click', async () => {
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
-  // 🔒 DÉSACTIVER IMMÉDIATEMENT TOUS LES BOUTONS
-  submitBtn.disabled = true;
-  resetBtn.disabled = true;
-  editBtn.disabled = true;
-  
-  // VALIDATION DES COMMUNES pour mode déplacement
-  const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
-  if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
-    if (!communesValidees || communesCalculeesSaved.length === 0) {
-      submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Liste de communes non validée</span><br>' +
-        '<span style="color:#6b7280">Vous devez calculer et valider la liste des communes couvertes avant de soumettre le formulaire.</span>';
-      
-      // 🔓 RÉACTIVER LES BOUTONS
-      submitBtn.disabled = false;
-      resetBtn.disabled = false;
-      
-      const zoneCommunes = document.getElementById('communesCalculeesZone');
-      if (zoneCommunes) {
-        zoneCommunes.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      
-      return;
-    }
+  // Valider tous les champs
+  if (!validerChamps()) {
+    return;
   }
   
-  const numTypeChecked = document.querySelector('input[name="numType"]:checked');
-  if (!numTypeChecked) { submitMsg.textContent = "Vous devez indiquer votre type de numéro professionnel."; return; }
-  const numType = numTypeChecked.value;
-  if (numType === "siret" && !validSiret(siretNum.value.trim())) { submitMsg.textContent = "Numéro SIRET invalide."; return; }
-  if (!document.getElementById("nom").value.trim()) { submitMsg.textContent = "Nom requis."; return; }
-  if (!document.getElementById("prenom").value.trim()) { submitMsg.textContent = "Prénom requis."; return; }
-  if (!validPhone(document.getElementById("phone").value.trim())) { submitMsg.textContent = "Téléphone invalide."; return; }
-  if (!document.getElementById("profession").value) { submitMsg.textContent = "Profession requise."; return; }
-  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { submitMsg.textContent = "Sélectionnez au moins un public."; return; }
+  submitBtn.disabled = true;
+  resetBtn.disabled = true;
   
+  const numTypeChecked = document.querySelector('input[name="numType"]:checked');
+  const numType = numTypeChecked.value;
+  if (numType === "siret" && !validSiret(siretNum.value.trim())) { 
+    submitMsg.textContent = "SIRET invalide."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!document.getElementById("nom").value.trim()) { 
+    submitMsg.textContent = "Nom requis."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!document.getElementById("prenom").value.trim()) { 
+    submitMsg.textContent = "Prénom requis."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!document.getElementById("profession").value) { 
+    submitMsg.textContent = "Profession requise."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!Array.from(document.querySelectorAll('input[name="public"]:checked')).length) { 
+    submitMsg.textContent = "Sélectionnez au moins un public."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
   if (!document.querySelector('input[name="modeIntervention"]:checked')) { 
     submitMsg.textContent = "Sélectionnez votre mode d'intervention."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!document.querySelector('input[name="visio"]:checked')) { 
+    submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!departSelect.value) { 
+    submitMsg.textContent = "Département requis."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
+  if (!communeSelect.value) { 
+    submitMsg.textContent = "Commune requise."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
     return; 
   }
   
-  if (!document.querySelector('input[name="visio"]:checked')) { submitMsg.textContent = "Indiquez si vous proposez des RDV en visio."; return; }
-  if (!departSelect.value) { submitMsg.textContent = "Département requis."; return; }
-  if (!communeSelect.value) { submitMsg.textContent = "Commune requise."; return; }
-  
-  const modeInterventionChecked2 = document.querySelector('input[name="modeIntervention"]:checked');
-  if (modeInterventionChecked2 && modeInterventionChecked2.value !== 'cabinet') {
-    const codeDept = departSelect.value.split(' ')[0];
-    
-    if (DEPS_METRO.includes(codeDept)) {
-      const tempsValue = document.getElementById("tempsTrajet").value.trim();
-      if (!tempsValue || tempsValue === "-- Sélectionnez --") { 
-        submitMsg.textContent = "Indiquez votre temps de trajet maximal."; 
-        return; 
-      }
-    } else if (DEPS_DOMTOM.includes(codeDept)) {
-      const rayonValue = document.getElementById("rayonKm").value.trim();
-      if (!rayonValue || rayonValue === "-- Sélectionnez --") { 
-        submitMsg.textContent = "Indiquez votre rayon d'intervention."; 
-        return; 
-      }
-    }
+  const dispoChecked = document.querySelector('input[name="dispo"]:checked');
+  if (!dispoChecked) { 
+    submitMsg.textContent = "Répondez à la question disponibilités."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
   }
   
-  const dispoChecked = document.querySelector('input[name="dispo"]:checked');
-  if (!dispoChecked) { submitMsg.textContent = "Répondez à la question disponibilités."; return; }
   if (dispoChecked.value === "oui") {
-    if (!dateInput.value) { submitMsg.textContent = "Indiquez la date de disponibilité."; return; }
+    if (!dateInput.value) { 
+      submitMsg.textContent = "Indiquez la date de disponibilité."; 
+      submitBtn.disabled = false;
+      resetBtn.disabled = false;
+      return; 
+    }
     const places = parseInt(placesInput.value);
     if (!places || places < 1 || places > 10) {
-      submitMsg.textContent = "Indiquez le nombre de places disponibles (entre 1 et 10).";
+      submitMsg.textContent = "Indiquez le nombre de places (entre 1 et 10).";
+      submitBtn.disabled = false;
+      resetBtn.disabled = false;
       return;
     }
     
     const modeContactChecked = document.querySelector('input[name="modeContact"]:checked');
     if (!modeContactChecked) { 
       submitMsg.textContent = "Indiquez comment vous souhaitez être contacté."; 
+      submitBtn.disabled = false;
+      resetBtn.disabled = false;
       return; 
     }
   }
   
-  if (!document.getElementById("consent").checked) { submitMsg.textContent = "Le consentement est obligatoire."; return; }
+  if (!document.getElementById("consent").checked) { 
+    submitMsg.textContent = "Le consentement est obligatoire."; 
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    return; 
+  }
   
-  submitBtn.disabled = true;
-  submitMsg.innerHTML = '<span style="color:#6b7280">⏳ Envoi en cours...</span>';
+  submitMsg.innerHTML = '<span style="color:#6b7280">⏳ Envoi...</span>';
   
-const fd = new FormData();
+  const fd = new FormData();
   fd.append("action", "submitForm");
   fd.append("email", (CURRENT_EMAIL || emailEl.value || "").trim().toLowerCase());
   fd.append("numType", numType);
@@ -2214,29 +2091,10 @@ const fd = new FormData();
   fd.append("departement", departSelect.value);
   fd.append("commune", communeSelect.value);
 
-  // 🆕 GESTION AMÉLIORÉE DE L'ENVOI DES COMMUNES
-  if (listeModifieeManuelle && communesCalculeesSaved.length > 0) {
-    // L'utilisateur a modifié manuellement la liste
-    const communesString = communesCalculeesSaved.join('|');
-    fd.append("communesModifiees", communesString);
-    
-    console.log('📝 Envoi communes modifiées manuellement');
-    console.log('📊 Nombre:', communesCalculeesSaved.length);
-    console.log('📋 Aperçu:', communesString.substring(0, 200) + '...');
-    
-  } else if (communesValidees && communesCalculeesSaved.length > 0) {
-    // L'utilisateur a validé la liste calculée automatiquement SANS la modifier
-    const communesString = communesCalculeesSaved.join('|');
-    fd.append("communesModifiees", communesString);
-    
-    console.log('✅ Envoi communes calculées automatiquement (validées)');
-    console.log('📊 Nombre:', communesCalculeesSaved.length);
-    console.log('📋 Aperçu:', communesString.substring(0, 200) + '...');
-    
+  if (communesValidees && communesCalculeesSaved.length > 0) {
+    fd.append("communesModifiees", communesCalculeesSaved.join('|'));
   } else {
-    // Aucune commune validée (mode cabinet ou erreur)
     fd.append("communesModifiees", "");
-    console.log('⚠️ Aucune commune à envoyer');
   } 
   
   const codeDept = departSelect.value.split(' ')[0];
@@ -2251,54 +2109,38 @@ const fd = new FormData();
   
   fd.append("visio", document.querySelector('input[name="visio"]:checked').value);
   fd.append("precisionsGeo", document.getElementById("precisionsGeo").value.trim());
-  fd.append("dispo", document.querySelector('input[name="dispo"]:checked').value);
-  fd.append("dateDispo", dateInput.value);
-  fd.append("placesDisponibles", placesInput.value || "");
-  fd.append("modeContact", document.querySelector('input[name="modeContact"]:checked')?.value || "direct");
+  fd.append("dispo", dispoChecked.value);
+  
+  if (dispoChecked.value === "oui") {
+    fd.append("dateDispo", dateInput.value);
+    fd.append("placesDisponibles", placesInput.value || "");
+    fd.append("modeContact", document.querySelector('input[name="modeContact"]:checked')?.value || "direct");
+  } else {
+    fd.append("dateDispo", "");
+    fd.append("placesDisponibles", "");
+    fd.append("modeContact", "direct");
+  }
+  
   fd.append("consent", document.getElementById("consent").checked ? "oui" : "non");
   
-  const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('TIMEOUT')), 30000)
-  );
-  
-  const fetchPromise = fetch(SCRIPT_URL, { method: "POST", body: fd });
-  
   try {
-    const res = await Promise.race([fetchPromise, timeoutPromise]);
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: fd });
     const j = await res.json();
-    
-    console.log("Réponse serveur submitForm:", j);
     
     if (j.ok) {
       lockForm();
     } else {
       submitBtn.disabled = false;
       resetBtn.disabled = false;
-      
-      if (j.error === "SIRET_ALREADY_EXISTS") {
-        submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ SIRET déjà enregistré</span><br>' +
-          '<span style="color:#6b7280">Ce numéro SIRET est déjà utilisé par un autre professionnel. ' +
-          'Si vous pensez qu\'il s\'agit d\'une erreur, contactez-nous.</span>';
-      } else {
-        submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur lors de l\'envoi</span><br>' +
-          '<span style="color:#6b7280">' + (j.error || j.detail || "Erreur inconnue") + '</span>';
-      }
+      submitMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur : ' + (j.error || "Erreur inconnue") + '</span>';
     }
   } catch (err) {
-    console.error("Erreur réseau:", err);
     submitBtn.disabled = false;
-    
-    if (err.message === 'TIMEOUT') {
-      submitMsg.innerHTML = '<span style="color:#f59e0b;font-weight:600">⏱️ Délai d\'attente dépassé</span><br>' +
-        '<span style="color:#6b7280">Le serveur met trop de temps à répondre. Vos données ont peut-être été enregistrées. Vérifiez vos emails de confirmation.</span>';
-    } else {
-      submitMsg.innerHTML = '<span style="color:#dc2626;font-weight:600">❌ Erreur réseau</span><br>' +
-        '<span style="color:#6b7280">Impossible de communiquer avec le serveur. Vérifiez votre connexion et réessayez.</span>';
-    }
+    resetBtn.disabled = false;
+    submitMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur réseau</span>';
   }
 });
 
-/* ========== RESET ========== */
 resetBtn.addEventListener('click', () => {
   formEl.reset();
   document.getElementById("consent").checked = false;
@@ -2319,89 +2161,51 @@ resetBtn.addEventListener('click', () => {
   document.getElementById('zoneOutreMer').classList.add('hidden');
   document.getElementById('precisionsGeo').value = '';
   
-  // 🆕 Réinitialiser la zone communes
-  document.getElementById('communesCalculeesZone').classList.add('hidden');
-  communesCalculeesSaved = [];
-  communesValidees = false;
+  resetZoneCommunes();
   
   unlockForm();
 });
 
-// ============================================================
-// 🗺️ GESTION DE LA CARTE INTERACTIVE
-// ============================================================
-
-let map = null;
-let communeLayers = {};
-let carteVisible = false;
-
-function toggleCarte() {
-  const mapContainer = document.getElementById('mapContainer');
-  const btnToggle = document.getElementById('btnToggleCarte');
+function initMapPrincipal() {
+  if (mapPrincipal) return;
   
-  carteVisible = !carteVisible;
+  const container = document.getElementById('mapPrincipal');
+  if (!container) return;
   
-  if (carteVisible) {
-    mapContainer.style.display = 'block';
-    btnToggle.textContent = '→ Masquer la carte';
-    btnToggle.style.color = '#dc2626';
-    btnToggle.style.fontWeight = '600';
-    
-    if (!map) {
-      initMap();
-    }
-    
-    setTimeout(() => {
-      map.invalidateSize();
-      updateMap();
-    }, 100);
-  
-  } else {
-    mapContainer.style.display = 'none';
-    btnToggle.textContent = '→ Afficher la carte';
-    btnToggle.style.color = 'var(--primary)';
-    btnToggle.style.fontWeight = '600';
-  }
-}
-
-function initMap() {
-  if (map) return;
-  
-  map = L.map('map').setView([46.603354, 1.888334], 6);
+  mapPrincipal = L.map('mapPrincipal').setView([46.603354, 1.888334], 6);
   
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap',
     maxZoom: 18
-  }).addTo(map);
-  
-  console.log('✅ Carte initialisée');
+  }).addTo(mapPrincipal);
 }
 
-async function updateMap() {
-  if (!map) return;
-  
-  Object.values(communeLayers).forEach(layer => map.removeLayer(layer));
-  communeLayers = {};
-  
-  const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]:checked');
-  const communesCochees = Array.from(checkboxes).map(cb => cb.value);
-  
-  if (communesCochees.length === 0) {
-    console.log('⚠️ Aucune commune cochée');
+async function updateMapPrincipal() {
+  if (!mapPrincipal) {
+    initMapPrincipal();
+    setTimeout(() => updateMapPrincipal(), 500);
     return;
   }
   
-  console.log(`🗺️ Affichage de ${communesCochees.length} commune(s)`);
+  const loadingIndicator = document.getElementById('mapLoadingIndicator');
+  if (loadingIndicator) loadingIndicator.style.display = 'block';
+  
+  Object.values(communeLayersPrincipal).forEach(layer => mapPrincipal.removeLayer(layer));
+  communeLayersPrincipal = {};
+  
+  if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
+    return;
+  }
   
   const communeCentrale = communeSelect.value.split('(')[0].trim();
   const bounds = [];
   
-  for (const communeAvecCP of communesCochees) {
+  for (const communeAvecCP of communesCalculeesSaved) {
     const communeNom = communeAvecCP.split('(')[0].trim();
     const isCentrale = (communeNom.toLowerCase() === communeCentrale.toLowerCase());
     
-try {
-      // Extraire le code postal de la commune
+    try {
       const match = communeAvecCP.match(/\((\d{5})\)/);
       const codePostal = match ? match[1] : null;
       
@@ -2409,80 +2213,56 @@ try {
       const response = await fetch(url);
       const data = await response.json();
       
-      if (!data.features || data.features.length === 0) {
-        console.warn(`⚠️ Aucune commune trouvée pour ${communeNom}`);
-        continue;
-      }
+      if (!data.features || data.features.length === 0) continue;
       
-      // Filtrer par code postal pour éviter les homonymes
       let feature = data.features[0];
       
       if (codePostal && data.features.length > 1) {
         const matchingFeature = data.features.find(f => 
           f.properties.codesPostaux && f.properties.codesPostaux.includes(codePostal)
         );
-        
-        if (matchingFeature) {
-          feature = matchingFeature;
-          console.log(`✅ ${communeNom} (${codePostal}) - commune exacte trouvée`);
-        } else {
-          console.warn(`⚠️ ${communeNom} : code postal ${codePostal} non trouvé, utilisation de la première`);
-        }
+        if (matchingFeature) feature = matchingFeature;
       }
-  
-  const layer = L.geoJSON(feature, {
-    style: {
-      fillColor: isCentrale ? '#ef4444' : '#3b82f6',
-      fillOpacity: isCentrale ? 0.6 : 0.5,
-      color: isCentrale ? '#dc2626' : '#1e40af',
-      weight: isCentrale ? 4 : 3
-    },
+      
+      const layer = L.geoJSON(feature, {
+        style: {
+          fillColor: isCentrale ? '#ef4444' : '#3b82f6',
+          fillOpacity: isCentrale ? 0.6 : 0.4,
+          color: isCentrale ? '#dc2626' : '#1e40af',
+          weight: isCentrale ? 3 : 2
+        },
+        onEachFeature: (feature, layer) => {
+          const cp = feature.properties.codesPostaux ? feature.properties.codesPostaux[0] : '';
+          const tooltipContent = isCentrale 
+            ? `📍 <strong>${communeNom}</strong>${cp ? ' (' + cp + ')' : ''}<br><em>Commune centrale</em>`
+            : `${communeNom}${cp ? ' (' + cp + ')' : ''}`;
           
-          onEachFeature: (feature, layer) => {
-            const cp = feature.properties.codesPostaux ? feature.properties.codesPostaux[0] : '';
-            const tooltipContent = isCentrale 
-              ? `📍 <strong>${communeNom}</strong>${cp ? ' (' + cp + ')' : ''}<br><em>Commune centrale</em>`
-              : `${communeNom}${cp ? ' (' + cp + ')' : ''}`;
-            
-            layer.bindTooltip(tooltipContent, {
-              permanent: false,
-              direction: 'top',
-              className: 'custom-tooltip'
-            });
-          }
-        }).addTo(map);
-        
-        communeLayers[communeNom] = layer;
-        
-        const geojsonBounds = layer.getBounds();
-        bounds.push([geojsonBounds.getSouth(), geojsonBounds.getWest()]);
-        bounds.push([geojsonBounds.getNorth(), geojsonBounds.getEast()]);
-        
-      }catch (error) {
+          layer.bindTooltip(tooltipContent, {
+            permanent: false,
+            direction: 'top',
+            className: 'custom-tooltip'
+          });
+        }
+      }).addTo(mapPrincipal);
+      
+      communeLayersPrincipal[communeNom] = layer;
+      
+      const geojsonBounds = layer.getBounds();
+      bounds.push([geojsonBounds.getSouth(), geojsonBounds.getWest()]);
+      bounds.push([geojsonBounds.getNorth(), geojsonBounds.getEast()]);
+      
+    } catch (error) {
       console.warn(`⚠️ Impossible de charger ${communeNom}:`, error);
     }
   }
   
   if (bounds.length > 0) {
-    map.fitBounds(bounds, { padding: [30, 30] });
+    mapPrincipal.fitBounds(bounds, { padding: [20, 20] });
   }
   
-  console.log('✅ Carte mise à jour');
+  if (loadingIndicator) loadingIndicator.style.display = 'none';
 }
 
-function updateCompteurCommunes() {
-  const checkboxes = document.querySelectorAll('#listeCommunesCheckboxes input[type="checkbox"]');
-  const nbCochees = Array.from(checkboxes).filter(cb => cb.checked).length;
-  
-  const compteur = document.getElementById('compteurCommunes');
-  if (compteur) {
-    compteur.textContent = `${nbCochees} commune(s)`;
-  }
-  
-  if (map && carteVisible) {
-    updateMap();
-  }
-}
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
