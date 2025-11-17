@@ -62,6 +62,35 @@
     box-shadow:0 6px 20px rgba(14,165,164,0.5);
   }
 
+  /* === Boutons multiples === */
+  .action-buttons{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .action-button{
+    display:inline-block;
+    background:linear-gradient(135deg, #0ea5a4 0%, #0d8887 100%);
+    color:#fff;
+    padding:14px 28px;
+    font-size:16px;
+    font-weight:700;
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(14,165,164,0.4);
+    text-decoration:none;
+    transition:all 0.2s;
+    flex:1;
+    min-width:200px;
+    max-width:280px;
+    text-align:center;
+  }
+  .action-button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(14,165,164,0.5);
+  }
+
   .features{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
@@ -110,6 +139,19 @@
   .step-content h4{margin:0 0 8px;font-size:16px;color:#0f1724;font-weight:700}
   .step-content p{margin:0;color:var(--muted);font-size:15px}
 
+  .help-box{
+    background:#f9fafb;
+    border-left:3px solid var(--primary);
+    padding:16px 20px;
+    border-radius:8px;
+    margin-top:24px;
+    font-size:14px;
+    color:#0f1724;
+  }
+  .help-box strong{color:var(--primary)}
+  .help-box a{color:var(--primary);text-decoration:none;font-weight:600}
+  .help-box a:hover{text-decoration:underline}
+
   footer{
     text-align:center;
     margin-top:48px;
@@ -129,6 +171,8 @@
     .hero h1{font-size:26px;}
     .hero .subtitle{font-size:16px;}
     .features{grid-template-columns:1fr;}
+    .action-buttons{flex-direction:column;align-items:stretch;}
+    .action-button{max-width:100%;}
   }
 </style>
 </head>
@@ -137,7 +181,7 @@
 
     <!-- === NAVIGATION HEADER === -->
     <div class="nav-header">
-      <h1> Accueil</h1>
+      <h1>🏠 Accueil</h1>
       <nav class="nav-links">
         <a href="index.html" class="active">Accueil</a>
         <a href="formulaire.html">Formulaire</a>
@@ -149,85 +193,22 @@
     <!-- === HERO SECTION === -->
     <div class="card">
       <div class="hero">
-        <h1> Référencement de professionnels spécialisés TSA</h1>
+        <h1>🧩 Référencement de professionnels spécialisés TSA</h1>
         <p class="subtitle">Facilitez la mise en relation entre votre expertise et les familles qui en ont besoin</p>
         <a href="formulaire.html" class="cta-button">📝 Remplir le questionnaire</a>
       </div>
     </div>
 
-    <div class="card">
-  <div class="info-box">
-    <h3>📍 Phase de test - Territoire limité</h3>
-    <p>Actuellement, cette plateforme est en test sur la région <strong>Grand Est</strong> (54, 55, 57, 88).</p>
-    <p><strong>Vous exercez dans un autre département ?</strong> Vous pouvez vous inscrire, mais la plateforme n'est pas encore diffusée sur votre territoire.</p>
-  </div>
-</div>
-
-    <!-- === SECTIONS SUIVANTES === -->
-    <div class="card">
-      <h2 style="margin:0 0 24px;font-size:22px;color:#0f1724;font-weight:700">À quoi sert cette plateforme ?</h2>
-      
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">👥</div>
-          <h3>Mise en relation facilitée</h3>
-          <p>Les familles peuvent vous trouver selon votre secteur d'intervention, vos disponibilités et le public que vous accompagnez.</p>
-        </div>
-        
-        <div class="feature">
-          <div class="feature-icon">🗺️</div>
-          <h3>Visibilité géographique</h3>
-          <p>Définissez votre zone d'intervention avec précision et visualisez les communes couvertes par votre rayon.</p>
-        </div>
-        
-        <div class="feature">
-          <div class="feature-icon">⚡</div>
-          <h3>Simple et rapide</h3>
-          <p>Un formulaire unique pour vous référencer. Vous pouvez modifier ou supprimer vos informations à tout moment.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="margin:0 0 24px;font-size:22px;color:#0f1724;font-weight:700">Comment ça fonctionne ?</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h4>Vérification par e-mail</h4>
-            <p>Saisissez votre adresse e-mail et recevez un code de vérification pour sécuriser l'accès.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h4>Remplissez vos informations</h4>
-            <p>Indiquez votre profession, zone d'intervention, publics accompagnés et disponibilités (5 minutes maximum).</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h4>Validation et mise en ligne</h4>
-            <p>Vos informations sont enregistrées et les familles peuvent vous contacter selon vos critères.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- === PHASE DE TEST === -->
     <div class="card">
       <div class="info-box">
-        <h3>🔒 Vos données sont protégées</h3>
-        <p>Nous respectons votre vie privée et le RGPD :</p>
-        <ul>
-          <li><strong>Utilisation unique</strong> : vos données servent uniquement à la mise en relation avec les familles</li>
-          <li><strong>Sécurité</strong> : accès par code de vérification par e-mail</li>
-          <li><strong>Contrôle total</strong> : modifiez ou supprimez vos informations à tout moment</li>
-          <li><strong>Transparence</strong> : consultez nos <a href="mentions.html">mentions légales</a> pour plus de détails</li>
-        </ul>
+        <h3>📍 Phase de test - Territoire limité</h3>
+        <p>Actuellement, cette plateforme est en test sur la région <strong>Grand Est</strong> (54, 55, 57, 88).</p>
+        <p style="margin-top:12px"><strong>Vous exercez dans un autre département ?</strong> Vous pouvez vous inscrire, mais la plateforme n'est pas encore diffusée sur votre territoire.</p>
       </div>
     </div>
 
+    <!-- === POUR QUI ? === -->
     <div class="card">
       <h2 style="margin:0 0 16px;font-size:22px;color:#0f1724;font-weight:700;text-align:center">Professionnels concernés</h2>
       <p style="text-align:center;color:var(--muted);margin:0 0 24px">Cette plateforme est destinée aux professionnels suivants :</p>
@@ -251,10 +232,78 @@
       </div>
     </div>
 
+    <!-- === À QUOI SERT LA PLATEFORME === -->
+    <div class="card">
+      <h2 style="margin:0 0 16px;font-size:22px;color:#0f1724;font-weight:700">À quoi sert cette plateforme ?</h2>
+      <p style="color:var(--muted);margin:0 0 24px;font-size:16px">Cette plateforme a pour objectif de <strong style="color:#0f1724">faciliter la mise en relation</strong> entre les professionnels TSA et les familles qui ont besoin de leur expertise.</p>
+      
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🎯</div>
+          <h3>Mise en relation facilitée</h3>
+          <p>Les familles vous trouvent directement selon vos critères : zone d'intervention, publics accompagnés et disponibilités. Fini les demandes hors de votre secteur.</p>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h3>Simple et rapide</h3>
+          <p>Un formulaire unique pour vous référencer. Vous pouvez modifier ou supprimer vos informations à tout moment.</p>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">⚙️</div>
+          <h3>Vous gardez le contrôle</h3>
+          <p>Mettez à jour vos disponibilités en temps réel, modifiez vos informations ou mettez en pause votre référencement quand vous voulez.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- === COMMENT ÇA FONCTIONNE === -->
+    <div class="card">
+      <h2 style="margin:0 0 24px;font-size:22px;color:#0f1724;font-weight:700">Comment ça fonctionne ?</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Vérification par e-mail</h4>
+            <p>Recevez un code sécurisé pour accéder au formulaire.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>Remplissez vos informations</h4>
+            <p>Profession, zone d'intervention, publics accompagnés et disponibilités (5 minutes maximum).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Validation et mise en ligne</h4>
+            <p>Votre profil est visible et les familles peuvent vous contacter selon vos critères.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="help-box">
+        <strong>💡 Des questions ?</strong><br>
+        • Sur le fonctionnement : consultez la <a href="faq.html">FAQ</a><br>
+        • Sur vos données et le RGPD : voir nos <a href="mentions.html#confidentialite">mentions légales</a>
+      </div>
+    </div>
+
+    <!-- === PRÊT À VOUS RÉFÉRENCER === -->
     <div class="card" style="text-align:center">
       <h2 style="margin:0 0 16px;font-size:22px;color:#0f1724;font-weight:700">Prêt à vous référencer ?</h2>
       <p style="color:var(--muted);margin:0 0 24px">Rejoignez les professionnels qui facilitent l'accès aux soins pour les personnes avec TSA</p>
-      <a href="formulaire.html" class="cta-button">📝 Accéder au questionnaire</a>
+      
+      <div class="action-buttons">
+        <a href="formulaire.html" class="action-button">📝 M'inscrire</a>
+        <a href="formulaire.html" class="action-button">✏️ Modifier mes infos</a>
+        <a href="formulaire.html" class="action-button">🗑️ Supprimer mon profil</a>
+      </div>
+      
+      <p style="color:var(--muted);font-size:14px;margin-top:16px">Toutes les actions se font via le même formulaire sécurisé par code email</p>
     </div>
 
     <footer>
