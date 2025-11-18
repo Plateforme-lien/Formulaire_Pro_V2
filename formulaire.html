@@ -2000,10 +2000,48 @@ function validerChamps() {
     return false;
   }
   
-  return true;
+ return true;
 }
 
+// SUPPRIMER LE ROUGE AUTOMATIQUEMENT QUAND L'UTILISATEUR CORRIGE
+function retirerRougeAutomatique() {
+  document.querySelectorAll('input, select, textarea').forEach(element => {
+    element.addEventListener('input', function() {
+      if (this.classList.contains('champ-requis-manquant')) {
+        this.classList.remove('champ-requis-manquant');
+        const nextElement = this.nextElementSibling;
+        if (nextElement && nextElement.classList.contains('error-message-inline')) {
+          nextElement.remove();
+        }
+      }
+    });
+    
+    element.addEventListener('change', function() {
+      if (this.classList.contains('champ-requis-manquant')) {
+        this.classList.remove('champ-requis-manquant');
+        const nextElement = this.nextElementSibling;
+        if (nextElement && nextElement.classList.contains('error-message-inline')) {
+          nextElement.remove();
+        }
+      }
+    });
+  });
+  
+  document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(element => {
+    element.addEventListener('change', function() {
+      const parent = this.closest('div');
+      if (parent) {
+        const errorMsg = parent.querySelector('.error-message-inline');
+        if (errorMsg) errorMsg.remove();
+      }
+    });
+  });
+}
+
+retirerRougeAutomatique();
+
 submitBtn.addEventListener('click', async () => {
+
   submitMsg.textContent = "";
   successBanner.classList.add("hidden");
   
