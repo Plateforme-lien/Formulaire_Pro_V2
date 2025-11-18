@@ -1210,11 +1210,30 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
       updateMapPrincipal();
       
     } else {
-      communesCalculeesSaved = [];
-      infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Aucune commune</span>';
-      listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucun résultat</div>';
-      if (btnGroupe) btnGroupe.style.display = 'none';
-    }
+  communesCalculeesSaved = [];
+  
+  // ✅ NOUVEAU : Vérifier si c'est une erreur de quota
+  if (result.error === "QUOTA_EXCEEDED") {
+    infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Limite quotidienne atteinte</span>';
+    listeDiv.innerHTML = `
+      <div style="background:#fff3cd; border:2px solid #ffc107; padding:24px; border-radius:12px; text-align:center;">
+        <div style="font-size:48px; margin-bottom:16px;">⏳</div>
+        <h3 style="margin:0 0 12px; color:#856404;">Limite de calcul atteinte</h3>
+        <p style="margin:0; line-height:1.6; color:#856404;">
+          Le service de calcul de zones d'intervention a atteint sa limite quotidienne 
+          (2000 requêtes/jour).
+          <br><br>
+          <strong>Merci de réessayer demain.</strong>
+        </p>
+      </div>
+    `;
+  } else {
+    infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Aucune commune</span>';
+    listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucun résultat</div>';
+  }
+  
+  if (btnGroupe) btnGroupe.style.display = 'none';
+}
     
   } catch (error) {
     console.error('❌ Erreur:', error);
