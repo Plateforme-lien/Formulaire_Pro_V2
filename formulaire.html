@@ -2018,7 +2018,7 @@ function retirerRougeAutomatique() {
     });
   });
   
-  // Pour les radio buttons - effacer l'erreur dès qu'on coche
+// Pour les radio buttons - effacer l'erreur dès qu'on coche
   document.querySelectorAll('input[type="radio"]').forEach(element => {
     element.addEventListener('change', function() {
       const groupName = this.name;
@@ -2028,6 +2028,8 @@ function retirerRougeAutomatique() {
         const errorMsg = container.querySelector('.error-message-inline');
         if (errorMsg) errorMsg.remove();
       }
+      // Effacer le message global
+      if (submitMsg) submitMsg.textContent = "";
     });
   });
   
@@ -2039,6 +2041,8 @@ function retirerRougeAutomatique() {
         const errorMsg = container.querySelector('.error-message-inline');
         if (errorMsg) errorMsg.remove();
       }
+      // Effacer le message global
+      if (submitMsg) submitMsg.textContent = "";
     });
   });
 }
@@ -2065,6 +2069,7 @@ function effacerErreurChamp(element) {
     const errorInParent = parent.querySelector('.error-message-inline');
     if (errorInParent) errorInParent.remove();
   }
+    if (submitMsg) submitMsg.textContent = "";
 }
 retirerRougeAutomatique();
 
