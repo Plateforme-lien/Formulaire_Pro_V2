@@ -1212,21 +1212,39 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
     } else {
   communesCalculeesSaved = [];
   
-  // ✅ NOUVEAU : Vérifier si c'est une erreur de quota
   if (result.error === "QUOTA_EXCEEDED") {
-    infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Limite quotidienne atteinte</span>';
+    infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Service temporairement saturé</span>';
     listeDiv.innerHTML = `
-      <div style="background:#fff3cd; border:2px solid #ffc107; padding:24px; border-radius:12px; text-align:center;">
-        <div style="font-size:48px; margin-bottom:16px;">⏳</div>
-        <h3 style="margin:0 0 12px; color:#856404;">Limite de calcul atteinte</h3>
-        <p style="margin:0; line-height:1.6; color:#856404;">
-          Le service de calcul de zones d'intervention a atteint sa limite quotidienne 
-          (2000 requêtes/jour).
-          <br><br>
-          <strong>Merci de réessayer demain.</strong>
+      <div style="background:#fff3cd; border:2px solid #ffc107; padding:32px; border-radius:12px; text-align:center;">
+        <div style="font-size:56px; margin-bottom:20px;">⏳</div>
+        <h3 style="margin:0 0 16px; color:#856404; font-size:20px;">Service temporairement indisponible</h3>
+        <p style="margin:0; line-height:1.8; color:#856404;">
+          Le service de calcul automatique a atteint sa limite quotidienne.<br>
+          <strong>Réessayez demain matin.</strong>
         </p>
       </div>
     `;
+    
+  } else if (result.error === "COORDS_NOT_FOUND") {
+    infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">❌ Commune introuvable</span>';
+    listeDiv.innerHTML = `
+      <div style="background:#fee; border:2px solid #dc2626; padding:32px; border-radius:12px; text-align:center;">
+        <div style="font-size:56px; margin-bottom:20px;">📍</div>
+        <h3 style="margin:0 0 16px; color:#dc2626;">Commune introuvable</h3>
+        <p style="margin:0; color:#991b1b;">Vérifiez votre sélection ou essayez une commune voisine.</p>
+      </div>
+    `;
+    
+  } else if (result.error === "UNKNOWN_ERROR") {
+    infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Erreur technique</span>';
+    listeDiv.innerHTML = `
+      <div style="background:#fee; border:2px solid #dc2626; padding:32px; border-radius:12px; text-align:center;">
+        <div style="font-size:56px; margin-bottom:20px;">❌</div>
+        <h3 style="margin:0 0 16px; color:#dc2626;">Erreur technique</h3>
+        <p style="margin:0; color:#991b1b;">Réessayez dans quelques instants.</p>
+      </div>
+    `;
+    
   } else {
     infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Aucune commune</span>';
     listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucun résultat</div>';
@@ -1234,6 +1252,8 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
   
   if (btnGroupe) btnGroupe.style.display = 'none';
 }
+
+    
     
   } catch (error) {
     console.error('❌ Erreur:', error);
