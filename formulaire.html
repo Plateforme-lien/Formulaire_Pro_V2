@@ -1867,12 +1867,14 @@ async function showFormAndPrefill(data) {
     }
   }, 1000);
 }
+  
 function validerChamps() {
-  // Nettoyer les anciennes erreurs
+  // Nettoyer TOUTES les anciennes erreurs ET le message global
   document.querySelectorAll('.champ-requis-manquant').forEach(el => {
     el.classList.remove('champ-requis-manquant');
   });
   document.querySelectorAll('.error-message-inline').forEach(el => el.remove());
+  submitMsg.textContent = ""; //  effacer le message global
   
   const erreurs = [];
   
@@ -2005,39 +2007,65 @@ function validerChamps() {
 
 // SUPPRIMER LE ROUGE AUTOMATIQUEMENT QUAND L'UTILISATEUR CORRIGE
 function retirerRougeAutomatique() {
-  document.querySelectorAll('input, select, textarea').forEach(element => {
+  // Pour les inputs normaux (text, date, number, etc.)
+  document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]), select, textarea').forEach(element => {
     element.addEventListener('input', function() {
-      if (this.classList.contains('champ-requis-manquant')) {
-        this.classList.remove('champ-requis-manquant');
-        const nextElement = this.nextElementSibling;
-        if (nextElement && nextElement.classList.contains('error-message-inline')) {
-          nextElement.remove();
-        }
-      }
+      effacerErreurChamp(this);
     });
     
     element.addEventListener('change', function() {
-      if (this.classList.contains('champ-requis-manquant')) {
-        this.classList.remove('champ-requis-manquant');
-        const nextElement = this.nextElementSibling;
-        if (nextElement && nextElement.classList.contains('error-message-inline')) {
-          nextElement.remove();
-        }
+      effacerErreurChamp(this);
+    });
+  });
+  
+  // Pour les radio buttons - effacer l'erreur dès qu'on coche
+  document.querySelectorAll('input[type="radio"]').forEach(element => {
+    element.addEventListener('change', function() {
+      const groupName = this.name;
+      // Trouver le conteneur de tout le groupe de radios
+      const container = this.closest('div').parentElement;
+      if (container) {
+        const errorMsg = container.querySelector('.error-message-inline');
+        if (errorMsg) errorMsg.remove();
       }
     });
   });
   
-  document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(element => {
+  // Pour les checkboxes - effacer l'erreur dès qu'on coche
+  document.querySelectorAll('input[type="checkbox"]').forEach(element => {
     element.addEventListener('change', function() {
-      const parent = this.closest('div');
-      if (parent) {
-        const errorMsg = parent.querySelector('.error-message-inline');
+      const container = this.closest('div').parentElement;
+      if (container) {
+        const errorMsg = container.querySelector('.error-message-inline');
         if (errorMsg) errorMsg.remove();
       }
     });
   });
 }
 
+// Nouvelle fonction helper pour effacer les erreurs
+function effacerErreurChamp(element) {
+  if (element.classList.contains('champ-requis-manquant')) {
+    element.classList.remove('champ-requis-manquant');
+  }
+  
+  // Chercher le message d'erreur après l'élément
+  let nextElement = element.nextElementSibling;
+  while (nextElement) {
+    if (nextElement.classList && nextElement.classList.contains('error-message-inline')) {
+      nextElement.remove();
+      break;
+    }
+    nextElement = nextElement.nextElementSibling;
+  }
+  
+  // Chercher aussi dans le parent
+  const parent = element.parentElement;
+  if (parent) {
+    const errorInParent = parent.querySelector('.error-message-inline');
+    if (errorInParent) errorInParent.remove();
+  }
+}
 retirerRougeAutomatique();
 
 submitBtn.addEventListener('click', async () => {
