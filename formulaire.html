@@ -986,6 +986,12 @@ confirmDeleteBtn.addEventListener("click", async () => {
       confirmDeleteBtn.disabled = false;
       cancelDeleteBtn.disabled = false;
     }
+  } catch (error) {
+    console.error('Erreur suppression:', error);
+    deleteMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur de connexion</span>';
+    confirmDeleteBtn.disabled = false;
+    cancelDeleteBtn.disabled = false;
+  }
 });
 
 document.querySelectorAll('input[name="numType"]').forEach(r => r.addEventListener('change', e => {
@@ -1158,7 +1164,6 @@ function resetZoneCommunes() {
   communesValidees = false;
   listeModifieeManuelle = false;
 }
-
 async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieux = false) {
   const dep = departSelect.value;
   const commune = communeSelect.value;
@@ -1218,7 +1223,6 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
       updateListeCommunes();
       
       if (btnGroupe) {
-        // Afficher UNIQUEMENT les boutons de validation
         const boutonsValidation = document.getElementById('boutons-validation');
         const boutonsPersonnalisation = document.getElementById('boutons-personnalisation');
         const zoneValideeBadge = document.getElementById('zone-validee-badge');
@@ -1227,13 +1231,12 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
           boutonsValidation.style.display = 'flex';
           boutonsValidation.classList.remove('hidden');
         }
-        // Afficher l'avertissement
+        
         const avertissement = document.getElementById('avertissementCommunes');
         if (avertissement) {
           avertissement.style.display = 'block';
         }
         
-        // Masquer les autres boutons
         if (boutonsPersonnalisation) {
           boutonsPersonnalisation.style.display = 'none';
           boutonsPersonnalisation.classList.add('hidden');
@@ -1249,26 +1252,50 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
       updateMapPrincipal();
       
     } else {
-  communesCalculeesSaved = [];
-  
-    if (!result.ok) {
-  communesCalculeesSaved = [];
-  infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Erreur</span>';
-  
-  listeDiv.innerHTML = `
-    <div style="background:#fff3cd; border:2px solid #ffc107; padding:32px; border-radius:12px; text-align:center;">
-      <div style="font-size:56px; margin-bottom:20px;">⚠️</div>
-      <h3 style="margin:0 0 12px; color:#856404; font-size:20px;">Service temporairement indisponible</h3>
-      <p style="margin:0; font-size:16px; line-height:1.8; color:#856404;">
-        Le calcul automatique a échoué.<br>
-        <strong>Vérifiez votre connexion et réessayez.</strong>
-      </p>
-    </div>
-  `;
-  
-  if (btnGroupe) btnGroupe.style.display = 'none';
+      communesCalculeesSaved = [];
+      
+      if (!result.ok) {
+        communesCalculeesSaved = [];
+        infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Erreur</span>';
+        
+        listeDiv.innerHTML = `
+          <div style="background:#fff3cd; border:2px solid #ffc107; padding:32px; border-radius:12px; text-align:center;">
+            <div style="font-size:56px; margin-bottom:20px;">⚠️</div>
+            <h3 style="margin:0 0 12px; color:#856404; font-size:20px;">Service temporairement indisponible</h3>
+            <p style="margin:0; font-size:16px; line-height:1.8; color:#856404;">
+              Le calcul automatique a échoué.<br>
+              <strong>Vérifiez votre connexion et réessayez.</strong>
+            </p>
+          </div>
+        `;
+        
+        if (btnGroupe) btnGroupe.style.display = 'none';
+      }
     }
+  } catch (error) {
+    console.error('Erreur calcul communes:', error);
+    
+    const listeDiv = document.getElementById('communesCalculeesListe');
+    const infoDiv = document.getElementById('communesCalculeesInfo');
+    
+    if (listeDiv) {
+      listeDiv.innerHTML = `
+        <div style="background:#fff3cd; border:2px solid #ffc107; padding:32px; border-radius:12px; text-align:center;">
+          <div style="font-size:56px; margin-bottom:20px;">⚠️</div>
+          <h3 style="margin:0 0 12px; color:#856404; font-size:20px;">Service temporairement indisponible</h3>
+          <p style="margin:0; font-size:16px; line-height:1.8; color:#856404;">
+            Le calcul automatique a échoué.<br>
+            <strong>Vérifiez votre connexion et réessayez.</strong>
+          </p>
+        </div>
+      `;
     }
+    
+    if (infoDiv) {
+      infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Erreur</span>';
+    }
+  }
+}
 
 function updateListeCommunes() {
   const listeDiv = document.getElementById('communesCalculeesListe');
@@ -2252,10 +2279,16 @@ submitBtn.addEventListener('click', async () => {
   
   const j = result.data;
   
-  if (j.ok) {
+    if (j.ok) {
     lockForm();
   } else {
     submitMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur : ' + (j.error || "Erreur inconnue") + '</span>';
+  }
+  } catch (error) {
+    console.error('Erreur soumission formulaire:', error);
+    submitBtn.disabled = false;
+    resetBtn.disabled = false;
+    submitMsg.innerHTML = '<span style="color:#dc2626">❌ Erreur de connexion</span>';
   }
 });
 
@@ -2385,24 +2418,6 @@ async function updateMapPrincipal() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
