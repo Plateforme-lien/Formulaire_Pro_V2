@@ -1217,8 +1217,8 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
     listeDiv.innerHTML = `
       <div style="background:#fff3cd; border:2px solid #ffc107; padding:32px; border-radius:12px; text-align:center;">
         <div style="font-size:56px; margin-bottom:20px;">⏳</div>
-        <h3 style="margin:0 0 16px; color:#856404; font-size:20px;">Service temporairement indisponible</h3>
-        <p style="margin:0; line-height:1.8; color:#856404;">
+        <h3 style="margin:0; font-size: 16px; color:#856404; font-size:20px;">Service temporairement indisponible</h3>
+        <p style="margin:0; font-size: 16px;line-height:1.8; color:#856404;">
           Le service de calcul automatique a atteint sa limite quotidienne.<br>
           <strong>Réessayez demain matin.</strong>
         </p>
@@ -1230,7 +1230,7 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
     listeDiv.innerHTML = `
       <div style="background:#fee; border:2px solid #dc2626; padding:32px; border-radius:12px; text-align:center;">
         <div style="font-size:56px; margin-bottom:20px;">📍</div>
-        <h3 style="margin:0 0 16px; color:#dc2626;">Commune introuvable</h3>
+        <h3 style="margin:0; font-size: 16px; color:#dc2626;">Commune introuvable</h3>
         <p style="margin:0; color:#991b1b;">Vérifiez votre sélection ou essayez une commune voisine.</p>
       </div>
     `;
@@ -1240,14 +1240,14 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
     listeDiv.innerHTML = `
       <div style="background:#fee; border:2px solid #dc2626; padding:32px; border-radius:12px; text-align:center;">
         <div style="font-size:56px; margin-bottom:20px;">❌</div>
-        <h3 style="margin:0 0 16px; color:#dc2626;">Erreur technique</h3>
-        <p style="margin:0; color:#991b1b;">Réessayez dans quelques instants.</p>
+        <h3 style="margin:0; font-size: 16px; color:#dc2626;">Erreur technique</h3>
+        <p style="margin:0; font-size: 16px; color:#991b1b;">Réessayez dans quelques instants.</p>
       </div>
     `;
     
   } else {
     infoDiv.innerHTML = '<span style="color:#dc2626;">❌ Aucune commune</span>';
-    listeDiv.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucun résultat</div>';
+    listeDiv.innerHTML = '<div style="text-align:center; font-size: 16px; padding:20px; color:#999;">Aucun résultat</div>';
   }
   
   if (btnGroupe) btnGroupe.style.display = 'none';
