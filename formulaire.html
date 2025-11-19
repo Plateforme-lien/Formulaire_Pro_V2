@@ -1294,6 +1294,7 @@ async function calculerEtAfficherCommunes(ouvrirVisualisation = false, silencieu
     if (infoDiv) {
       infoDiv.innerHTML = '<span style="color:#dc2626; font-weight:700;">⚠️ Erreur</span>';
     }
+      if (loadingIndicator) loadingIndicator.style.display = 'none'; 
   }
 }
 
@@ -2418,7 +2419,6 @@ async function updateMapPrincipal() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
-
 
 
 
