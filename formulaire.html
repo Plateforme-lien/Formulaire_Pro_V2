@@ -2107,15 +2107,22 @@ function validerChamps() {
       }
     }
     
-    // Communes validées
+   // Communes validées
     const zoneCalculee = document.getElementById('communesCalculeesZone');
     const estVisible = zoneCalculee && !zoneCalculee.classList.contains('hidden');
-    
-    if (estVisible && !communesValidees) {
-      erreurs.push({ 
-        element: zoneCalculee, 
-        message: "Vous devez valider ou personnaliser la liste des communes avant d'enregistrer"
-      });
+    if (estVisible) {
+      if (!communesValidees) {
+        erreurs.push({ 
+          element: zoneCalculee, 
+          message: "Vous devez valider ou personnaliser la liste des communes avant d'enregistrer"
+        });
+      } else if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
+        erreurs.push({ 
+          element: zoneCalculee, 
+          message: "La liste des communes est vide"
+        });
+      }
+    }
     } else if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
       erreurs.push({ 
         element: departSelect, 
