@@ -699,6 +699,7 @@ const codeArea = document.getElementById("codeArea");
 const codeEl = document.getElementById("code");
 const verifyBtn = document.getElementById("verifyBtn");
 const resendBtn = document.getElementById("resendBtn");
+  
   resendBtn.addEventListener("click", async () => {
     const mail = (emailEl.value || "").trim().toLowerCase();
     if (!mail) {
@@ -706,10 +707,10 @@ const resendBtn = document.getElementById("resendBtn");
       return;
     }
     
-    // Désactiver le bouton pendant l'envoi
     resendBtn.disabled = true;
     resendBtn.textContent = "⏳ Envoi...";
     codeMsg.textContent = "Envoi du nouveau code...";
+    
     const result = await fetchWithErrorHandling(
       `${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`
     );
@@ -724,26 +725,23 @@ const resendBtn = document.getElementById("resendBtn");
     
     const j = result.data;
     
+    if (j.error === "COOLDOWN_ACTIVE") {
+      codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ ${j.message}</span>`;
+      return;
+    }
+    
     if (j.error === "DAILY_LIMIT_REACHED") {
-      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br><span style="color:#6b7280;font-size:13px">Vous avez demandé 3 codes aujourd'hui. Réessayez demain.</span>`;
-      sendCodeBtn.disabled = false;
+      codeMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br><span style="color:#6b7280;font-size:13px">Vous avez demandé 3 codes aujourd'hui. Réessayez demain.</span>`;
       return;
     }
     
     if (j.error === "SERVICE_QUOTA_EXCEEDED") {
-      emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⚠️ Service temporairement saturé</span><br><span style="color:#6b7280;font-size:13px">Trop de demandes aujourd'hui. Réessayez demain.</span>`;
-      sendCodeBtn.disabled = false;
+      codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⚠️ Service temporairement saturé</span><br><span style="color:#6b7280;font-size:13px">Trop de demandes aujourd'hui. Réessayez demain.</span>`;
       return;
     }
     
     if (j.error === "EMAIL_INVALIDE") {
-      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ ${j.message || 'Email invalide'}</span>`;
-      sendCodeBtn.disabled = false;
-      return;
-    }
-    
-    if (j.error === "COOLDOWN_ACTIVE") {
-      codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ ${j.message}</span>`;
+      codeMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ ${j.message || 'Email invalide'}</span>`;
       return;
     }
     
@@ -1404,7 +1402,7 @@ function validerCommunes() {
   }
   
   communesValidees = true;
-  effacerErreurZoneCommunes();
+  effacerErreurZoneCommunes(); 
   listeModifieeManuelle = false;
   
   const avertissement = document.getElementById('avertissementCommunes');
@@ -2084,13 +2082,12 @@ function validerChamps() {
     }
     
     // Communes validées
-    // Communes validées
     const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
     if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
       if (!communesValidees || communesCalculeesSaved.length === 0) {
         erreurs.push({ 
           element: document.getElementById('communesCalculeesZone') || departSelect, 
-          message: "⚠️ Vous devez valider ou personnaliser la liste des communes avant d'enregistrer" 
+          message: "Vous devez valider ou personnaliser la liste des communes avant d'enregistrer"
         });
       }
     }
