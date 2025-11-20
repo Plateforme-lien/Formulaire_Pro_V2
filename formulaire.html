@@ -700,63 +700,62 @@ const codeEl = document.getElementById("code");
 const verifyBtn = document.getElementById("verifyBtn");
 const resendBtn = document.getElementById("resendBtn");
   resendBtn.addEventListener("click", async () => {
-  const mail = (emailEl.value || "").trim().toLowerCase();
+    const mail = (emailEl.value || "").trim().toLowerCase();
+    if (!mail) {
+      codeMsg.textContent = "⚠️ Email requis";
+      return;
+    }
+    
+    // Désactiver le bouton pendant l'envoi
+    resendBtn.disabled = true;
+    resendBtn.textContent = "⏳ Envoi...";
+    codeMsg.textContent = "Envoi du nouveau code...";
+    const result = await fetchWithErrorHandling(
+      `${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`
+    );
+    
+    resendBtn.disabled = false;
+    resendBtn.textContent = "Renvoyer";
+    
+    if (!result.ok) {
+      codeMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">${result.message}</span>`;
+      return;
+    }
+    
+    const j = result.data;
+    
+    if (j.error === "DAILY_LIMIT_REACHED") {
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br><span style="color:#6b7280;font-size:13px">Vous avez demandé 3 codes aujourd'hui. Réessayez demain.</span>`;
+      sendCodeBtn.disabled = false;
+      return;
+    }
+    
+    if (j.error === "SERVICE_QUOTA_EXCEEDED") {
+      emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⚠️ Service temporairement saturé</span><br><span style="color:#6b7280;font-size:13px">Trop de demandes aujourd'hui. Réessayez demain.</span>`;
+      sendCodeBtn.disabled = false;
+      return;
+    }
+    
+    if (j.error === "EMAIL_INVALIDE") {
+      emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ ${j.message || 'Email invalide'}</span>`;
+      sendCodeBtn.disabled = false;
+      return;
+    }
+    
+    if (j.error === "COOLDOWN_ACTIVE") {
+      codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ ${j.message}</span>`;
+      return;
+    }
+    
+    if (j.ok) {
+      codeMsg.innerHTML = `<span style="color:#059669;font-weight:600">✅ Nouveau code envoyé !</span>`;
+      codeEl.value = "";
+      codeEl.focus();
+    } else {
+      codeMsg.innerHTML = `<span style="color:#dc2626">❌ Erreur : ${j.error || "Impossible d'envoyer"}</span>`;
+    }
+  });
   
-  if (!mail) {
-    codeMsg.textContent = "⚠️ Email requis";
-    return;
-  }
-  
-  // Désactiver le bouton pendant l'envoi
-  resendBtn.disabled = true;
-  resendBtn.textContent = "⏳ Envoi...";
-  codeMsg.textContent = "Envoi du nouveau code...";
-  
-  const result = await fetchWithErrorHandling(
-    `${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(mail)}&_t=${Date.now()}`
-  );
-  
-  resendBtn.disabled = false;
-  resendBtn.textContent = "Renvoyer";
-  
-  if (!result.ok) {
-    codeMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">${result.message}</span>`;
-    return;
-  }
-  
-  const j = result.data;
-  
-  if (j.error === "DAILY_LIMIT_REACHED") {
-  emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Limite quotidienne atteinte</span><br><span style="color:#6b7280;font-size:13px">Vous avez demandé 3 codes aujourd'hui. Réessayez demain.</span>`;
-  sendCodeBtn.disabled = false;
-  return;
-}
-
-if (j.error === "SERVICE_QUOTA_EXCEEDED") {
-  emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⚠️ Service temporairement saturé</span><br><span style="color:#6b7280;font-size:13px">Trop de demandes aujourd'hui. Réessayez demain.</span>`;
-  sendCodeBtn.disabled = false;
-  return;
-}
-
-if (j.error === "EMAIL_INVALIDE") {
-  emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ ${j.message || 'Email invalide'}</span>`;
-  sendCodeBtn.disabled = false;
-  return;
-}
-  
-  if (j.error === "COOLDOWN_ACTIVE") {
-    codeMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ ${j.message}</span>`;
-    return;
-  }
-  
-  if (j.ok) {
-    codeMsg.innerHTML = `<span style="color:#059669;font-weight:600">✅ Nouveau code envoyé !</span>`;
-    codeEl.value = "";
-    codeEl.focus();
-  } else {
-    codeMsg.innerHTML = `<span style="color:#dc2626">❌ Erreur : ${j.error || "Impossible d'envoyer"}</span>`;
-  }
-});
 const codeMsg = document.getElementById("codeMsg");
 const formEl = document.getElementById("form");
 const siretBlock = document.getElementById("siretBlock");
@@ -935,6 +934,24 @@ sendCodeBtn.addEventListener("click", async () => {
       sendCodeBtn.disabled = false;
       return;
     }
+  
+  if (j.error === "COOLDOWN_ACTIVE") {
+    emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Patientez avant de renvoyer</span><br><span style="color:#6b7280;font-size:13px">${j.message}</span>`;
+    sendCodeBtn.disabled = false;
+    return;
+  }
+  
+  if (j.error === "SERVICE_QUOTA_EXCEEDED") {
+    emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⚠️ Service temporairement saturé</span><br><span style="color:#6b7280;font-size:13px">Trop de demandes aujourd'hui. Réessayez demain.</span>`;
+    sendCodeBtn.disabled = false;
+    return;
+  }
+  
+  if (j.error === "EMAIL_INVALIDE") {
+    emailMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">❌ Email invalide</span><br><span style="color:#6b7280;font-size:13px">Vérifiez votre adresse email.</span>`;
+    sendCodeBtn.disabled = false;
+    return;
+  }
     
     if (j.ok) {
       emailMsg.innerHTML = `<span style="color:#059669;font-weight:600">✓ Code envoyé</span><br><span style="color:#6b7280">Vérifiez votre boîte mail.</span>`;
@@ -2067,8 +2084,15 @@ function validerChamps() {
     }
     
     // Communes validées
-    if (!communesValidees || communesCalculeesSaved.length === 0) {
-      erreurs.push({ element: document.getElementById('communesCalculeesZone') || departSelect, message: "Validez la liste des communes" });
+    // Communes validées
+    const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
+    if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
+      if (!communesValidees || communesCalculeesSaved.length === 0) {
+        erreurs.push({ 
+          element: document.getElementById('communesCalculeesZone') || departSelect, 
+          message: "⚠️ Vous devez valider ou personnaliser la liste des communes avant d'enregistrer" 
+        });
+      }
     }
   }
   
@@ -2162,29 +2186,24 @@ function retirerRougeAutomatique() {
   });
 }
 
-// Nouvelle fonction helper pour effacer les erreurs
+//  fonction helper pour effacer les erreurs
 function effacerErreurChamp(element) {
+  // Retirer le rouge uniquement de l'élément modifié
   if (element.classList.contains('champ-requis-manquant')) {
     element.classList.remove('champ-requis-manquant');
   }
   
-  // Chercher le message d'erreur après l'élément
+  // Chercher le message d'erreur IMMÉDIATEMENT après l'élément (son nextSibling direct)
   let nextElement = element.nextElementSibling;
-  while (nextElement) {
-    if (nextElement.classList && nextElement.classList.contains('error-message-inline')) {
-      nextElement.remove();
-      break;
-    }
-    nextElement = nextElement.nextElementSibling;
+  if (nextElement && nextElement.classList && nextElement.classList.contains('error-message-inline')) {
+    nextElement.remove();
   }
-  
-  // Chercher aussi dans le parent
-  const parent = element.parentElement;
-  if (parent) {
-    const errorInParent = parent.querySelector('.error-message-inline');
-    if (errorInParent) errorInParent.remove();
+    
+  // Effacer le message global uniquement s'il n'y a plus aucune erreur
+  const erreursRestantes = document.querySelectorAll('.error-message-inline');
+  if (erreursRestantes.length === 0 && submitMsg) {
+    submitMsg.textContent = "";
   }
-    if (submitMsg) submitMsg.textContent = "";
 }
 retirerRougeAutomatique();
 
