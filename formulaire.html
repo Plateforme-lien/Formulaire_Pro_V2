@@ -727,7 +727,7 @@ const placesInput = document.getElementById("placesDisponibles");
 const modeContactBlock = document.getElementById("modeContactBlock");
 const consentNumber = document.getElementById("consentNumber");
 
-  / ============================================================
+// ============================================================
 // BOUTON RENVOYER LE CODE
 // ============================================================
 resendBtn.addEventListener("click", async () => {
@@ -2086,6 +2086,7 @@ function validerChamps() {
   }
   
   // Temps/rayon pour déplacements
+ // Temps/rayon pour déplacements
   const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
   if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
     const codeDept = departSelect.value ? departSelect.value.split(' ')[0] : '';
@@ -2105,24 +2106,21 @@ function validerChamps() {
     }
     
     // Communes validées
-    const modeInterventionChecked = document.querySelector('input[name="modeIntervention"]:checked');
-    if (modeInterventionChecked && modeInterventionChecked.value !== 'cabinet') {
-      // Vérifier que la zone est bien validée OU que c'est la première fois
-      const zoneCalculee = document.getElementById('communesCalculeesZone');
-      const estVisible = zoneCalculee && !zoneCalculee.classList.contains('hidden');
-      
-      if (estVisible && !communesValidees) {
-        erreurs.push({ 
-          element: zoneCalculee, 
-          message: "Vous devez valider ou personnaliser la liste des communes avant d'enregistrer"
-        });
-      } else if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
-        erreurs.push({ 
-          element: departSelect, 
-          message: "Les communes doivent être calculées avant validation"
-        });
-      }
+    const zoneCalculee = document.getElementById('communesCalculeesZone');
+    const estVisible = zoneCalculee && !zoneCalculee.classList.contains('hidden');
+    
+    if (estVisible && !communesValidees) {
+      erreurs.push({ 
+        element: zoneCalculee, 
+        message: "Vous devez valider ou personnaliser la liste des communes avant d'enregistrer"
+      });
+    } else if (!communesCalculeesSaved || communesCalculeesSaved.length === 0) {
+      erreurs.push({ 
+        element: departSelect, 
+        message: "Les communes doivent être calculées avant validation"
+      });
     }
+  }  
   
   // Disponibilités
   const dispoChecked = document.querySelector('input[name="dispo"]:checked');
@@ -2547,14 +2545,5 @@ async function updateMapPrincipal() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
 
 
