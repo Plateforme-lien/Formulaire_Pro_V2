@@ -2012,39 +2012,55 @@ async function showFormAndPrefill(data) {
 }
 
 function effacerErreurZoneCommunes() {
-  // 1️⃣ Effacer le message d'erreur DANS la zone communes
+  console.log('🧹 Début nettoyage erreurs communes');
+  
+  // 1️⃣ Effacer le message DANS la zone communes
   const zoneCommunes = document.getElementById('communesCalculeesZone');
   if (zoneCommunes) {
-    // Retirer tous les messages inline dans la zone
-    const errorMsgs = zoneCommunes.querySelectorAll('.error-message-inline');
-    errorMsgs.forEach(msg => msg.remove());
+    // Chercher DANS la zone
+    const errorsInside = zoneCommunes.querySelectorAll('.error-message-inline');
+    errorsInside.forEach(msg => {
+      console.log('  ➜ Suppression message DANS zone:', msg.textContent);
+      msg.remove();
+    });
     
-    // Retirer le rouge de la zone
+    // Chercher APRÈS la zone (nextSibling)
+    let nextEl = zoneCommunes.nextElementSibling;
+    while (nextEl) {
+      if (nextEl.classList && nextEl.classList.contains('error-message-inline')) {
+        const texte = nextEl.textContent.toLowerCase();
+        if (texte.includes('commune') || texte.includes('valider')) {
+          console.log('  ➜ Suppression message APRÈS zone:', nextEl.textContent);
+          const toRemove = nextEl;
+          nextEl = nextEl.nextElementSibling;
+          toRemove.remove();
+          continue;
+        }
+      }
+      nextEl = nextEl.nextElementSibling;
+    }
+    
+    // Retirer le rouge
     zoneCommunes.classList.remove('champ-requis-manquant');
   }
   
-  // 2️⃣ FORCER l'effacement du message global (submitMsg)
-  const submitMsg = document.getElementById('submitMsg');
+  // 2️⃣ Effacer le message global en bas
   if (submitMsg) {
+    console.log('  ➜ Effacement submitMsg');
     submitMsg.textContent = "";
     submitMsg.innerHTML = "";
-    submitMsg.style.display = "none"; // Forcer la disparition
-    
-    // Réafficher après pour les prochains messages
-    setTimeout(() => {
-      if (submitMsg.textContent === "") {
-        submitMsg.style.display = "block";
-      }
-    }, 100);
   }
   
-  // 3️⃣ Effacer TOUS les messages inline liés aux communes dans TOUT le formulaire
+  // 3️⃣ Sécurité : Effacer TOUS les messages liés aux communes PARTOUT
   document.querySelectorAll('.error-message-inline').forEach(msg => {
     const texte = msg.textContent.toLowerCase();
     if (texte.includes('commune') || texte.includes('valider') || texte.includes('liste')) {
+      console.log('  ➜ Suppression message global:', msg.textContent);
       msg.remove();
     }
   });
+  
+  console.log('✅ Nettoyage terminé');
 } 
 
 function validerChamps() {
