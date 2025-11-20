@@ -699,11 +699,41 @@ const codeArea = document.getElementById("codeArea");
 const codeEl = document.getElementById("code");
 const verifyBtn = document.getElementById("verifyBtn");
 const resendBtn = document.getElementById("resendBtn");
-  
-  resendBtn.addEventListener("click", async () => {
+const codeMsg = document.getElementById("codeMsg");  // ← DÉPLACÉ ICI EN PREMIER
+const formEl = document.getElementById("form");
+const siretBlock = document.getElementById("siretBlock");
+const noNum = document.getElementById("noNum");
+const rest = document.getElementById("rest");
+const siretNum = document.getElementById("siretNum");
+const siretErr = document.getElementById("siretErr");
+const submitBtn = document.getElementById("submit");
+const editBtn = document.getElementById("editBtn");
+const submitMsg = document.getElementById("submitMsg");
+const departSelect = document.getElementById("departement");
+const communeSelect = document.getElementById("commune");
+const dateBlock = document.getElementById("dateBlock");
+const dateInput = document.getElementById("dateDispo");
+const resetBtn = document.getElementById("resetBtn");
+const newUserMessage = document.getElementById("newUserMessage");
+const existingUserChoice = document.getElementById("existingUserChoice");
+const deleteConfirmation = document.getElementById("deleteConfirmation");
+const modifyBtn = document.getElementById("modifyBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const deleteMsg = document.getElementById("deleteMsg");
+const successBanner = document.getElementById("successBanner");
+const placesInput = document.getElementById("placesDisponibles");
+const modeContactBlock = document.getElementById("modeContactBlock");
+const consentNumber = document.getElementById("consentNumber");
+
+  / ============================================================
+// BOUTON RENVOYER LE CODE
+// ============================================================
+resendBtn.addEventListener("click", async () => {
   const mail = (emailEl.value || "").trim().toLowerCase();
   if (!mail) {
-    codeMsg.textContent = "⚠️ Email requis";
+    codeMsg.innerHTML = `<span style="color:#dc2626;font-weight:600">⚠️ Adresse email requise</span>`;
     return;
   }
   
@@ -751,7 +781,13 @@ const resendBtn = document.getElementById("resendBtn");
     return;
   }
   
-  // 5. Succès
+  // 5. Code déjà valide
+  if (j.alreadySent) {
+    codeMsg.innerHTML = `<span style="color:#059669;font-weight:600">✅ ${j.message}</span>`;
+    return;
+  }
+  
+  // 6. Succès
   if (j.ok) {
     codeMsg.innerHTML = `<span style="color:#059669;font-weight:600">✅ Nouveau code envoyé !</span>`;
     codeEl.value = "";
@@ -760,35 +796,7 @@ const resendBtn = document.getElementById("resendBtn");
     codeMsg.innerHTML = `<span style="color:#dc2626">❌ ${j.error || "Erreur"}</span>`;
   }
 });
-   
-  
-const codeMsg = document.getElementById("codeMsg");
-const formEl = document.getElementById("form");
-const siretBlock = document.getElementById("siretBlock");
-const noNum = document.getElementById("noNum");
-const rest = document.getElementById("rest");
-const siretNum = document.getElementById("siretNum");
-const siretErr = document.getElementById("siretErr");
-const submitBtn = document.getElementById("submit");
-const editBtn = document.getElementById("editBtn");
-const submitMsg = document.getElementById("submitMsg");
-const departSelect = document.getElementById("departement");
-const communeSelect = document.getElementById("commune");
-const dateBlock = document.getElementById("dateBlock");
-const dateInput = document.getElementById("dateDispo");
-const resetBtn = document.getElementById("resetBtn");
-const newUserMessage = document.getElementById("newUserMessage");
-const existingUserChoice = document.getElementById("existingUserChoice");
-const deleteConfirmation = document.getElementById("deleteConfirmation");
-const modifyBtn = document.getElementById("modifyBtn");
-const deleteBtn = document.getElementById("deleteBtn");
-const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
-const deleteMsg = document.getElementById("deleteMsg");
-const successBanner = document.getElementById("successBanner");
-const placesInput = document.getElementById("placesDisponibles");
-const modeContactBlock = document.getElementById("modeContactBlock");
-const consentNumber = document.getElementById("consentNumber");
+
 
 let CURRENT_EMAIL = null;
 let EXISTING = false;
