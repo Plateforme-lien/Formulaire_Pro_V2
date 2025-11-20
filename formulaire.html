@@ -1320,6 +1320,7 @@ function validerCommunes() {
   }
   
   communesValidees = true;
+  effacerErreurZoneCommunes();
   listeModifieeManuelle = false;
   
   const avertissement = document.getElementById('avertissementCommunes');
@@ -1638,6 +1639,7 @@ function validerModifications() {
   
   communesValidees = true;
   listeModifieeManuelle = true;
+  effacerErreurZoneCommunes();
   
   const vueListeCommunes = document.getElementById('vueListeCommunes');
   const vuePersonnalisation = document.getElementById('vuePersonnalisation');
@@ -1900,6 +1902,18 @@ async function showFormAndPrefill(data) {
       }
     }
   }, 1000);
+}
+
+  function effacerErreurZoneCommunes() {
+  // Effacer le message d'erreur de la zone communes
+  const zoneCommunes = document.getElementById('communesCalculeesZone');
+  if (zoneCommunes) {
+    const errorMsg = zoneCommunes.querySelector('.error-message-inline');
+    if (errorMsg) errorMsg.remove();
+  }
+  
+  // Effacer aussi le message global
+  if (submitMsg) submitMsg.textContent = "";
 }
   
 function validerChamps() {
