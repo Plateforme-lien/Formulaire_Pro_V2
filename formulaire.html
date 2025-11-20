@@ -2011,18 +2011,42 @@ async function showFormAndPrefill(data) {
   }, 1000);
 }
 
-  function effacerErreurZoneCommunes() {
-  // Effacer le message d'erreur de la zone communes
+function effacerErreurZoneCommunes() {
+  // 1️⃣ Effacer le message d'erreur DANS la zone communes
   const zoneCommunes = document.getElementById('communesCalculeesZone');
   if (zoneCommunes) {
-    const errorMsg = zoneCommunes.querySelector('.error-message-inline');
-    if (errorMsg) errorMsg.remove();
+    // Retirer tous les messages inline dans la zone
+    const errorMsgs = zoneCommunes.querySelectorAll('.error-message-inline');
+    errorMsgs.forEach(msg => msg.remove());
+    
+    // Retirer le rouge de la zone
+    zoneCommunes.classList.remove('champ-requis-manquant');
   }
   
-  // Effacer aussi le message global
-  if (submitMsg) submitMsg.textContent = "";
-}
+  // 2️⃣ FORCER l'effacement du message global (submitMsg)
+  const submitMsg = document.getElementById('submitMsg');
+  if (submitMsg) {
+    submitMsg.textContent = "";
+    submitMsg.innerHTML = "";
+    submitMsg.style.display = "none"; // Forcer la disparition
+    
+    // Réafficher après pour les prochains messages
+    setTimeout(() => {
+      if (submitMsg.textContent === "") {
+        submitMsg.style.display = "block";
+      }
+    }, 100);
+  }
   
+  // 3️⃣ Effacer TOUS les messages inline liés aux communes dans TOUT le formulaire
+  document.querySelectorAll('.error-message-inline').forEach(msg => {
+    const texte = msg.textContent.toLowerCase();
+    if (texte.includes('commune') || texte.includes('valider') || texte.includes('liste')) {
+      msg.remove();
+    }
+  });
+} 
+
 function validerChamps() {
   // Nettoyer TOUTES les anciennes erreurs ET le message global
   document.querySelectorAll('.champ-requis-manquant').forEach(el => {
