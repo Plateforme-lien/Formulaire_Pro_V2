@@ -950,7 +950,7 @@ sendCodeBtn.addEventListener("click", async () => {
     }
   
   if (j.error === "COOLDOWN_ACTIVE") {
-    emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">⏱️ Patientez avant de renvoyer</span><br><span style="color:#6b7280;font-size:13px">${j.message}</span>`;
+    emailMsg.innerHTML = `<span style="color:#f59e0b;font-weight:600">${j.message}</span>`;
     sendCodeBtn.disabled = false;
     return;
   }
@@ -1456,6 +1456,8 @@ function afficherInterfaceModification() {
   const zoneValideeBadge = document.getElementById('zone-validee-badge');
   const infoDiv = document.getElementById('communesCalculeesInfo');
   const avertissement = document.getElementById('avertissementCommunes');
+
+  communesValidees = false; 
   
   if (avertissement) avertissement.style.display = 'none';
   
